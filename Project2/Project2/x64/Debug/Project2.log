@@ -1,0 +1,8 @@
+﻿  Assembling 1.asm...
+1.asm(1): error A2008: syntax error : .
+1.asm(3): error A2008: syntax error : section
+1.asm(4): error A2034: must be in segment block
+1.asm(5): error A2034: must be in segment block
+1.asm(6): error A2034: must be in segment block
+1.asm(6): error A2088: END directive required at end of file
+C:\Program Files\Microsoft Visual Studio\18\Insiders\MSBuild\Microsoft\VC\v180\BuildCustomizations\masm.targets(70,5): error MSB3721: выход из команды "ml64.exe /c /nologo /Zi /Fo"x64\Debug\1.obj" /W3 /errorReport:prompt  /Ta1.asm" с кодом "1".
