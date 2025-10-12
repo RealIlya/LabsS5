@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Лабораторная работа 2 — Отчёт</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Титульная страница (с рамкой) -->
+    <section class="page-wrapper">
+      <div class="page-content">
+        <div class="header">
+          <div class="coat-of-arms">
+            <img src="public/gerb.png" alt="Герб РФ" />
+          </div>
+          <p>ФЕДЕРАЛЬНОЕ ГОСУДАРСТВЕННОЕ БЮДЖЕТНОЕ</p>
+          <p>ОБРАЗОВАТЕЛЬНОЕ УЧРЕЖДЕНИЕ ВЫСШЕГО ОБРАЗОВАНИЯ</p>
+          <h2 class="university-name">
+            «НОВОСИБИРСКИЙ ГОСУДАРСТВЕННЫЙ ТЕХНИЧЕСКИЙ УНИВЕРСИТЕТ»
+          </h2>
+        </div>
+        <div class="faculty">
+          <img
+            class="faculty-logo"
+            src="public/logo.png"
+            alt="ФПМИ НГТУ НЭТИ"
+          />
+        </div>
+        <div class="work-info">
+          <p>КАФЕДРА ТЕОРЕТИЧЕСКОЙ И ПРИКЛАДНОЙ ИНФОРМАТИКИ</p>
+          <p>ЛАБОРАТОРНАЯ РАБОТА № 2</p>
+          <p>ПО ДИСЦИПЛИНЕ «Основы WEB-программирования»</p>
+        </div>
+        <h1 class="main-title">Вёрстка страницы «О себе»</h1>
+        <div class="details">
+          <div class="row">
+            <div class="label">Бригада №5</div>
+            <div class="members">
+              <div>ВЕСЕЛЫЙ ДЕНИС</div>
+              <div>ВОРОНЧУК ИЛЬЯ</div>
+              <div>ЛЫКОВА МАРИЯ</div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">Группа</div>
+            <div>ПМИ-32</div>
+          </div>
+          <div class="row">
+            <div class="label">Преподаватель</div>
+            <div>ЦЫГУЛИН А.А.</div>
+          </div>
+        </div>
+        <div class="footer muted"><p>Новосибирск, 2025</p></div>
+      </div>
+    </section>
+
+    <!-- Страница со скриншотами: 2 на участника, сгруппировано -->
+    <section class="page-wrapper">
+      <div class="page-content courses">
+        <h1>Скриншоты прохождения курсов</h1>
+        <div class="subtitle">
+          По два скриншота от каждого участника бригады №5
+        </div>
+        <div class="groups">
+          <section class="group">
+            <div class="group-title">Веселый Денис</div>
+            <div class="pair">
+              <figure>
+                <a href="public/screens/Denis1.jpg">
+                  <img
+                    src="public/screens/Denis1.jpg"
+                    alt="Денис — скриншот 1"
+                  />
+                </a>
+                <figcaption>Денис — Скриншот 1: информация о курсе</figcaption>
+              </figure>
+              <figure>
+                <a href="public/screens/Denis2.jpg">
+
+                <img src="public/screens/Denis2.jpg" alt="Денис — скриншот 2" />
+                </a>
+                <figcaption>
+                  Денис — Скриншот 2: название курса/раздела
+                </figcaption>
+              </figure>
+            </div>
+          </section>
+          <section class="group">
+            <div class="group-title">Ворончук Илья</div>
+            <div class="pair">
+              <figure>
+                <a href="public/screens/Ilya1.jpg">
+                  <img src="public/screens/Ilya1.jpg" alt="Илья — скриншот 1" />
+                </a>
+
+                <figcaption>Илья — Скриншот 1: информация о курсе</figcaption>
+              </figure>
+              <figure>
+                <a href="public/screens/Ilya2.jpg">
+                  <img src="public/screens/Ilya2.jpg" alt="Илья — скриншот 2" />
+                </a>
+                <figcaption>Илья — Скриншот 2: информация о курсе</figcaption>
+              </figure>
+            </div>
+          </section>
+          <section class="group">
+            <div class="group-title">Лыкова Мария</div>
+            <div class="pair">
+              <figure>
+                <a href="public/screens/Masha1.jpg">
+                  <img
+                    src="public/screens/Masha1.jpg"
+                    alt="Мария — скриншот 1"
+                  />
+                </a>
+                <figcaption>Мария — Скриншот 1: информация о курсе</figcaption>
+              </figure>
+              <figure>
+                <a href="public/screens/Masha1.jpg">
+                  <img
+                    src="public/screens/Masha2.jpg"
+                    alt="Мария — скриншот 2"
+                  />
+                </a>
+                <figcaption>Мария — Скриншот 2: информация о курсе</figcaption>
+              </figure>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <!-- О нас -->
+    <section class="page-wrapper">
+      <div class="page-content about">
+        <div class="hat">
+          <h1>О нас</h1>
+          <h2>Бригада №5 · ПМИ-32</h2>
+        </div>
+        <div class="cards">
+          <article class="card">
+            <img
+              class="avatar"
+              src="public/avatars/Denis.jpg"
+              alt="Фото Дениса"
+            />
+            <h3>Веселый Денис</h3>
+            <p class="role">Программист / Студент 3 курса ФПМИ НГТУ</p>
+            <p class="bio">
+              Увлекается программированием на <b>С++</b> и
+              <b>Data science</b>'ом. Любит красоту природы и ведёт свой топ
+              лучших мест. В будущем хочет принять участие в разработке
+              *<i>идеальной</i>* компьютерной игры.
+            </p>
+          </article>
+          <article class="card">
+            <img class="avatar" src="public/avatars/Ilya.jpg" alt="Фото Ильи" />
+            <h3>Ворончук Илья</h3>
+            <p class="role">
+              Человек-попаданец (не знает, как он здесь оказался)
+            </p>
+            <p class="bio">
+              <i
+                >Сирены били тревогу. Бортовой ИИ оповещал о незамедлительной
+                эвакуации...</i
+              >
+              <br />
+              Выйдя из капсулы, он оказался на неизвестной планете, полностью
+              покрытой водой...
+            </p>
+          </article>
+          <article class="card">
+            <img
+              class="avatar"
+              src="public/avatars/Masha.jpg"
+              alt="Фото Марии"
+            />
+            <h3>Лыкова Мария</h3>
+            <p class="role">Студент 3 курса НГТУ, ПМИ</p>
+            <p class="bio">
+              Интересуюсь <b>программированием</b>, <b>ИИ</b> и
+              <b>цифровым рисованием</b>. Хочу исследовать границы
+              взаимодействия человека и машины.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>

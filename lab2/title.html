@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Титульный лист</title>
+    <style>
+      body {
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* Это сам лист бумаги A4 */
+      .page-wrapper {
+        width: 210mm;
+        height: 297mm;
+        background-color: white;
+        /* margin: 20px; */
+        /* box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); */
+        box-sizing: border-box;
+      }
+
+      /* Это ваше содержимое с рамкой, которое теперь имеет отступы (margin) */
+      .page-content {
+        height: calc(
+          100% - (2cm - var(--border-width-vertical)) -
+            (2cm - var(--border-width-vertical))
+        );
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+
+        --border-width-left: 13px;
+        --border-width-right: 20px;
+        --border-width-vertical: 2px;
+
+        margin-top: calc(2cm - var(--border-width-vertical));
+        margin-left: calc(3cm - var(--border-width-left));
+        margin-right: calc(1.5cm - var(--border-width-right));
+        margin-bottom: calc(2cm - var(--border-width-vertical));
+
+        background-image: url("outline.png");
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+
+        font-family: "Calibri Light", Calibri, Candara, Segoe, "Segoe UI",
+          Optima, Arial, sans-serif;
+        font-weight: 300;
+      }
+
+      .header p {
+        margin: 2px 0;
+        font-size: 14px;
+        line-height: 1.4;
+      }
+
+      .coat-of-arms {
+        margin: 0;
+        margin-top: 30px;
+        margin-bottom: 20px;
+      }
+
+      .coat-of-arms img {
+        width: 100px;
+      }
+
+      .university-name {
+        font-size: 14px;
+        font-weight: 300;
+      }
+
+      .faculty-block {
+      }
+
+      .faculty-logo {
+        width: 580px;
+      }
+
+      .work-info p {
+        margin: 5px 0;
+        font-size: 16px;
+      }
+
+      .main-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 40px 0;
+      }
+
+      .details-section {
+        margin: 8px 20%;
+        font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial,
+          sans-serif;
+        font-weight: 400;
+      }
+
+      .detail-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 45px;
+        text-align: left;
+        font-size: 16px;
+      }
+
+      .detail-members {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .footer {
+        font-size: 20px;
+        font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial,
+          sans-serif;
+        font-weight: 400;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-wrapper">
+      <div class="page-content">
+        <!-- Верхняя часть -->
+        <div class="header">
+          <div class="coat-of-arms">
+            <img src="gerb.png" alt="Герб РФ" />
+          </div>
+          <p>ФЕДЕРАЛЬНОЕ ГОСУДАРСТВЕННОЕ БЮДЖЕТНОЕ</p>
+          <p>ОБРАЗОВАТЕЛЬНОЕ УЧРЕЖДЕНИЕ ВЫСШЕГО ОБРАЗОВАНИЯ</p>
+          <h2 class="university-name">
+            «НОВОСИБИРСКИЙ ГОСУДАРСТВЕННЫЙ ТЕХНИЧЕСКИЙ УНИВЕРСИТЕТ»
+          </h2>
+        </div>
+
+        <!-- Блок факультета -->
+        <div class="faculty-block">
+          <img
+            src="logo.png"
+            alt="Логотип и название факультета"
+            class="faculty-logo"
+          />
+        </div>
+
+        <!-- Информация о работе -->
+        <div class="work-info">
+          <p>КАФЕДРА ТЕОРЕТИЧЕСКОЙ И ПРИКЛАДНОЙ ИФОРМАТИКИ</p>
+          <p>ЛАБОРАТОРНАЯ РАБОТА № 2</p>
+          <p>ПО ДИСЦИПЛИНЕ «Основы WEB-ПРОГРАММИРОВАНИЯ»</p>
+        </div>
+
+        <h1 class="main-title">ВЁРСТКА СТРАНИЦЫ «О СЕБЕ»</h1>
+
+        <!-- Детали: исполнитель, группа, преподаватель -->
+        <div class="details-section">
+          <div class="detail-row">
+            <div class="detail-label">
+              Бригада<br />
+              №5
+            </div>
+            <div class="detail-members">
+              <div class="detail-value">ВЕСЕЛЫЙ ДЕНИС</div>
+              <div class="detail-value">ВОРОНЧУК ИЛЬЯ</div>
+              <div class="detail-value">ЛЫКОВА МАРИЯ</div>
+            </div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Группа</div>
+            <div class="detail-value">ПМИ-32</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Преподаватели</div>
+            <div class="detail-value">ЦЫГУЛИН А.А.</div>
+          </div>
+        </div>
+
+        <!-- Нижняя часть: город и год -->
+        <div class="footer">
+          <p>Новосибирск, 2025</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

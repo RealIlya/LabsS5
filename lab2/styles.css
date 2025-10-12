@@ -1,0 +1,289 @@
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+:root {
+  --border-left: 13px;
+  --border-right: 20px;
+  --border-vert: 2px;
+  --page-w: 210mm;
+  --page-h: 297mm;
+  --font-1: "Calibri Light", Calibri, Candara, Segoe, "Segoe UI", Optima, Arial,
+    sans-serif;
+  --font-2: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
+}
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #f3f5f7;
+  display: flex;
+  flex-direction: column;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  font-family: var(--font-2);
+}
+
+.page-wrapper {
+  width: var(--page-w);
+  height: var(--page-h);
+  min-height: var(--page-h);
+  background: #fff;
+  margin: 12px auto;
+  display: block;
+  page-break-after: always;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* TITLE PAGE */
+.page-content {
+  height: calc(100% - (2cm - var(--border-vert)) - (2cm - var(--border-vert)));
+  margin-top: calc(2cm - var(--border-vert));
+  margin-left: calc(3cm - var(--border-left));
+  margin-right: calc(1.5cm - var(--border-right));
+  margin-bottom: calc(2cm - var(--border-vert));
+  background-image: url("public/outline.png");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  font-family: var(--font-1);
+  font-weight: 300;
+}
+
+.header p {
+  margin: 2px 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.coat-of-arms {
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.coat-of-arms img {
+  width: 100px;
+}
+
+.university-name {
+  font-size: 14px;
+  font-weight: 300;
+  margin: 0 24px;
+}
+
+.faculty-logo {
+  width: 580px;
+  max-width: 85%;
+  height: auto;
+}
+
+.work-info p {
+  margin: 5px 0;
+  font-size: 16px;
+}
+
+.main-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 36px 0;
+}
+
+.details {
+  width: 60%;
+  text-align: left;
+  margin-top: 4px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  font-size: 16px;
+  margin: 26px 0 32px;
+}
+
+.row .label {
+  white-space: nowrap;
+}
+
+.members {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer {
+  margin-top: auto;
+  font-size: 20px;
+}
+
+.muted {
+  opacity: 0.9;
+}
+
+/* ABOUT + COURSES PAGES */
+.page-content.about,
+.page-content.courses {
+  margin: 2cm; /* одинаковые поля */
+  height: calc(100% - 4cm);
+  background: none;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: initial;
+  font-family: var(--font-2);
+  font-weight: 400;
+  gap: 12px;
+}
+
+/* ABOUT */
+.about .hat {
+  width: 100%;
+  text-align: center;
+  padding: 0;
+}
+
+.about h1 {
+  letter-spacing: 0.2px;
+  margin: 0;
+}
+
+.about h2 {
+  font-weight: 600;
+  margin: 2px 0 6px;
+  text-align: center;
+}
+
+.cards {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  padding: 0;
+}
+
+.card {
+  background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.92),
+        rgba(255, 255, 255, 0.92)
+      )
+      padding-box,
+    radial-gradient(120% 120% at 0% 0%, #84d5b4 0%, #ff6b81 40%, #4da3ff 80%)
+      border-box;
+  border: 2px dashed rgba(0, 0, 0, 0.06);
+  border-radius: 18px;
+  padding: 14px 14px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.avatar {
+  width: 140px;
+  height: 140px;
+  margin: 6px 0 10px;
+  object-fit: cover;
+  border-radius: 14px;
+}
+
+.card h3 {
+  margin: 8px 0 6px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.role {
+  font-size: 13px;
+  opacity: 0.8;
+  margin: 0 0 8px;
+}
+
+.bio {
+  font-size: 14px;
+  margin: 4px 0 8px;
+}
+
+/* COURSES (grouped per participant) */
+.courses h1 {
+  text-align: center;
+  margin: 0 0 4px;
+}
+
+.courses .subtitle {
+  text-align: center;
+  opacity: 0.9;
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.group {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  break-inside: avoid;
+  background: #fff;
+}
+
+.group-title {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-size: 14px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.pair figure {
+  margin: 0;
+}
+
+.pair img {
+  width: 100%;
+  height: 55mm; /* чтобы вся группа уместилась на одной странице */
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+  border: 1px solid #e5e7eb;
+}
+
+.pair figcaption {
+  font-size: 11px;
+  margin-top: 4px;
+  text-align: center;
+  opacity: 0.8;
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
+  .page-wrapper {
+    margin: 0;
+    box-shadow: none;
+  }
+}
