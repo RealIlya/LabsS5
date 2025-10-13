@@ -1,21 +1,71 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
- <meta charset="UTF-8">
- <title>О себе</title>
-</head>
-<body>
- <h1>Привет, я [Твое Имя]!</h1>
- <img src="[путь_к_твоему_фото]" alt="Мое фото" width="200">
- <p>Я студент группы ПМИ-32...</p>
- <p>Мои увлечения:</p>
- <ul>
- <li>Программирование</li>
- <li>Спорт</li>
- <li>Чтение</li>
- </ul>
- <p>Мои профили в социальных сетях:</p>
- <a href="[ссылка_на_вк]">ВКонтакте</a>
- <a href="[ссылка_на_github]">GitHub</a>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ЛР2 - О себе</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <section class="page-wrapper">
+      <div class="page-content about">
+        <div class="hat">
+          <h1>О нас</h1>
+          <h2>Бригада №5 · ПМИ-32</h2>
+        </div>
+
+        <div class="cards">
+          <!-- Денис -->
+          <article class="card">
+            <img
+              class="avatar"
+              src="public/avatars/Denis.jpg"
+              alt="Фото Дениса"
+            />
+            <h3>Веселый Денис</h3>
+            <p class="role">Программист / Студент 3 курса ФПМИ НГТУ</p>
+            <p class="bio">
+              Увлекается программированием на <b>С++</b> и
+              <b>Data&nbsp;science</b>. Любит красоту природы и ведёт свой топ
+              лучших мест. В будущем хочет принять участие в разработке
+              <i>идеальной</i> компьютерной игры.
+            </p>
+          </article>
+
+          <!-- Илья -->
+          <article class="card">
+            <img class="avatar" src="public/avatars/Ilya.jpg" alt="Фото Ильи" />
+            <h3>Ворончук Илья</h3>
+            <p class="role">
+              Человек-попаданец (не&nbsp;знает,&nbsp;как он здесь оказался)
+            </p>
+            <p class="bio">
+              <i
+                >Сирены били тревогу. Бортовой ИИ оповещал о незамедлительной
+                эвакуации...</i
+              ><br />
+              Выйдя из капсулы, он оказался на неизвестной планете, полностью
+              покрытой водой.
+            </p>
+          </article>
+
+          <!-- Мария -->
+          <article class="card">
+            <img
+              class="avatar"
+              src="public/avatars/Masha.jpg"
+              alt="Фото Марии"
+            />
+            <h3>Лыкова Мария</h3>
+            <p class="role">Студент 3 курса НГТУ, ПМИ</p>
+            <p class="bio">
+              Интересуюсь <b>программированием</b>, <b>ИИ</b> и
+              <b>цифровым рисованием</b>. Хочу исследовать границы
+              взаимодействия человека и машины.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </body>
 </html>
