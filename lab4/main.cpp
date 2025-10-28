@@ -1,5 +1,5 @@
 #include <fstream>
-#include <iomanip>  // Для форматирования вывода
+#include <iomanip>
 #include <iostream>
 #include <vector>
 
@@ -11,7 +11,7 @@
 #include <arpa/inet.h>  // Для ntohs
 #endif
 
-// Выравнивание по 1 байту критически важно, чтобы компилятор не добавил "пустышки" между полями.
+// Выравнивание по 1 байту критически важно, чтобы компилятор не добавил "пустышки" между полями
 #pragma pack(push, 1)
 
 // Структура, описывающая заголовок Ethernet (первые 14 байт кадра)
@@ -22,7 +22,7 @@ struct EthernetHeader {
 };
 
 // Структура, описывающая IP-заголовок (минимальный размер 20 байт)
-// Нам нужны только адреса, поэтому опишем поля до них.
+// Нам нужны только адреса, поэтому опишем поля до них
 struct IpHeader {
     unsigned char ihl_version;      // Длина заголовка и версия
     unsigned char tos;              // Тип сервиса
@@ -47,7 +47,7 @@ void print_mac_address(const unsigned char* mac) {
         std::cout << std::hex << std::setw(2) << std::setfill('0') << (int)mac[i];
         if (i < 5) std::cout << ":";
     }
-    std::cout << std::dec;  // Возвращаем в десятичный режим
+    std::cout << std::dec;  // Возвращаем поток вывода в десятичный режим
 }
 
 /**
@@ -72,7 +72,7 @@ int main() {
         return 1;
     }
 
-    // --- Статистика ---
+    // Статистика
     int frame_counter = 0;
     int ip_frames = 0;
     int arp_frames = 0;
@@ -87,12 +87,12 @@ int main() {
         file.read((char*)&eth_header, sizeof(EthernetHeader));
         if (file.gcount() < sizeof(EthernetHeader)) {
             // Если прочитали меньше 14 байт, значит, достигли конца файла
-            // или в файле "мусор" в конце.
+            // или в файле "мусор" в конце
             break;
         }
 
         frame_counter++;
-        std::cout << "----------------------------------------\n";
+        std::cout << "--------------------------------------\n";
         std::cout << "Frame #" << frame_counter << std::endl;
 
         // Преобразуем поле Type/Length из сетевого порядка байт (Big-Endian) в хостовый
@@ -105,7 +105,7 @@ int main() {
         print_mac_address(eth_header.dest_mac);
         std::cout << std::endl;
 
-        long frame_data_len = 0;
+        long long frame_data_len = 0;
 
         // ------ Логика определения типа кадра ------
 
@@ -146,7 +146,7 @@ int main() {
                 // Неизвестный тип Ethernet II. Пропускаем остаток кадра.
                 // В реальном анализаторе нужно было бы смотреть на размер пакета,
                 // но здесь для простоты считаем его минимальным.
-                // Длина поля данных должна быть минимум 46 байт.
+                // Длина поля данных должна быть минимум 46 байт
                 file.seekg(46, std::ios::cur);
                 frame_data_len = 46;
             }
@@ -180,10 +180,10 @@ int main() {
         std::cout << "  Frame Size:      " << sizeof(EthernetHeader) + frame_data_len << " bytes" << std::endl;
     }
 
-    // --- Вывод итоговой статистики ---
-    std::cout << "\n========================================\n";
+    // Вывод итоговой статистики
+    std::cout << "\n======================================\n";
     std::cout << "           Analysis Summary\n";
-    std::cout << "========================================\n";
+    std::cout << "======================================\n";
     std::cout << "Total frames processed: " << frame_counter << std::endl;
     std::cout << "\n--- Ethernet II (DIX) Frames ---\n";
     std::cout << "  IP Frames:            " << ip_frames << std::endl;
@@ -192,7 +192,7 @@ int main() {
     std::cout << "  LLC Frames:           " << llc_frames << std::endl;
     std::cout << "  Novell RAW Frames:    " << novell_raw_frames << std::endl;
     std::cout << "  SNAP Frames:          " << snap_frames << std::endl;
-    std::cout << "========================================\n";
+    std::cout << "======================================\n";
 
     file.close();
 
