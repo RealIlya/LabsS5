@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>О нас — Наша бригада</title>
+    <link rel="stylesheet" href="public/styles.css" />
+  </head>
+  <body>
+    <header class="site-header sticky">
+      <div class="container header-inner">
+        <a class="logo" href="#top">Бригада №5</a>
+        <nav class="nav">
+          <a href="#team">Команда</a>
+          <a href="#comments">Комментарии</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="section team-section" id="team">
+        <div class="container">
+          <h1>О нас</h1>
+          <p class="lead">Три участника, три роли — одна команда.</p>
+
+          <div class="team-grid">
+            <!-- Денис -->
+            <article class="person">
+              <img
+                class="person-avatar"
+                src="public/avatars/Denis.jpg"
+                alt="Фото Дениса"
+              />
+              <h3>Веселый Денис</h3>
+              <p class="role">Программист / Студент 3 курса ФПМИ НГТУ</p>
+              <p class="bio">
+                Увлекается программированием на <b>С++</b> и
+                <b>Data&nbsp;science</b>. Любит красоту природы и ведёт свой топ
+                лучших мест. В будущем хочет принять участие в разработке
+                <i>идеальной</i> компьютерной игры.
+              </p>
+            </article>
+
+            <!-- Илья -->
+            <article class="person">
+              <img
+                class="person-avatar"
+                src="public/avatars/Ilya.jpg"
+                alt="Фото Ильи"
+              />
+              <h3>Ворончук Илья</h3>
+              <p class="role">
+                Человек-попаданец (не&nbsp;знает,&nbsp;как он здесь оказался)
+              </p>
+              <p class="bio">
+                <i
+                  >Сирены били тревогу. Бортовой ИИ оповещал о незамедлительной
+                  эвакуации...</i
+                ><br />
+                Выйдя из капсулы, он оказался на неизвестной планете, полностью
+                покрытой водой.
+              </p>
+            </article>
+
+            <!-- Мария -->
+            <article class="person">
+              <img
+                class="person-avatar"
+                src="public/avatars/Masha.jpg"
+                alt="Фото Марии"
+              />
+              <h3>Лыкова Мария</h3>
+              <p class="role">Студент 3 курса НГТУ, ПМИ</p>
+              <p class="bio">
+                Интересуюсь <b>программированием</b>, <b>ИИ</b> и
+                <b>цифровым рисованием</b>. Хочу исследовать границы
+                взаимодействия человека и машины.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Комментарии -->
+      <section class="section comments-section" id="comments">
+        <div class="container">
+          <h2>Комментарии</h2>
+
+          <form id="comment-form" class="comment-form" autocomplete="off">
+            <div class="field">
+              <label for="author">Ваше имя</label>
+              <input
+                type="text"
+                id="author"
+                name="author"
+                placeholder="Имя"
+                maxlength="50"
+                required
+              />
+            </div>
+            <div class="field">
+              <label for="text">Комментарий</label>
+              <textarea
+                id="text"
+                name="text"
+                placeholder="Напишите что-нибудь..."
+                maxlength="1000"
+                required
+              ></textarea>
+            </div>
+            <div class="actions">
+              <button type="submit" class="btn primary">Отправить</button>
+              <button
+                type="button"
+                id="toggle-admin"
+                class="btn ghost"
+                title="Режим автора: показать/скрыть кнопки модерации"
+              >
+                Режим автора
+              </button>
+            </div>
+            <p class="hint">
+              Добавление без перезагрузки страницы. Нажмите «Режим автора»,
+              чтобы включить управление комментариями.
+            </p>
+          </form>
+
+          <ul
+            id="comments-list"
+            class="comments-list"
+            aria-live="polite"
+            aria-busy="false"
+          ></ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>© НГТУ ФПМИ, 2025 — Бригада №5</p>
+      </div>
+    </footer>
+
+    <script src="public/js/comments.js"></script>
+  </body>
+</html>
