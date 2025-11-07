@@ -1,0 +1,3 @@
+module MyComponents
+StyledTextArea 1.0 styledTextArea.qml
+FileInput 1.0 fileInput.qml
