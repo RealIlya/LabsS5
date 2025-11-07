@@ -1,0 +1,9 @@
+-rootPath
+/home/thundergod/ULabs/IaCT/lab4/src
+-cmake-output
+-output-file
+/home/thundergod/ULabs/IaCT/lab4/build/.qt_plugins/Qt6_QmlPlugins_Imports_iact4.cmake
+-importPath
+/home/thundergod/ULabs/IaCT/lab4/build
+-importPath
+/usr/lib/x86_64-linux-gnu/qt6/qml

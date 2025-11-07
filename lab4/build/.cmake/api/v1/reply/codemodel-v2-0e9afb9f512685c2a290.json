@@ -1,0 +1,87 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "IaCT4",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "iact4::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-iact4-Debug-793559be1ada754fef4d.json",
+					"name" : "iact4",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "iact4_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-iact4_autogen-Debug-245c5186b4df14ace4ec.json",
+					"name" : "iact4_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "iact4_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-iact4_autogen_timestamp_deps-Debug-1688598b4044626e2964.json",
+					"name" : "iact4_autogen_timestamp_deps",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "iact4_qmlimportscan::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-iact4_qmlimportscan-Debug-6d5e0fda92e565c21013.json",
+					"name" : "iact4_qmlimportscan",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/thundergod/ULabs/IaCT/lab4/build",
+		"source" : "/home/thundergod/ULabs/IaCT/lab4/src"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}

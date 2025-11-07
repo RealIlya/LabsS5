@@ -1,0 +1,26 @@
+{
+	"BUILD_DIR" : "/home/thundergod/ULabs/IaCT/lab4/build/iact4_autogen",
+	"CMAKE_BINARY_DIR" : "/home/thundergod/ULabs/IaCT/lab4/build",
+	"CMAKE_CURRENT_BINARY_DIR" : "/home/thundergod/ULabs/IaCT/lab4/build",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/thundergod/ULabs/IaCT/lab4/src",
+	"CMAKE_SOURCE_DIR" : "/home/thundergod/ULabs/IaCT/lab4/src",
+	"GENERATOR" : "Unix Makefiles",
+	"INCLUDE_DIR" : "/home/thundergod/ULabs/IaCT/lab4/build/iact4_autogen/include",
+	"INPUTS" : 
+	[
+		"/home/thundergod/ULabs/IaCT/lab4/src/front/main.qml",
+		"/home/thundergod/ULabs/IaCT/lab4/src/front/MyComponents/styledTextArea.qml",
+		"/home/thundergod/ULabs/IaCT/lab4/src/front/MyComponents/qmldir",
+		"/home/thundergod/ULabs/IaCT/lab4/src/front/MyComponents/fileInput.qml"
+	],
+	"LOCK_FILE" : "/home/thundergod/ULabs/IaCT/lab4/build/CMakeFiles/iact4_autogen.dir/AutoRcc_resources_3T4JOTWOLB_Lock.lock",
+	"MULTI_CONFIG" : false,
+	"OPTIONS" : [ "-name", "resources" ],
+	"OUTPUT_CHECKSUM" : "3T4JOTWOLB",
+	"OUTPUT_NAME" : "qrc_resources.cpp",
+	"RCC_EXECUTABLE" : "/usr/lib/qt6/libexec/rcc",
+	"RCC_LIST_OPTIONS" : [ "--list" ],
+	"SETTINGS_FILE" : "/home/thundergod/ULabs/IaCT/lab4/build/CMakeFiles/iact4_autogen.dir/AutoRcc_resources_3T4JOTWOLB_Used.txt",
+	"SOURCE" : "/home/thundergod/ULabs/IaCT/lab4/src/front/resources.qrc",
+	"VERBOSITY" : 0
+}

@@ -1,0 +1,6 @@
+/home/thundergod/ULabs/IaCT/lab4/build/CMakeFiles/iact4.dir
+/home/thundergod/ULabs/IaCT/lab4/build/CMakeFiles/iact4_qmlimportscan.dir
+/home/thundergod/ULabs/IaCT/lab4/build/CMakeFiles/edit_cache.dir
+/home/thundergod/ULabs/IaCT/lab4/build/CMakeFiles/rebuild_cache.dir
+/home/thundergod/ULabs/IaCT/lab4/build/CMakeFiles/iact4_autogen_timestamp_deps.dir
+/home/thundergod/ULabs/IaCT/lab4/build/CMakeFiles/iact4_autogen.dir

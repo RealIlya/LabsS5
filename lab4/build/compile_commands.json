@@ -1,0 +1,26 @@
+[
+{
+  "directory": "/home/thundergod/ULabs/IaCT/lab4/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICKCONTROLS2_LIB -DQT_QUICKDIALOGS2_LIB -DQT_QUICK_LIB -I/home/thundergod/ULabs/IaCT/lab4/build/iact4_autogen/include -I/home/thundergod/cpp_matrix/src -isystem /usr/include/x86_64-linux-gnu/qt6/QtCore -isystem /usr/include/x86_64-linux-gnu/qt6 -isystem /usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt6/QtGui -isystem /usr/include/x86_64-linux-gnu/qt6/QtQuick -isystem /usr/include/x86_64-linux-gnu/qt6/QtQml -isystem /usr/include/x86_64-linux-gnu/qt6/QtQmlIntegration -isystem /usr/include/x86_64-linux-gnu/qt6/QtNetwork -isystem /usr/include/x86_64-linux-gnu/qt6/QtQmlModels -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGL -isystem /usr/include/x86_64-linux-gnu/qt6/QtQuickControls2 -isystem /usr/include/x86_64-linux-gnu/qt6/QtQuickDialogs2 -g -std=gnu++20 -fPIC -o CMakeFiles/iact4.dir/iact4_autogen/mocs_compilation.cpp.o -c /home/thundergod/ULabs/IaCT/lab4/build/iact4_autogen/mocs_compilation.cpp",
+  "file": "/home/thundergod/ULabs/IaCT/lab4/build/iact4_autogen/mocs_compilation.cpp",
+  "output": "CMakeFiles/iact4.dir/iact4_autogen/mocs_compilation.cpp.o"
+},
+{
+  "directory": "/home/thundergod/ULabs/IaCT/lab4/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICKCONTROLS2_LIB -DQT_QUICKDIALOGS2_LIB -DQT_QUICK_LIB -I/home/thundergod/ULabs/IaCT/lab4/build/iact4_autogen/include -I/home/thundergod/cpp_matrix/src -isystem /usr/include/x86_64-linux-gnu/qt6/QtCore -isystem /usr/include/x86_64-linux-gnu/qt6 -isystem /usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt6/QtGui -isystem /usr/include/x86_64-linux-gnu/qt6/QtQuick -isystem /usr/include/x86_64-linux-gnu/qt6/QtQml -isystem /usr/include/x86_64-linux-gnu/qt6/QtQmlIntegration -isystem /usr/include/x86_64-linux-gnu/qt6/QtNetwork -isystem /usr/include/x86_64-linux-gnu/qt6/QtQmlModels -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGL -isystem /usr/include/x86_64-linux-gnu/qt6/QtQuickControls2 -isystem /usr/include/x86_64-linux-gnu/qt6/QtQuickDialogs2 -g -std=gnu++20 -fPIC -o CMakeFiles/iact4.dir/main.cpp.o -c /home/thundergod/ULabs/IaCT/lab4/src/main.cpp",
+  "file": "/home/thundergod/ULabs/IaCT/lab4/src/main.cpp",
+  "output": "CMakeFiles/iact4.dir/main.cpp.o"
+},
+{
+  "directory": "/home/thundergod/ULabs/IaCT/lab4/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICKCONTROLS2_LIB -DQT_QUICKDIALOGS2_LIB -DQT_QUICK_LIB -I/home/thundergod/ULabs/IaCT/lab4/build/iact4_autogen/include -I/home/thundergod/cpp_matrix/src -isystem /usr/include/x86_64-linux-gnu/qt6/QtCore -isystem /usr/include/x86_64-linux-gnu/qt6 -isystem /usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt6/QtGui -isystem /usr/include/x86_64-linux-gnu/qt6/QtQuick -isystem /usr/include/x86_64-linux-gnu/qt6/QtQml -isystem /usr/include/x86_64-linux-gnu/qt6/QtQmlIntegration -isystem /usr/include/x86_64-linux-gnu/qt6/QtNetwork -isystem /usr/include/x86_64-linux-gnu/qt6/QtQmlModels -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGL -isystem /usr/include/x86_64-linux-gnu/qt6/QtQuickControls2 -isystem /usr/include/x86_64-linux-gnu/qt6/QtQuickDialogs2 -g -std=gnu++20 -fPIC -o CMakeFiles/iact4.dir/back/EncryptAlgorithms.cpp.o -c /home/thundergod/ULabs/IaCT/lab4/src/back/EncryptAlgorithms.cpp",
+  "file": "/home/thundergod/ULabs/IaCT/lab4/src/back/EncryptAlgorithms.cpp",
+  "output": "CMakeFiles/iact4.dir/back/EncryptAlgorithms.cpp.o"
+},
+{
+  "directory": "/home/thundergod/ULabs/IaCT/lab4/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QUICKCONTROLS2_LIB -DQT_QUICKDIALOGS2_LIB -DQT_QUICK_LIB -I/home/thundergod/ULabs/IaCT/lab4/build/iact4_autogen/include -I/home/thundergod/cpp_matrix/src -isystem /usr/include/x86_64-linux-gnu/qt6/QtCore -isystem /usr/include/x86_64-linux-gnu/qt6 -isystem /usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt6/QtGui -isystem /usr/include/x86_64-linux-gnu/qt6/QtQuick -isystem /usr/include/x86_64-linux-gnu/qt6/QtQml -isystem /usr/include/x86_64-linux-gnu/qt6/QtQmlIntegration -isystem /usr/include/x86_64-linux-gnu/qt6/QtNetwork -isystem /usr/include/x86_64-linux-gnu/qt6/QtQmlModels -isystem /usr/include/x86_64-linux-gnu/qt6/QtOpenGL -isystem /usr/include/x86_64-linux-gnu/qt6/QtQuickControls2 -isystem /usr/include/x86_64-linux-gnu/qt6/QtQuickDialogs2 -g -std=gnu++20 -fPIC -o CMakeFiles/iact4.dir/iact4_autogen/3T4JOTWOLB/qrc_resources.cpp.o -c /home/thundergod/ULabs/IaCT/lab4/build/iact4_autogen/3T4JOTWOLB/qrc_resources.cpp",
+  "file": "/home/thundergod/ULabs/IaCT/lab4/build/iact4_autogen/3T4JOTWOLB/qrc_resources.cpp",
+  "output": "CMakeFiles/iact4.dir/iact4_autogen/3T4JOTWOLB/qrc_resources.cpp.o"
+}
+]
