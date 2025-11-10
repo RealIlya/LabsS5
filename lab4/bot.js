@@ -24,7 +24,7 @@ const escapeMarkdownV2 = (text) => {
   );
 };
 
-const knownCommands = ["/start", "/add", "/list", "/done", "/delete"];
+const knownCommands = ["/start", "/help", "/add", "/list", "/done", "/delete"];
 
 /**
  * Создает текст сообщения и клавиатуру для конкретной страницы.
@@ -92,9 +92,33 @@ const generateTaskList = async (userId, page = 1) => {
 bot.onText(/\/start/, (msg) => {
   bot.sendMessage(
     msg.chat.id,
-    "Привет! Я твой менеджер задач. Используй /list, чтобы увидеть запланированные дела.",
+    "Привет! Я твой менеджер задач. Используй /list, чтобы увидеть запланированные дела.\n" +
+      "_Подсказка_: /help — узнать больше команд.",
     { parse_mode: "Markdown" }
   );
+});
+
+bot.onText(/\/help/, (msg) => {
+  const chatId = msg.chat.id;
+
+  const helpText =
+    "*Доступные команды:*\n\n" +
+    "*/start* — запуск бота и краткое приветствие.\n\n" +
+    "*/help* — показать эту подсказку.\n\n" +
+    "*/add [текст]* — добавить новую задачу.\n" +
+    "_Пример:_ `/add Купить молоко`\n\n" +
+    '*/list* — показать список задач (навигация по страницам, кнопки "Вперед/Назад").\n\n' +
+    "*/done [ID]* — пометить задачу как выполненную.\n" +
+    "_Пример:_ `/done 3`\n\n" +
+    "*/delete [ID]* — удалить задачу.\n" +
+    "_Пример:_ `/delete 3`\n\n";
+
+  // Кнопки быстрого доступа (inline keyboard)
+  const options = {
+    parse_mode: "Markdown",
+  };
+
+  bot.sendMessage(chatId, helpText, options);
 });
 
 bot.onText(/\/add (.+)/, async (msg, match) => {
@@ -228,7 +252,10 @@ bot.on("callback_query", async (callbackQuery) => {
 bot.onText(/\/add$/, (msg) => {
   bot.sendMessage(
     msg.chat.id,
-    "Пожалуйста, укажите текст задачи. Например: `/add Купить молоко`"
+    "Пожалуйста, укажите текст задачи. Например: `/add Купить молоко`",
+    {
+      parse_mode: "Markdown",
+    }
   );
 });
 
