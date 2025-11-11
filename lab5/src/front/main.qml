@@ -19,7 +19,7 @@ ApplicationWindow {
     //minimumWidth: rootLayout.implicitWidth// + 30
     //minimumHeight: rootLayout.implicitHeight
     visible: true
-    //Material.theme: Material.Light
+    Material.theme: Material.Light
     title: "Аддитивный генератор псевдослучайных чисел"
     // Создаем экземпляр нашего C++ объекта.
     Generator {
@@ -39,7 +39,7 @@ ApplicationWindow {
                 }
                 openDialog.sourceFileInput.filePath = pathString;
                 if (fileContentTA) {
-                    fileContentTA.text = coder.readFileContent(pathString);
+                    fileContentTA.text = generator.readFileContent(pathString);
                     fileContentTA = null;
                 }
             }
@@ -77,7 +77,7 @@ ApplicationWindow {
             placeholderText: "Выберите файл с входными параметрами..."
             onButtonClicked: {
                 openDialog.sourceFileInput = generatorInputPath;
-                openDialog.fileContentTA = encryptInputText;
+                openDialog.fileContentTA = generatorInputText;
                 openDialog.open();
             }
         }

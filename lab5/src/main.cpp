@@ -6,7 +6,7 @@
 
 int main(int argc, char* argv[]) {
   // Другие варианты: "Material", "Universal", "Imagine"
-  QQuickStyle::setStyle("Universal");
+  QQuickStyle::setStyle("Material");
   // Создаем экземпляр приложения
   QGuiApplication app(argc, argv);
 

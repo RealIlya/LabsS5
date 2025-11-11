@@ -64,7 +64,6 @@ void Generator::generateSequence(const QString& init_params) noexcept {
     x.resize(k);
     for (int i = 0; i < k; ++i) {
       x[i] = values[i].toInt();
-      qInfo() << x[i];
     }
     int count = values[k].toInt();
     if (count <= 0)
