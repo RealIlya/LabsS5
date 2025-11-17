@@ -1,0 +1,61 @@
+.game {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: var(--space-lg);
+  max-width: var(--layout-max-width);
+  margin: 0 auto;
+  padding: var(--space-xxl) var(--space-lg);
+  color: var(--color-text-contrast);
+}
+
+.game__topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(45, 55, 72, 0.7);
+  padding: var(--space-md);
+  border-radius: var(--radius-soft);
+}
+
+.game__map {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(90px, 1fr));
+  gap: var(--space-sm);
+}
+
+.game__tile {
+  border: none;
+  border-radius: var(--radius-soft);
+  height: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xxs);
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--color-text-body);
+}
+
+.game__tile--selected {
+  outline: 2px solid var(--color-highlight);
+}
+
+.game__panel {
+  background: rgba(15, 23, 42, 0.8);
+  border-radius: var(--radius-soft);
+  padding: var(--space-xl);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.game__panel ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.game__end-turn {
+  min-width: 200px;
+}

@@ -1,0 +1,19 @@
+@import "./tokens.css";
+
+:root {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-body);
+  background-color: var(--color-page-bg);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--gradient-page);
+  color: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}

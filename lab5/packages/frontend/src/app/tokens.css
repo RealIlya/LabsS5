@@ -1,0 +1,84 @@
+:root {
+  /* Typography */
+  --font-family-base: "Inter", "Segoe UI", system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-size-label: 0.8rem;
+  --font-size-rank: 0.85rem;
+  --font-size-body: 1rem;
+  --font-size-section-title: clamp(2rem, 4vw, 3rem);
+  --font-size-version: 0.9rem;
+  --font-size-hero-title: clamp(2.4rem, 5vw, 3.4rem);
+  --letterspacing-rank: 0.1em;
+  --letterspacing-tagline: 0.3em;
+
+  /* Layout sizes */
+  --layout-max-width: 1200px;
+  --layout-hero-max-width: 720px;
+  --layout-hero-subtitle-width: 520px;
+  --layout-actions-max-width: 560px;
+  --layout-secondary-action-min: 180px;
+  --card-min-width: 220px;
+
+  /* Spacing scale */
+  --space-none: 0;
+  --space-xxs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-xxl: 3rem;
+  --space-profile-padding-y: 0.85rem;
+  --space-button-padding-y: 0.9rem;
+  --space-button-padding-x: 1.6rem;
+  --space-button-gap: 0.5rem;
+  --space-hero-title-margin-top: 0.25rem;
+  --space-hero-title-margin-bottom: 0.4rem;
+  --space-section-gap: 2.5rem;
+  --space-connection-gap: 0.6rem;
+  --space-card-header-gap: 0.75rem;
+
+  /* Radii */
+  --radius-card: 18px;
+  --radius-soft: 16px;
+  --radius-pill: 999px;
+
+  /* Shadows & blur */
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.2);
+  --shadow-success: 0 0 12px rgba(72, 187, 120, 0.7);
+  --blur-card: 6px;
+
+  /* Color palette */
+  --color-page-bg: #0b1120;
+  --color-bg-main: #1a202c;
+  --color-bg-surface: #2d3748;
+  --color-surface-overlay: rgba(45, 55, 72, 0.6);
+  --color-border-soft: rgba(148, 163, 184, 0.2);
+  --color-border-primary: rgba(90, 153, 229, 0.8);
+  --color-border-primary-faded: rgba(90, 153, 229, 0.12);
+  --color-text-body: #0f172a;
+  --color-text-contrast: #f8fafc;
+  --color-text-secondary: #a0aec0;
+  --color-text-muted: rgba(226, 232, 240, 0.7);
+  --color-text-neutral: #e2e8f0;
+  --color-text-translucent: rgba(248, 250, 252, 0.8);
+  --color-text-subtle: rgba(248, 250, 252, 0.6);
+  --color-text-card-muted: rgba(15, 23, 42, 0.8);
+  --color-primary: #5a99e5;
+  --color-primary-hover: #74aef5;
+  --color-secondary-text: #cbd5f5;
+  --color-highlight: #90cdf4;
+  --color-success: #48bb78;
+  --color-error: #f87171;
+
+  /* Gradients */
+  --gradient-page: radial-gradient(circle at top, #1e293b 0%, #0b1120 55%);
+
+  /* Sizes */
+  --size-emoji: 2rem;
+  --size-connection-dot: 0.75rem;
+  --breakpoint-mobile: 640px;
+}

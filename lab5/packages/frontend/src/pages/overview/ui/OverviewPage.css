@@ -1,0 +1,81 @@
+.overview {
+  max-width: var(--layout-max-width);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg) var(--space-xxl);
+}
+
+.overview header {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+  color: var(--color-text-contrast);
+}
+
+.overview header h1 {
+  margin: var(--space-sm) 0 var(--space-xs);
+  font-size: var(--font-size-section-title);
+}
+
+.overview section {
+  margin-bottom: var(--space-section-gap);
+}
+
+.overview section h2 {
+  color: var(--color-text-contrast);
+  margin-bottom: var(--space-md);
+}
+
+.overview .card-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(var(--card-min-width), 1fr)
+  );
+  gap: var(--space-md);
+}
+
+.overview .info-card {
+  border-radius: var(--radius-card);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(var(--blur-card));
+  color: var(--color-text-body);
+}
+
+.overview .info-card__header {
+  display: flex;
+  gap: var(--space-card-header-gap);
+  align-items: center;
+  margin-bottom: var(--space-card-header-gap);
+}
+
+.overview .info-card__emoji {
+  font-size: var(--size-emoji);
+}
+
+.overview .info-card h3 {
+  margin: var(--space-none);
+}
+
+.overview .info-card p {
+  margin: var(--space-none);
+  color: var(--color-text-card-muted);
+}
+
+.overview .info-card ul {
+  list-style: none;
+  margin: var(--space-none);
+  padding: var(--space-none);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.overview .info-card li {
+  display: flex;
+  justify-content: space-between;
+  font-weight: var(--font-weight-semibold);
+}
+
+.overview .info-card li span:last-child {
+  font-weight: var(--font-weight-bold);
+}

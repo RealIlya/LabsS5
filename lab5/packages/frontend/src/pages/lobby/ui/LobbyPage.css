@@ -1,0 +1,61 @@
+.lobby {
+  max-width: var(--layout-max-width);
+  margin: 0 auto;
+  padding: var(--space-xxl) var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  color: var(--color-text-contrast);
+}
+
+.lobby__header h1 {
+  margin: var(--space-sm) 0 0;
+}
+
+.lobby__players {
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-soft);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-card);
+}
+
+.lobby__players ul {
+  list-style: none;
+  margin: var(--space-md) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.lobby__player-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.lobby__host-tag {
+  margin-left: var(--space-sm);
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--radius-pill);
+  background: rgba(90, 153, 229, 0.2);
+  font-size: var(--font-size-label);
+}
+
+.lobby__player-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.lobby__actions {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.lobby__actions .ui-button {
+  min-width: 160px;
+}
