@@ -5,7 +5,7 @@ export interface PlayerData {
   populationCap: number;
   currentPopulation: number;
   status: "playing" | "defeated";
-  capitalCityId: string;
+  capitalCityId: string | null;
 }
 
 export interface PlayerProfile {
