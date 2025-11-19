@@ -20,10 +20,7 @@ export function Button({
     classes.push(className);
   }
   return (
-    <button
-      className={classes.join(" ")}
-      {...rest}
-    >
+    <button className={classes.join(" ")} {...rest}>
       {icon ? <span className="ui-button__icon">{icon}</span> : null}
       {children}
     </button>

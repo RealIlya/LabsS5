@@ -15,6 +15,7 @@
   padding: var(--space-profile-padding-y) var(--space-lg);
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--space-lg);
   color: var(--color-text-neutral);
 }
@@ -38,6 +39,11 @@
   color: var(--color-text-muted);
 }
 
+.main-menu__profile-edit {
+  white-space: nowrap;
+  padding-inline: var(--space-md);
+}
+
 .main-menu__hero {
   text-align: center;
   color: var(--color-text-contrast);
@@ -46,7 +52,8 @@
 }
 
 .main-menu__hero h1 {
-  margin: var(--space-hero-title-margin-top) 0 var(--space-hero-title-margin-bottom);
+  margin: var(--space-hero-title-margin-top) 0
+    var(--space-hero-title-margin-bottom);
   font-size: var(--font-size-hero-title);
 }
 

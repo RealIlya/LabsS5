@@ -1,41 +1,58 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "../../../shared/ui/button";
 import {
-  TERRAIN_RULES,
-  type TerrainType,
   STRUCTURE_RULES,
   UNIT_RULES,
-  type UnitType,
   type StructureType,
+  type TerrainType,
+  type UnitType,
 } from "@hex/shared";
 import { translations } from "../../../shared/i18n";
+import { useGameState } from "../../../entities/game/model/useGameState";
+import { placeCapital } from "../../../entities/game/api/gameApi";
+import { useLobbyStore } from "../../../entities/lobby/model/useLobbyStore";
 import "./GameMapPage.css";
+
+interface MapStructure {
+  id: string;
+  type: StructureType;
+  ownerId: string;
+  ownerName: string;
+  isCapital?: boolean;
+}
 
 interface MapTile {
   id: string;
   x: number;
   y: number;
   terrain: TerrainType;
-  structure?: StructureType;
+  structure?: MapStructure;
   unit?: {
     type: UnitType;
     owner: string;
   };
 }
 
+const HEX_CONFIG = {
+  SIZE: 60, // Радиус гексагона (расстояние от центра до вершины)
+  get HEIGHT() {
+    return this.SIZE * 2;
+  },
+  get WIDTH() {
+    return (Math.sqrt(3) / 2) * this.HEIGHT;
+  },
+  get ROW_SPACING_V() {
+    // Вертикальное расстояние между центрами рядов
+    return this.HEIGHT * 0.75;
+  },
+};
+
 const MAP_COLUMNS = 12;
 const MAP_ROWS = 10;
 const VIEWPORT_COLUMNS = 8;
 const VIEWPORT_ROWS = 6;
-const HEX_SIZE = 110;
-const HORIZONTAL_SPACING = HEX_SIZE * 0.75;
-const VERTICAL_SPACING = HEX_SIZE * 0.866; // расстояние между рядами (sin 60°)
-const viewportWidth = VIEWPORT_COLUMNS * HORIZONTAL_SPACING + HEX_SIZE;
-const viewportHeight = VIEWPORT_ROWS * VERTICAL_SPACING + HEX_SIZE;
-const mapWidth = HORIZONTAL_SPACING * (MAP_COLUMNS - 1) + HEX_SIZE;
-const mapHeight = VERTICAL_SPACING * (MAP_ROWS - 1) + HEX_SIZE;
-const maxOffsetX = Math.max(0, mapWidth - viewportWidth);
-const maxOffsetY = Math.max(0, mapHeight - viewportHeight);
 
 const terrainColor: Record<TerrainType, string> = {
   Plains: "#9bd770",
@@ -54,38 +71,101 @@ const unitEmoji: Record<UnitType, string> = {
   Worker: "🛠️",
 };
 
-const terrainPool: TerrainType[] = ["Plains", "Forest", "Hills", "Plains", "Plains", "Water", "Mountains"];
-const structurePool: StructureType[] = ["City", "Farm", "Fort", "Barracks", "Granary"];
-const unitPool: UnitType[] = ["Warrior", "Spearman", "Archer", "Horseman"];
-
-function generateMap(): MapTile[] {
-  const tiles: MapTile[] = [];
-  for (let y = 0; y < MAP_ROWS; y += 1) {
-    for (let x = 0; x < MAP_COLUMNS; x += 1) {
-      const terrain = terrainPool[(x + y) % terrainPool.length];
-      const id = `${x}-${y}`;
-      const tile: MapTile = { id, x, y, terrain };
-
-      if ((x + y) % 11 === 0) {
-        tile.structure = structurePool[(x + y) % structurePool.length];
-      }
-      if ((x * y) % 13 === 0 && x !== 0 && y !== 0) {
-        tile.unit = {
-          type: unitPool[(x + y) % unitPool.length],
-          owner: (x + y) % 2 === 0 ? "Player" : "Enemy",
-        };
-      }
-
-      tiles.push(tile);
-    }
-  }
-  return tiles;
-}
-
 export function GameMapPage() {
   const t = useMemo(() => translations.ru.game, []);
-  const mapTiles = useMemo(() => generateMap(), []);
+  const [searchParams] = useSearchParams();
+  const storedGameId = useLobbyStore((state) => state.currentGameId);
+  const lobby = useLobbyStore((state) => state.lobby);
+  const setGameId = useLobbyStore((state) => state.setGameId);
+  const selfId = useLobbyStore((state) => state.selfId);
+  const mapWrapperRef = useRef<HTMLDivElement>(null);
+  const [viewport, setViewport] = useState({ width: 0, height: 0 });
+  const gameIdFromParams = searchParams.get("gameId");
+  const effectiveGameId =
+    gameIdFromParams ?? storedGameId ?? lobby?.gameId ?? "demo-game";
+  useEffect(() => {
+    if (gameIdFromParams) {
+      setGameId(gameIdFromParams);
+    }
+  }, [gameIdFromParams, setGameId]);
+
+  useEffect(() => {
+    const updateViewport = () => {
+      const element = mapWrapperRef.current;
+      if (!element) {
+        return;
+      }
+      setViewport({
+        width: element.clientWidth,
+        height: element.clientHeight,
+      });
+    };
+    updateViewport();
+    window.addEventListener("resize", updateViewport);
+    return () => window.removeEventListener("resize", updateViewport);
+  }, []);
+
+  const { data: gameState, isLoading, isError } = useGameState(effectiveGameId);
+  const queryClient = useQueryClient();
+  const placeCapitalMutation = useMutation({
+    mutationFn: (tileId: string) => {
+      if (!effectiveGameId || !selfId) {
+        throw new Error("Missing identifiers for capital placement");
+      }
+      return placeCapital({ gameId: effectiveGameId, tileId, playerId: selfId });
+    },
+    onSuccess: () => {
+      if (effectiveGameId) {
+        queryClient.invalidateQueries({ queryKey: ["game", effectiveGameId] });
+      }
+    },
+  });
+  const mapTiles = useMemo(() => {
+    if (!gameState?.tiles) {
+      return [];
+    }
+    return gameState.tiles.map((tile) => ({
+      id: tile.id,
+      x: tile.x,
+      y: tile.y,
+      terrain: tile.terrain as TerrainType,
+      structure: tile.structure
+        ? {
+            id: tile.structure.id,
+            type: tile.structure.type as StructureType,
+            ownerId: tile.structure.ownerId,
+            ownerName: tile.structure.ownerName,
+            isCapital: tile.structure.isCapital,
+          }
+        : undefined,
+      unit: tile.unit
+        ? { type: tile.unit.type as UnitType, owner: tile.unit.owner }
+        : undefined,
+    }));
+  }, [gameState?.tiles]);
+
+  const playerState = selfId
+    ? gameState?.players?.find((player) => player.id === selfId) ?? null
+    : null;
+  const isPlacementPhase = gameState?.phase === "capital-placement";
+  const needsCapital = Boolean(playerState) && isPlacementPhase && !playerState?.capitalCityId;
+  const waitingForOpponents = isPlacementPhase && !needsCapital;
+  const controlsDisabled = isPlacementPhase;
+
+  const defaultViewportWidth =
+    typeof window !== "undefined" ? window.innerWidth - 48 : 1024;
+  const defaultViewportHeight =
+    typeof window !== "undefined" ? window.innerHeight * 0.5 : 480;
+  const viewportWidth = viewport.width || defaultViewportWidth;
+  const viewportHeight =
+    viewport.height || Math.max(320, defaultViewportHeight);
+
   const [selectedTile, setSelectedTile] = useState<MapTile | null>(null);
+  useEffect(() => {
+    if (!selectedTile && mapTiles.length > 0) {
+      setSelectedTile(mapTiles[0]);
+    }
+  }, [mapTiles, selectedTile]);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const dragState = useRef({
     active: false,
@@ -94,10 +174,48 @@ export function GameMapPage() {
     startOffset: { x: 0, y: 0 },
   });
 
-  const handleSelect = (tile: MapTile) => setSelectedTile(tile);
-  const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
+  const isTileEligibleForCapital = (tile: MapTile | null) => {
+    if (!tile) {
+      return false;
+    }
+    return tile.terrain !== "Mountains" && tile.terrain !== "Water" && !tile.structure;
+  };
 
-  const handlePointerDown: React.PointerEventHandler<HTMLDivElement> = (event) => {
+  const getStructureEmoji = (structure?: MapStructure) => {
+    if (!structure) {
+      return null;
+    }
+    if (structure.type === "City") {
+      return structure.isCapital ? "🏠" : "🏰";
+    }
+    if (structure.type === "Farm") {
+      return "🌾";
+    }
+    if (structure.type === "Fort") {
+      return "🛡️";
+    }
+    return "🏗️";
+  };
+
+  const handleSelect = (tile: MapTile) => {
+    setSelectedTile(tile);
+    if (needsCapital && isTileEligibleForCapital(tile) && !placeCapitalMutation.isPending) {
+      placeCapitalMutation.mutate(tile.id);
+    }
+  };
+  const clamp = (value: number, min: number, max: number) =>
+    Math.min(Math.max(value, min), max);
+
+  const handlePointerDown: React.PointerEventHandler<HTMLDivElement> = (
+    event
+  ) => {
+    if (event.button !== 0) {
+      return;
+    }
+    const target = event.target as HTMLElement | null;
+    if (target?.closest("button")) {
+      return;
+    }
     dragState.current = {
       active: true,
       pointerId: event.pointerId,
@@ -107,7 +225,9 @@ export function GameMapPage() {
     event.currentTarget.setPointerCapture(event.pointerId);
   };
 
-  const handlePointerMove: React.PointerEventHandler<HTMLDivElement> = (event) => {
+  const handlePointerMove: React.PointerEventHandler<HTMLDivElement> = (
+    event
+  ) => {
     if (!dragState.current.active) {
       return;
     }
@@ -117,8 +237,8 @@ export function GameMapPage() {
     const dy = event.clientY - dragState.current.start.y;
 
     setOffset({
-      x: clamp(dragState.current.startOffset.x - dx, 0, maxOffsetX),
-      y: clamp(dragState.current.startOffset.y - dy, 0, maxOffsetY),
+      x: clamp(dragState.current.startOffset.x - dx, 0, maxDragX),
+      y: clamp(dragState.current.startOffset.y - dy, 0, maxDragY),
     });
   };
 
@@ -129,103 +249,199 @@ export function GameMapPage() {
     }
   };
 
-  const selectedUnit = selectedTile?.unit ? UNIT_RULES[selectedTile.unit.type] : null;
-  const selectedStructure = selectedTile?.structure ? STRUCTURE_RULES[selectedTile.structure] : null;
+  const selectedUnit = selectedTile?.unit
+    ? UNIT_RULES[selectedTile.unit.type]
+    : null;
+  const selectedStructure = selectedTile?.structure
+    ? STRUCTURE_RULES[selectedTile.structure.type]
+    : null;
+  const selectedTileEligible = isTileEligibleForCapital(selectedTile);
+  const columns = gameState?.map?.columns ?? MAP_COLUMNS;
+  const rows = gameState?.map?.rows ?? MAP_ROWS;
+  const computedMapWidth =
+    (columns - 1) * HEX_CONFIG.WIDTH + HEX_CONFIG.WIDTH / 2;
+  const computedMapHeight =
+    (rows - 1) * HEX_CONFIG.ROW_SPACING_V + HEX_CONFIG.HEIGHT;
+  const maxDragX = Math.max(0, computedMapWidth - viewportWidth);
+  const maxDragY = Math.max(0, computedMapHeight - viewportHeight);
+  useEffect(() => {
+    if (offset.x > maxDragX || offset.y > maxDragY) {
+      setOffset({
+        x: clamp(offset.x, 0, maxDragX),
+        y: clamp(offset.y, 0, maxDragY),
+      });
+    }
+  }, [maxDragX, maxDragY, offset.x, offset.y]);
+
+  if (isLoading) {
+    return (
+      <div className="game">
+        <p>{t.loading}</p>
+      </div>
+    );
+  }
+
+  if (isError || !gameState) {
+    return (
+      <div className="game">
+        <p>{t.error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="game">
-      <header className="game__topbar">
-        <div>
-          <strong>
-            {t.turn}: 12
-          </strong>
-          <span>
-            {t.currentPlayer}: Player One
-          </span>
-        </div>
-        <div>
-          {t.population}: 85 / 100
-        </div>
-      </header>
-
-      <section
-        className="game__map-wrapper"
-        style={{ width: viewportWidth, height: viewportHeight }}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={endDrag}
-        onPointerLeave={endDrag}
-      >
-        <div
-          className="game__map"
-          style={{
-            width: mapWidth + HEX_SIZE,
-            height: mapHeight + HEX_SIZE,
-            transform: `translate(${-offset.x}px, ${-offset.y}px)`,
-          }}
-        >
-          {mapTiles.map((tile) => {
-            const offsetX = tile.x * HORIZONTAL_SPACING + (tile.y % 2 ? HORIZONTAL_SPACING / 2 : 0);
-            const offsetY = tile.y * VERTICAL_SPACING;
-            return (
-              <button
-                key={tile.id}
-                type="button"
-                className={`game__tile ${selectedTile?.id === tile.id ? "game__tile--selected" : ""}`}
-                onClick={() => handleSelect(tile)}
-                style={{
-                  backgroundColor: terrainColor[tile.terrain],
-                  width: HEX_SIZE,
-                  height: HEX_SIZE,
-                  left: offsetX,
-                  top: offsetY,
-                }}
-              >
-                {tile.structure ? <span className="game__tile-structure">🏰</span> : null}
-                {tile.unit ? <span className="game__tile-unit">{unitEmoji[tile.unit.type]}</span> : null}
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="game__panel">
-        {selectedTile ? (
+      <div className="game__stats-section">
+        <div className="game__stats">
           <div>
-            <h2>{t.tileInfo}</h2>
-            <p>{selectedTile.terrain}</p>
-            {selectedStructure ? (
-              <p>{t.structures}: {selectedTile.structure}</p>
-            ) : null}
-            {selectedUnit ? (
-              <div>
-                <h3>{t.unitInfo}</h3>
-                <p>
-                  {selectedTile.unit?.owner}: {selectedTile.unit?.type}
-                </p>
-                <ul>
-                  <li>
-                    {t.attack}: {selectedUnit.baseStats.attack}
-                  </li>
-                  <li>
-                    {t.health}: {selectedUnit.baseStats.health}
-                  </li>
-                  <li>
-                    {t.movement}: {selectedUnit.baseStats.movement}
-                  </li>
-                </ul>
-              </div>
+            <p className="game__label">{t.turn}</p>
+            <strong>{gameState.turn}</strong>
+          </div>
+          <div>
+            <p className="game__label">{t.currentPlayer}</p>
+            <strong>{gameState.currentPlayer}</strong>
+          </div>
+          <div>
+            <p className="game__label">{t.population}</p>
+            <strong>
+              {gameState.population.current} / {gameState.population.cap}
+            </strong>
+          </div>
+        </div>
+        {isPlacementPhase ? (
+          <div className="game__placement-banner">
+            {needsCapital ? t.capitalPlacement.hint : t.capitalPlacement.waiting}
+          </div>
+        ) : null}
+      </div>
+
+      <div className="game__map-container">
+        <section
+          className="game__map-wrapper"
+          ref={mapWrapperRef}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={endDrag}
+          onPointerLeave={endDrag}
+        >
+          <div
+            className="game__map"
+            style={{
+              width: computedMapWidth + HEX_CONFIG.WIDTH,
+              height: computedMapHeight,
+              transform: `translate(${-offset.x}px, ${-offset.y}px)`,
+            }}
+          >
+            {mapTiles.map((tile) => {
+              const offsetX =
+                tile.x * HEX_CONFIG.WIDTH +
+                (tile.y % 2 ? HEX_CONFIG.WIDTH / 2 : 0);
+              const offsetY = tile.y * HEX_CONFIG.ROW_SPACING_V;
+              const isBlocked = needsCapital && !isTileEligibleForCapital(tile);
+              const structureEmoji = getStructureEmoji(tile.structure);
+              const tileClasses = ["game__tile"];
+              if (selectedTile?.id === tile.id) {
+                tileClasses.push("game__tile--selected");
+              }
+              if (isBlocked) {
+                tileClasses.push("game__tile--blocked");
+              }
+
+              return (
+                <button
+                  key={tile.id}
+                  type="button"
+                  className={tileClasses.join(" ")}
+                  onClick={() => handleSelect(tile)}
+                  style={{
+                    backgroundColor: terrainColor[tile.terrain],
+                    width: HEX_CONFIG.WIDTH,
+                    height: HEX_CONFIG.HEIGHT,
+                    left: offsetX,
+                    top: offsetY,
+                  }}
+                >
+                  {structureEmoji ? (
+                    <span className="game__tile-structure">{structureEmoji}</span>
+                  ) : null}
+                  {tile.unit ? (
+                    <span className="game__tile-unit">
+                      {unitEmoji[tile.unit.type]}
+                    </span>
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        <div className="game__overlay game__overlay-bottom">
+          <div className="game__info-card">
+            {selectedTile ? (
+              <>
+                <h2>{t.tileInfo}</h2>
+                <p className="game__info-terrain">{selectedTile.terrain}</p>
+                {needsCapital ? (
+                  <p className="game__placement-banner">
+                    {selectedTileEligible
+                      ? t.capitalPlacement.action
+                      : t.capitalPlacement.invalid}
+                  </p>
+                ) : (
+                  <>
+                    {selectedStructure ? (
+                      <p className="game__info-structure">
+                        {t.structures}: {selectedTile.structure?.type}
+                        {selectedTile.structure?.isCapital ? ` · ${t.capitalPlacement.capitalLabel}` : ""}
+                      </p>
+                    ) : null}
+                    {selectedUnit ? (
+                      <div className="game__unit-details">
+                        <h3>{t.unitInfo}</h3>
+                        <p>
+                          {selectedTile.unit?.owner}: {selectedTile.unit?.type}
+                        </p>
+                        <ul>
+                          <li>
+                            {t.attack}: {selectedUnit.baseStats.attack}
+                          </li>
+                          <li>
+                            {t.health}: {selectedUnit.baseStats.health}
+                          </li>
+                          <li>
+                            {t.movement}: {selectedUnit.baseStats.movement}
+                          </li>
+                        </ul>
+                      </div>
+                    ) : (
+                      <p>{t.selectPrompt}</p>
+                    )}
+                  </>
+                )}
+              </>
+            ) : (
+              <p>{needsCapital ? t.capitalPlacement.hint : t.selectPrompt}</p>
+            )}
+            {waitingForOpponents ? (
+              <p className="game__placement-banner">{t.capitalPlacement.waiting}</p>
             ) : null}
           </div>
-        ) : (
-          <p>{t.selectPrompt}</p>
-        )}
-        <Button className="game__end-turn" disabled>
-          {t.endTurnDisabled}
-        </Button>
-      </section>
+          <div className="game__actions">
+            <Button variant="secondary" disabled={controlsDisabled}>
+              {t.actions.attack}
+            </Button>
+            <Button variant="secondary" disabled={controlsDisabled}>
+              {t.actions.build}
+            </Button>
+            <Button variant="secondary" disabled={controlsDisabled}>
+              {t.actions.fortify}
+            </Button>
+            <Button className="game__end-turn" disabled>
+              {controlsDisabled ? t.capitalPlacement.waiting : t.endTurnDisabled}
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
-
-export default GameMapPage;

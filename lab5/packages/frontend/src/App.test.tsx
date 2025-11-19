@@ -23,7 +23,9 @@ describe("App", () => {
 
   it("рендерит главное меню по умолчанию", () => {
     renderWithRouter();
-    expect(screen.getByRole("heading", { name: /соберите армию/i })).toBeVisible();
+    expect(
+      screen.getByRole("heading", { name: /The Settler's Hope/i })
+    ).toBeVisible();
     expect(
       screen.getByRole("button", { name: "Создать игру" })
     ).toBeInTheDocument();
@@ -37,14 +39,20 @@ describe("App", () => {
 
   it("рендерит лобби на маршруте /lobby", () => {
     renderWithRouter(["/lobby"]);
-    expect(screen.getByRole("heading", { name: /ожидание подключения/i })).toBeInTheDocument();
-    expect(screen.getByText(/Командир Nova/)).toBeVisible();
-    expect(screen.getByRole("button", { name: /Ждём всех игроков/i })).toBeDisabled();
+    expect(
+      screen.getByRole("heading", { name: /ожидание подключения/i })
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Nova/)).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: /Ждём всех игроков/i })
+    ).toBeDisabled();
   });
 
-  it("загружает карту на маршруте /game", () => {
+  it("загружает карту на маршруте /game", async () => {
     renderWithRouter(["/game"]);
-    expect(screen.getByText(/Выберите юнита/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Действия завершены/i })).toBeDisabled();
+    await screen.findByText(/Выберите юнита/i);
+    expect(
+      screen.getByRole("button", { name: /Действия завершены/i })
+    ).toBeDisabled();
   });
 });

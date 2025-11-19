@@ -1,17 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "../../../shared/ui/button";
-import type { PlayerProfile } from "@hex/shared";
 import { translations } from "../../../shared/i18n";
-import { useCreateLobbyMutation, useJoinLobbyMutation } from "../../../entities/lobby/model/useLobbyMutations";
+import {
+  useCreateLobbyMutation,
+  useJoinLobbyMutation,
+} from "../../../entities/lobby/model/useLobbyMutations";
+import { useProfileStore } from "../../../entities/profile/model/useProfileStore";
 import "./MainMenuPage.css";
-
-const mockProfile: PlayerProfile = {
-  id: "player-1",
-  nickname: "Командир Nova",
-  rank: "Hex HQ",
-  status: "online",
-};
 
 const mockConnection = {
   status: "online" as const,
@@ -28,17 +24,55 @@ export function MainMenuPage() {
   const [isSettingsOpen, setSettingsOpen] = useState(false);
   const [isTutorialOpen, setTutorialOpen] = useState(false);
   const [isJoinOpen, setJoinOpen] = useState(false);
+  const [isProfileModalOpen, setProfileModalOpen] = useState(false);
   const [joinCode, setJoinCode] = useState("");
   const [joinError, setJoinError] = useState<string | null>(null);
+  const [profileNickname, setProfileNickname] = useState("");
+  const [profilePassword, setProfilePassword] = useState("");
+  const [profileError, setProfileError] = useState<string | null>(null);
   const t = useMemo(() => translations.ru.mainMenu, []);
   const createLobbyMutation = useCreateLobbyMutation();
   const joinLobbyMutation = useJoinLobbyMutation();
   const isJoining = joinLobbyMutation.isPending;
   const isCreating = createLobbyMutation.isPending;
+  const profile = useProfileStore((state) => state.profile);
+  const setProfile = useProfileStore((state) => state.setProfile);
+  const profileLabel = profile?.nickname ?? t.profileModal.placeholderName;
+
+  useEffect(() => {
+    if (!profile) {
+      setProfileModalOpen(true);
+      return;
+    }
+    setProfileNickname(profile.nickname);
+  }, [profile]);
+
+  const generatePlayerId = () => {
+    if (profile?.id) {
+      return profile.id;
+    }
+    if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+      return crypto.randomUUID();
+    }
+    return `player-${Date.now()}`;
+  };
+
+  const ensureProfile = () => {
+    if (profile) {
+      return profile;
+    }
+    setProfileModalOpen(true);
+    setProfileError(null);
+    return null;
+  };
 
   const handleCreate = () => {
+    const currentProfile = ensureProfile();
+    if (!currentProfile) {
+      return;
+    }
     createLobbyMutation.mutate(
-      { hostId: mockProfile.id, nickname: mockProfile.nickname },
+      { hostId: currentProfile.id, nickname: currentProfile.nickname },
       {
         onSuccess: () => {
           navigate("/lobby");
@@ -58,13 +92,21 @@ export function MainMenuPage() {
       return;
     }
     setJoinError(null);
+    const currentProfile = ensureProfile();
+    if (!currentProfile) {
+      return;
+    }
     joinLobbyMutation.mutate(
-      { code: joinCode.trim(), nickname: mockProfile.nickname, playerId: `${mockProfile.id}-ally` },
+      {
+        code: joinCode.trim(),
+        nickname: currentProfile.nickname,
+        playerId: currentProfile.id,
+      },
       {
         onSuccess: () => {
           setJoinOpen(false);
           setJoinCode("");
-          navigate("/game");
+          navigate("/lobby");
         },
         onError: () => {
           setJoinError(t.joinModal.error);
@@ -73,14 +115,45 @@ export function MainMenuPage() {
     );
   };
 
+  const submitProfile = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!profileNickname.trim()) {
+      setProfileError(t.profileModal.nameError);
+      return;
+    }
+    if (!profilePassword.trim()) {
+      setProfileError(t.profileModal.passwordError);
+      return;
+    }
+    setProfile({
+      id: generatePlayerId(),
+      nickname: profileNickname.trim(),
+      password: profilePassword,
+    });
+    setProfileError(null);
+    setProfilePassword("");
+    setProfileModalOpen(false);
+  };
+
   return (
     <div className="main-menu">
       <div className="main-menu__profile-card">
         <div>
           <p className="main-menu__profile-label">{t.profileLabel}</p>
-          <p className="main-menu__profile-name">{mockProfile.nickname}</p>
+          <p className="main-menu__profile-name">{profileLabel}</p>
         </div>
-        <span className="main-menu__profile-rank">{mockProfile.rank}</span>
+        <Button
+          variant="secondary"
+          className="main-menu__profile-edit"
+          onClick={() => {
+            setProfileModalOpen(true);
+            setProfileError(null);
+            setProfileNickname(profile?.nickname ?? "");
+            setProfilePassword("");
+          }}
+        >
+          {profile ? t.profileModal.edit : t.profileModal.create}
+        </Button>
       </div>
 
       <header className="main-menu__hero">
@@ -127,12 +200,53 @@ export function MainMenuPage() {
           </span>
         </div>
         <div className="main-menu__footer-info">
-          <p className="main-menu__version">
-            {t.versionLabel}: v0.1.0
-          </p>
+          <p className="main-menu__version">{t.versionLabel}: v0.1.0</p>
           <p className="main-menu__credits">{t.credits}</p>
         </div>
       </footer>
+
+      {isProfileModalOpen ? (
+        <div className="main-menu__modal" role="dialog" aria-modal="true">
+          <div className="main-menu__modal-content">
+            <h2>{t.profileModal.title}</h2>
+            <p>{t.profileModal.description}</p>
+            <form onSubmit={submitProfile} className="main-menu__form">
+              <input
+                type="text"
+                value={profileNickname}
+                onChange={(event) => setProfileNickname(event.target.value)}
+                placeholder={t.profileModal.namePlaceholder}
+              />
+              <input
+                type="password"
+                value={profilePassword}
+                onChange={(event) => setProfilePassword(event.target.value)}
+                placeholder={t.profileModal.passwordPlaceholder}
+              />
+              {profileError ? (
+                <span className="main-menu__form-error">{profileError}</span>
+              ) : null}
+              <div className="main-menu__form-actions">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => {
+                    setProfileModalOpen(false);
+                    setProfileError(null);
+                    setProfilePassword("");
+                    if (!profile) {
+                      setProfileNickname("");
+                    }
+                  }}
+                >
+                  {t.profileModal.cancel}
+                </Button>
+                <Button type="submit">{t.profileModal.submit}</Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
 
       {isSettingsOpen ? (
         <div className="main-menu__modal" role="dialog" aria-modal="true">

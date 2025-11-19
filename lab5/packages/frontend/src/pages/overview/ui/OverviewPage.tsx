@@ -200,50 +200,52 @@ const structureCards: CardData[] = (
   return { id: type, meta, stats };
 });
 
-const unitCards: CardData[] = (
-  Object.keys(UNIT_RULES) as UnitType[]
-).map((type) => {
-  const rule = UNIT_RULES[type];
-  const meta = unitMeta[type];
-  const stats: CardData["stats"] = [
-    { label: t.cost, value: `${rule.cost}` },
-    { label: t.production, value: `${rule.productionTurns} ходов` },
-    { label: t.attack, value: `${rule.baseStats.attack}` },
-    { label: t.health, value: `${rule.baseStats.health}` },
-    { label: t.movementPoints, value: `${rule.baseStats.movement}` },
-  ];
+const unitCards: CardData[] = (Object.keys(UNIT_RULES) as UnitType[]).map(
+  (type) => {
+    const rule = UNIT_RULES[type];
+    const meta = unitMeta[type];
+    const stats: CardData["stats"] = [
+      { label: t.cost, value: `${rule.cost}` },
+      { label: t.production, value: `${rule.productionTurns} ходов` },
+      { label: t.attack, value: `${rule.baseStats.attack}` },
+      { label: t.health, value: `${rule.baseStats.health}` },
+      { label: t.movementPoints, value: `${rule.baseStats.movement}` },
+    ];
 
-  if (rule.abilities.range) {
-    stats.push({ label: t.range, value: `${rule.abilities.range} тайла` });
-  }
-  if (rule.abilities.canBuildCity) {
-    stats.push({ label: t.special, value: "🏙️ строит города" });
-  }
-  if (rule.abilities.canBuildStructures?.length) {
-    stats.push({
-      label: t.builds,
-      value: rule.abilities.canBuildStructures.map((s) => structureMeta[s].name).join(", "),
-    });
-  }
-  if (rule.abilities.bonusVs?.length) {
-    stats.push({
-      label: t.bonusVs,
-      value: rule.abilities.bonusVs
-        .map(
-          (bonus) =>
-            `${unitMeta[bonus.type].name} +${Math.round(
-              (bonus.multiplier - 1) * 100
-            )}%`
-        )
-        .join(", "),
-    });
-  }
-  if (rule.abilities.canAttack === false) {
-    stats.push({ label: t.special, value: t.cannotAttack });
-  }
+    if (rule.abilities.range) {
+      stats.push({ label: t.range, value: `${rule.abilities.range} тайла` });
+    }
+    if (rule.abilities.canBuildCity) {
+      stats.push({ label: t.special, value: "🏙️ строит города" });
+    }
+    if (rule.abilities.canBuildStructures?.length) {
+      stats.push({
+        label: t.builds,
+        value: rule.abilities.canBuildStructures
+          .map((s) => structureMeta[s].name)
+          .join(", "),
+      });
+    }
+    if (rule.abilities.bonusVs?.length) {
+      stats.push({
+        label: t.bonusVs,
+        value: rule.abilities.bonusVs
+          .map(
+            (bonus) =>
+              `${unitMeta[bonus.type].name} +${Math.round(
+                (bonus.multiplier - 1) * 100
+              )}%`
+          )
+          .join(", "),
+      });
+    }
+    if (rule.abilities.canAttack === false) {
+      stats.push({ label: t.special, value: t.cannotAttack });
+    }
 
-  return { id: type, meta, stats };
-});
+    return { id: type, meta, stats };
+  }
+);
 
 const Section = ({ title, cards }: { title: string; cards: CardData[] }) => (
   <section>
