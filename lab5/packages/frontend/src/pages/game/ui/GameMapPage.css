@@ -18,15 +18,26 @@
 }
 
 .game__map {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(90px, 1fr));
-  gap: var(--space-sm);
+  position: relative;
+  transition: transform 0.05s linear;
+}
+
+.game__map-wrapper {
+  overflow: hidden;
+  border-radius: var(--radius-soft);
+  touch-action: none;
+  cursor: grab;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.game__map-wrapper:active {
+  cursor: grabbing;
 }
 
 .game__tile {
+  position: absolute;
   border: none;
   border-radius: var(--radius-soft);
-  height: 90px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -35,6 +46,15 @@
   font-size: 1.5rem;
   cursor: pointer;
   color: var(--color-text-body);
+  clip-path: polygon(
+    25% 0%,
+    75% 0%,
+    100% 50%,
+    75% 100%,
+    25% 100%,
+    0% 50%
+  );
+  box-shadow: var(--shadow-card);
 }
 
 .game__tile--selected {
