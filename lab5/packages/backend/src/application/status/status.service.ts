@@ -1,7 +1,7 @@
 export class StatusService {
   getStatus() {
     return {
-      message: "Hex Strategy backend is up",
+      message: "Backend is up",
       timestamp: new Date().toISOString(),
     };
   }

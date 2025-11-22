@@ -4,36 +4,38 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import type { Lobby } from "../../domain/lobby/lobby.types";
-import type {
-  GameState,
-  GameTileState,
-  GameStructureState,
-} from "../../domain/game/game-state";
+import type { GameState, GameTileState } from "../../domain/game/game-state";
+import {
+  STRUCTURE_RULES,
+  TERRAIN_RULES,
+  UNIT_RULES,
+  type CityData,
+  type CityImprovementType,
+  type CityProductionItem,
+  type HexCoord,
+  type PlayerAction,
+  type UnitData,
+  type UnitType,
+} from "@hex/shared";
+import {
+  CAPITAL_START_FORTIFICATION,
+  CAPITAL_START_POPULATION,
+  CITY_FORT_REGEN,
+  CITY_MAX_FORTIFICATION,
+  CITY_POPULATION_CAP_BONUS,
+  MAP_COLUMNS,
+  MAP_ROWS,
+  PLAYER_COLORS,
+} from "./game.constants";
+import { getNeighbors, getTile, isTilePlaceable } from "./game.utils";
 import { memoryStore } from "../../infrastructure/store/memory-store";
-
-const MAP_COLUMNS = 18;
-const MAP_ROWS = 14;
-const PLAYER_COLORS = ["#5FB49C", "#FFB347", "#6C63FF", "#FF6F91"];
-const EVEN_NEIGHBORS = [
-  { dx: 0, dy: -1 },
-  { dx: 1, dy: -1 },
-  { dx: -1, dy: 0 },
-  { dx: 1, dy: 0 },
-  { dx: 0, dy: 1 },
-  { dx: 1, dy: 1 },
-];
-const ODD_NEIGHBORS = [
-  { dx: -1, dy: -1 },
-  { dx: 0, dy: -1 },
-  { dx: -1, dy: 0 },
-  { dx: 1, dy: 0 },
-  { dx: -1, dy: 1 },
-  { dx: 0, dy: 1 },
-];
+import { MapService } from "./map.service";
 
 @Injectable()
 export class GameService {
-  getGame(gameId: string) {
+  constructor(private readonly mapService: MapService) {}
+
+  getGame(gameId: string): GameState {
     const game = memoryStore.getGame(gameId);
     if (!game) {
       throw new NotFoundException("Game not found");
@@ -47,7 +49,54 @@ export class GameService {
     return gameState;
   }
 
-  placeCapital(gameId: string, playerId: string, tileId: string) {
+  applyAction(
+    gameId: string,
+    playerId: string,
+    action: PlayerAction
+  ): GameState {
+    const game = this.getGame(gameId);
+    if (game.phase !== "running") {
+      throw new BadRequestException("Game is not running");
+    }
+    if (game.currentPlayerId !== playerId) {
+      throw new BadRequestException("Not your turn");
+    }
+
+    switch (action.type) {
+      case "MOVE_UNIT":
+        this.handleMoveUnit(
+          game,
+          playerId,
+          action.payload.path,
+          action.payload.unitId
+        );
+        break;
+      case "BUILD_STRUCTURE":
+        this.handleBuildStructure(game, playerId, action.payload);
+        break;
+      case "SET_CITY_PRODUCTION":
+        this.handleSetCityProduction(
+          game,
+          playerId,
+          action.payload.cityId,
+          action.payload.item
+        );
+        break;
+      case "FOUND_CITY":
+        this.handleFoundCity(game, playerId, action.payload.settlerId);
+        break;
+      case "END_TURN":
+        this.advanceTurn(game);
+        break;
+      default:
+        throw new BadRequestException("Action not supported yet");
+    }
+
+    memoryStore.saveGame(game);
+    return game;
+  }
+
+  placeCapital(gameId: string, playerId: string, tileId: string): GameState {
     const game = this.getGame(gameId);
     if (game.phase !== "capital-placement") {
       throw new BadRequestException("Capital placement already finished");
@@ -65,7 +114,7 @@ export class GameService {
     if (!tile) {
       throw new NotFoundException("Tile not found");
     }
-    if (!this.isTilePlaceable(tile)) {
+    if (!isTilePlaceable(tile)) {
       throw new BadRequestException("Tile is not suitable for a capital");
     }
     if (tile.structure) {
@@ -73,21 +122,40 @@ export class GameService {
     }
 
     const structureId = `city-${tile.id}`;
-    tile.structure = {
+    const city: CityData = {
       id: structureId,
       type: "City",
       ownerId: player.id,
       ownerName: player.name,
+      population: CAPITAL_START_POPULATION,
+      improvement: null,
+      fortification: CAPITAL_START_FORTIFICATION,
       isCapital: true,
+      production: null,
     };
+    tile.structure = city;
+    tile.ownerId = player.id;
+    const acquiredTileIds = this.claimInitialTerritory(game, tile, player.id);
 
     player.capitalCityId = structureId;
     player.populationCap = Math.max(player.populationCap, 50);
-    player.currentPopulation = Math.max(player.currentPopulation, 35);
-    game.population = this.calculatePopulation(game.players);
+    this.recalculatePopulation(game);
+    this.pushEvent(game, {
+      type: "CITY_FOUNDED",
+      payload: {
+        newCity: city,
+        acquiredTileIds,
+      },
+    });
 
     if (game.players.every((p) => p.capitalCityId)) {
       game.phase = "running";
+      game.currentPlayerId = game.players[0]?.id ?? playerId;
+      game.currentPlayerName = game.players[0]?.name ?? player.name;
+      const firstPlayer = game.players[0];
+      if (firstPlayer) {
+        this.startPlayerTurn(game, firstPlayer);
+      }
     }
 
     memoryStore.saveGame(game);
@@ -95,8 +163,7 @@ export class GameService {
   }
 
   private buildGameState(lobby: Lobby): GameState {
-    const seed = this.stringToSeed(lobby.id);
-    const tiles = this.generateTiles(seed);
+    const tiles = this.mapService.generateTiles(lobby.id);
 
     const players = lobby.players.map((player, index) => ({
       id: player.id,
@@ -111,8 +178,9 @@ export class GameService {
     return {
       id: lobby.gameId,
       turn: 1,
-      currentPlayer: lobby.players[0]?.nickname ?? "Commander",
-      population: this.calculatePopulation(players),
+      currentPlayerId: lobby.players[0]?.id ?? "",
+      currentPlayerName: lobby.players[0]?.nickname ?? "Commander",
+      population: { current: 0, cap: 0 },
       phase: "capital-placement",
       map: {
         columns: MAP_COLUMNS,
@@ -120,187 +188,501 @@ export class GameService {
       },
       players,
       tiles,
+      events: [],
     };
   }
 
-  private generateTiles(seed: number): GameTileState[] {
-    const tiles: GameTileState[] = [];
-    for (let y = 0; y < MAP_ROWS; y += 1) {
-      for (let x = 0; x < MAP_COLUMNS; x += 1) {
-        const elevation = this.sampleHeight(x, y, seed);
-        tiles.push({
-          id: `${x}-${y}`,
-          x,
-          y,
-          terrain: this.pickTerrain(elevation),
-        });
-      }
-    }
-    return tiles;
-  }
-
-  private isTilePlaceable(tile: GameTileState) {
-    return tile.terrain !== "Water" && tile.terrain !== "Mountains";
-  }
-
-  private decorateStartingArea(
-    tiles: GameTileState[],
-    x: number,
-    y: number,
-    ownerId: string,
-    ownerName: string,
-    seed: number
-  ) {
-    const neighbors = this.getNeighbors(x, y);
-    neighbors.forEach((coord, index) => {
-      const tile = this.getTile(tiles, coord.x, coord.y);
-      if (!tile || tile.terrain === "Water") {
-        return;
-      }
-
-      // Ensure starting ring is easy to traverse
-      if (tile.terrain === "Mountains") {
-        tile.terrain = "Hills";
-      }
-
-      if (!tile.structure && index < 2) {
-        tile.structure = {
-          id: `farm-${tile.id}`,
-          type: "Farm",
-          ownerId,
-          ownerName,
-        };
-      } else if (!tile.unit && index === 2) {
-        tile.unit = { type: "Settler", owner: ownerName };
-      } else if (!tile.unit && index === 3) {
-        tile.unit = { type: "Worker", owner: ownerName };
-      } else if (!tile.structure && this.randomFromSeed(coord.x, coord.y, seed) > 0.7) {
-        tile.structure = {
-          id: `fort-${tile.id}`,
-          type: "Fort",
-          ownerId,
-          ownerName,
-        };
-      }
-    });
-  }
-
-  private decorateNeutralTiles(tiles: GameTileState[], seed: number) {
-    for (const tile of tiles) {
-      if (tile.structure || tile.terrain === "Water") {
-        continue;
-      }
-      const roll = this.randomFromSeed(tile.x + 11, tile.y + 19, seed);
-      if (tile.terrain === "Mountains" && roll > 0.92) {
-        tile.structure = {
-          id: `neutral-fort-${tile.id}`,
-          type: "Fort",
-          ownerId: "neutral",
-          ownerName: "Neutral",
-        };
-        continue;
-      }
-      if (roll > 0.965 && !tile.unit) {
-        tile.unit = {
-          type: roll > 0.985 ? "Horseman" : "Spearman",
-          owner: "Neutral",
-        };
-      } else if (roll > 0.93 && !tile.structure) {
-        const type = roll > 0.975 ? "Granary" : "Farm";
-        tile.structure = {
-          id: `neutral-${type.toLowerCase()}-${tile.id}`,
-          type,
-          ownerId: "neutral",
-          ownerName: "Neutral",
-        };
-      }
-    }
-  }
-
-  private getTile(tiles: GameTileState[], x: number, y: number) {
-    if (x < 0 || x >= MAP_COLUMNS || y < 0 || y >= MAP_ROWS) {
-      return null;
-    }
-    return tiles[y * MAP_COLUMNS + x];
-  }
-
-  private getNeighbors(x: number, y: number) {
-    const offsets = y % 2 === 0 ? EVEN_NEIGHBORS : ODD_NEIGHBORS;
-    return offsets
-      .map(({ dx, dy }) => ({ x: x + dx, y: y + dy }))
-      .filter(
-        (coord) =>
-          coord.x >= 0 &&
-          coord.x < MAP_COLUMNS &&
-          coord.y >= 0 &&
-          coord.y < MAP_ROWS
+  private recalculatePopulation(game: GameState) {
+    game.players.forEach((player) => {
+      const population = this.getPlayerCities(game, player.id).reduce(
+        (sum, city) => sum + city.population,
+        0
       );
-  }
+      player.currentPopulation = population;
+    });
 
-  private getSpawnPositions(count: number) {
-    const marginX = 3;
-    const marginY = 2;
-    const presets = [
-      { x: marginX, y: marginY },
-      { x: MAP_COLUMNS - marginX - 1, y: MAP_ROWS - marginY - 1 },
-      { x: marginX, y: MAP_ROWS - marginY - 1 },
-      { x: MAP_COLUMNS - marginX - 1, y: marginY },
-    ];
-    const positions: { x: number; y: number }[] = [];
-
-    for (let i = 0; i < count; i += 1) {
-      positions.push(presets[i] ?? { x: marginX + i, y: marginY + (i % 3) });
-    }
-    return positions;
-  }
-
-  private pickTerrain(value: number) {
-    if (value < 0.1) {
-      return "Water";
-    }
-    if (value < 0.3) {
-      return "Plains";
-    }
-    if (value < 0.55) {
-      return "Forest";
-    }
-    if (value < 0.78) {
-      return "Hills";
-    }
-    return "Mountains";
-  }
-
-  private sampleHeight(x: number, y: number, seed: number) {
-    const nx = x / MAP_COLUMNS - 0.5;
-    const ny = y / MAP_ROWS - 0.5;
-    const distance = Math.sqrt(nx * nx + ny * ny);
-    const base = this.randomFromSeed(x, y, seed);
-    const variation = this.randomFromSeed(x * 2, y * 2, seed + 37);
-    return base * 0.7 + variation * 0.3 - distance * 0.5;
-  }
-
-  private randomFromSeed(x: number, y: number, seed: number) {
-    const value = Math.sin((x + 1) * 12.9898 + (y + 1) * 78.233 + seed * 0.353);
-    const fractional = value - Math.trunc(value);
-    return fractional < 0 ? fractional + 1 : fractional;
-  }
-
-  private stringToSeed(input: string) {
-    let hash = 0;
-    for (let i = 0; i < input.length; i += 1) {
-      hash = (hash << 5) - hash + input.charCodeAt(i);
-      hash |= 0;
-    }
-    return Math.abs(hash) + 1;
-  }
-
-  private calculatePopulation(players: GameState["players"]) {
-    return players.reduce(
+    game.population = game.players.reduce(
       (acc, player) => ({
         current: acc.current + player.currentPopulation,
         cap: acc.cap + player.populationCap,
       }),
       { current: 0, cap: 0 }
     );
+  }
+
+  private handleMoveUnit(
+    game: GameState,
+    playerId: string,
+    path: HexCoord[],
+    unitId: string
+  ) {
+    if (path.length !== 1) {
+      throw new BadRequestException("Only single-step moves are supported");
+    }
+    const fromTile = this.findUnitTile(game, unitId);
+    if (!fromTile || !fromTile.unit) {
+      throw new BadRequestException("Unit not found");
+    }
+    if (fromTile.unit.ownerId !== playerId) {
+      throw new BadRequestException("Cannot move foreign unit");
+    }
+    if (!fromTile.unit.movementPoints || fromTile.unit.movementPoints <= 0) {
+      throw new BadRequestException("Unit has no movement points");
+    }
+
+    const destination = path[0];
+    const toTile = getTile(game.tiles, destination.x, destination.y);
+    if (!toTile) {
+      throw new BadRequestException("Destination out of bounds");
+    }
+    if (!this.areTilesAdjacent(fromTile, toTile)) {
+      throw new BadRequestException("Destination not adjacent");
+    }
+    if (!isTilePlaceable(toTile) && toTile.structure?.ownerId !== playerId) {
+      throw new BadRequestException("Destination blocked");
+    }
+    if (toTile.unit) {
+      throw new BadRequestException("Destination already occupied");
+    }
+
+    const movementCost = 1;
+    if (fromTile.unit.movementPoints < movementCost) {
+      throw new BadRequestException("Insufficient movement points");
+    }
+
+    const remaining = fromTile.unit.movementPoints - movementCost;
+    toTile.unit = { ...fromTile.unit, movementPoints: remaining };
+    fromTile.unit = undefined;
+
+    this.pushEvent(game, {
+      type: "UNIT_MOVED",
+      payload: {
+        unitId,
+        path,
+        newMovementPoints: remaining,
+      },
+    });
+  }
+
+  private handleSetCityProduction(
+    game: GameState,
+    playerId: string,
+    cityId: string,
+    item: CityProductionItem
+  ) {
+    const cityTile = this.getCityTile(game, cityId);
+    if (!cityTile || cityTile.structure?.type !== "City") {
+      throw new NotFoundException("City not found");
+    }
+    const city = cityTile.structure as CityData;
+    if (city.ownerId !== playerId) {
+      throw new BadRequestException("Cannot manage production in foreign city");
+    }
+
+    if (city.production) {
+      const refund = this.getProductionCost(city.production.item);
+      city.population += refund;
+    }
+
+    const cost = this.getProductionCost(item);
+    if (city.population < cost) {
+      throw new BadRequestException("Not enough population for production");
+    }
+
+    city.population -= cost;
+    city.production = {
+      item,
+      progressTurns: 0,
+    };
+    this.recalculatePopulation(game);
+  }
+
+  private handleFoundCity(
+    game: GameState,
+    playerId: string,
+    settlerId: string
+  ) {
+    const settlerTile = this.findUnitTile(game, settlerId);
+    if (!settlerTile || !settlerTile.unit) {
+      throw new NotFoundException("Settler not found");
+    }
+    const unit = settlerTile.unit;
+    if (unit.ownerId !== playerId) {
+      throw new BadRequestException("Cannot found city with foreign unit");
+    }
+    if (unit.type !== "Settler") {
+      throw new BadRequestException("Only settlers can found cities");
+    }
+    if (!isTilePlaceable(settlerTile)) {
+      throw new BadRequestException("Tile unsuitable for city");
+    }
+    if (settlerTile.structure) {
+      throw new BadRequestException("Tile already occupied");
+    }
+
+    const player = this.getPlayer(game, playerId);
+    player.populationCap += CITY_POPULATION_CAP_BONUS;
+    settlerTile.unit = undefined;
+    const newCity: CityData = {
+      id: `city-${settlerTile.id}`,
+      type: "City",
+      ownerId: player.id,
+      ownerName: player.name,
+      population: 20,
+      improvement: null,
+      fortification: 60,
+      isCapital: false,
+      production: null,
+    };
+    settlerTile.structure = newCity;
+    settlerTile.ownerId = player.id;
+    const acquired = this.claimInitialTerritory(game, settlerTile, player.id);
+    this.recalculatePopulation(game);
+
+    this.pushEvent(game, {
+      type: "CITY_FOUNDED",
+      payload: {
+        newCity,
+        acquiredTileIds: acquired,
+      },
+    });
+  }
+
+  private handleBuildStructure(
+    game: GameState,
+    playerId: string,
+    payload: {
+      workerId: string;
+      structureType: "Farm" | "Fort";
+      position: HexCoord;
+      fromCityId: string;
+    }
+  ) {
+    const { workerId, structureType, position, fromCityId } = payload;
+    const workerTile = this.findUnitTile(game, workerId);
+    if (!workerTile || !workerTile.unit) {
+      throw new NotFoundException("Worker not found");
+    }
+    const worker = workerTile.unit;
+    if (worker.ownerId !== playerId || worker.type !== "Worker") {
+      throw new BadRequestException("Selected unit cannot build structures");
+    }
+
+    const targetTile = getTile(game.tiles, position.x, position.y);
+    if (!targetTile) {
+      throw new BadRequestException("Target tile not found");
+    }
+    if (targetTile.id !== workerTile.id) {
+      throw new BadRequestException("Worker must stand on the target tile");
+    }
+    if (!isTilePlaceable(targetTile)) {
+      throw new BadRequestException("Cannot build on this terrain");
+    }
+    if (targetTile.structure) {
+      throw new BadRequestException("Tile already has a structure");
+    }
+
+    const cityTile = this.getCityTile(game, fromCityId);
+    if (!cityTile || cityTile.structure?.type !== "City") {
+      throw new BadRequestException("City not found");
+    }
+    const sourceCity = cityTile.structure as CityData;
+    if (sourceCity.ownerId !== playerId) {
+      throw new BadRequestException(
+        "Cannot spend population from foreign city"
+      );
+    }
+
+    const rule = STRUCTURE_RULES[structureType];
+    if (!rule || rule.category !== "Standalone") {
+      throw new BadRequestException("Structure not buildable");
+    }
+
+    if (sourceCity.population < rule.cost) {
+      throw new BadRequestException("Not enough population in selected city");
+    }
+
+    sourceCity.population -= rule.cost;
+    const structureId = `${structureType.toLowerCase()}-${
+      targetTile.id
+    }-${Date.now()}`;
+    targetTile.structure = {
+      id: structureId,
+      type: structureType,
+      ownerId: playerId,
+      ownerName: worker.ownerName,
+    };
+    targetTile.ownerId = playerId;
+    workerTile.unit.movementPoints = 0;
+
+    const player = this.getPlayer(game, playerId);
+    if (rule.effects.empirePopulationCapIncrease) {
+      player.populationCap += rule.effects.empirePopulationCapIncrease;
+    }
+
+    this.recalculatePopulation(game);
+    this.pushEvent(game, {
+      type: "STRUCTURE_CREATED",
+      payload: {
+        newStructure: targetTile.structure,
+        position,
+      },
+    });
+  }
+
+  private startPlayerTurn(
+    game: GameState,
+    player: GameState["players"][number]
+  ) {
+    this.applyPopulationGrowth(game, player);
+    this.resetMovementForPlayer(game, player.id);
+    this.regenerateFortifications(game, player.id);
+    this.recalculatePopulation(game);
+  }
+
+  private applyPopulationGrowth(
+    game: GameState,
+    player: GameState["players"][number]
+  ) {
+    this.recalculatePopulation(game);
+    if (
+      player.populationCap <= 0 ||
+      player.currentPopulation >= player.populationCap
+    ) {
+      return;
+    }
+    const cities = this.getPlayerCities(game, player.id);
+    cities.forEach((city) => {
+      const baseGrowth = 1;
+      const granaryBonus = city.improvement === "Granary" ? 0.5 : 0;
+      city.population += baseGrowth + granaryBonus;
+    });
+    this.recalculatePopulation(game);
+  }
+
+  private resetMovementForPlayer(game: GameState, playerId: string) {
+    game.tiles.forEach((tile) => {
+      if (tile.unit?.ownerId === playerId) {
+        tile.unit.movementPoints = 1;
+      }
+    });
+  }
+
+  private regenerateFortifications(game: GameState, playerId: string) {
+    this.getPlayerCities(game, playerId).forEach((city) => {
+      city.fortification = Math.min(
+        CITY_MAX_FORTIFICATION,
+        city.fortification + CITY_FORT_REGEN
+      );
+    });
+  }
+
+  private progressCityProduction(game: GameState, playerId: string) {
+    const cities = this.getPlayerCities(game, playerId);
+    cities.forEach((city) => {
+      if (!city.production) {
+        return;
+      }
+      city.production.progressTurns += 1;
+      const required = this.getProductionTurns(city.production.item);
+      if (city.production.progressTurns >= required) {
+        this.finishProduction(game, city);
+      }
+    });
+  }
+
+  private finishProduction(game: GameState, city: CityData) {
+    const item = city.production?.item;
+    if (!item) {
+      return;
+    }
+
+    let createdUnit: UnitData | undefined;
+    let createdImprovement: CityImprovementType | undefined;
+
+    if (item.type === "unit") {
+      createdUnit = this.spawnUnit(game, city, item.unitType) ?? undefined;
+    } else {
+      city.improvement = item.improvementType;
+      createdImprovement = item.improvementType;
+    }
+
+    city.production = null;
+
+    this.pushEvent(game, {
+      type: "PRODUCTION_COMPLETED",
+      payload: {
+        cityId: city.id,
+        createdUnit,
+        createdImprovement,
+      },
+    });
+  }
+
+  private spawnUnit(game: GameState, city: CityData, unitType: UnitType) {
+    const cityTile = this.getCityTile(game, city.id);
+    if (!cityTile) {
+      return null;
+    }
+    const spawnTile = this.findSpawnTile(game, cityTile, city.ownerId);
+    if (!spawnTile) {
+      return null;
+    }
+    const unit = this.createUnit(city.ownerId, city.ownerName, unitType);
+    spawnTile.unit = unit;
+    return unit;
+  }
+
+  private findSpawnTile(
+    game: GameState,
+    origin: GameTileState,
+    ownerId: string
+  ) {
+    if (!origin.unit) {
+      return origin;
+    }
+    const candidates = getNeighbors(origin.x, origin.y)
+      .map(({ x, y }) => getTile(game.tiles, x, y))
+      .filter(
+        (tile): tile is GameTileState =>
+          Boolean(tile) &&
+          !tile?.unit &&
+          tile?.ownerId === ownerId &&
+          isTilePlaceable(tile)
+      );
+    return candidates[0] ?? null;
+  }
+
+  private getCityTile(game: GameState, cityId: string) {
+    return (
+      game.tiles.find(
+        (tile) =>
+          tile.structure?.type === "City" && tile.structure.id === cityId
+      ) ?? null
+    );
+  }
+
+  private getPlayer(game: GameState, playerId: string) {
+    const player = game.players.find((p) => p.id === playerId);
+    if (!player) {
+      throw new NotFoundException("Player not found");
+    }
+    return player;
+  }
+
+  private getProductionCost(item: CityProductionItem) {
+    if (item.type === "unit") {
+      return UNIT_RULES[item.unitType].cost;
+    }
+    return STRUCTURE_RULES[item.improvementType].cost;
+  }
+
+  private getProductionTurns(item: CityProductionItem) {
+    if (item.type === "unit") {
+      return UNIT_RULES[item.unitType].productionTurns;
+    }
+    return STRUCTURE_RULES[item.improvementType].productionTurns;
+  }
+
+  private createUnit(ownerId: string, ownerName: string, type: UnitType) {
+    const stats = UNIT_RULES[type].baseStats;
+    return {
+      id: `${ownerId}-${type}-${Math.random().toString(36).slice(2, 10)}`,
+      ownerId,
+      ownerName,
+      type,
+      health: stats.health,
+      movementPoints: 1,
+      isVeteran: false,
+    };
+  }
+
+  private findUnitTile(game: GameState, unitId: string) {
+    return game.tiles.find((tile) => tile.unit?.id === unitId) ?? null;
+  }
+
+  private areTilesAdjacent(a: GameTileState, b: GameTileState) {
+    return getNeighbors(a.x, a.y).some(({ x, y }) => x === b.x && y === b.y);
+  }
+
+  private pushEvent(
+    game: GameState,
+    event: NonNullable<GameState["events"]>[number]
+  ) {
+    if (!game.events) {
+      game.events = [];
+    }
+    game.events.push(event);
+    if (game.events.length > 50) {
+      game.events.shift();
+    }
+  }
+
+  private claimInitialTerritory(
+    game: GameState,
+    origin: GameTileState,
+    ownerId: string
+  ) {
+    const tilesToClaim = [
+      origin,
+      ...getNeighbors(origin.x, origin.y)
+        .map(({ x, y }) => getTile(game.tiles, x, y))
+        .filter((tile): tile is GameTileState => Boolean(tile)),
+    ];
+    const claimed: string[] = [];
+    tilesToClaim.forEach((tile) => {
+      if (!tile.ownerId || tile.ownerId === ownerId) {
+        if (tile.ownerId !== ownerId) {
+          claimed.push(tile.id);
+        } else if (!claimed.includes(tile.id)) {
+          claimed.push(tile.id);
+        }
+        tile.ownerId = ownerId;
+      }
+    });
+    return claimed;
+  }
+
+  private getPlayerCities(game: GameState, playerId: string): CityData[] {
+    return game.tiles
+      .map((tile) => tile.structure)
+      .filter(
+        (structure): structure is CityData =>
+          Boolean(structure) &&
+          structure?.type === "City" &&
+          structure.ownerId === playerId
+      );
+  }
+
+  private advanceTurn(game: GameState) {
+    const currentIndex = game.players.findIndex(
+      (player) => player.id === game.currentPlayerId
+    );
+    const currentPlayer = currentIndex >= 0 ? game.players[currentIndex] : null;
+    if (currentPlayer) {
+      this.progressCityProduction(game, currentPlayer.id);
+    }
+
+    const nextIndex =
+      currentIndex >= 0 ? (currentIndex + 1) % game.players.length : 0;
+    const nextPlayer = game.players[nextIndex];
+    if (!nextPlayer) {
+      throw new BadRequestException("No players available for turn rotation");
+    }
+    if (nextIndex === 0) {
+      game.turn += 1;
+    }
+
+    game.currentPlayerId = nextPlayer.id;
+    game.currentPlayerName = nextPlayer.name;
+    this.startPlayerTurn(game, nextPlayer);
+
+    this.pushEvent(game, {
+      type: "TURN_CHANGED",
+      payload: {
+        nextPlayerId: nextPlayer.id,
+        turnNumber: game.turn,
+      },
+    });
   }
 }

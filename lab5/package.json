@@ -8,6 +8,7 @@
     "dev:back": "pnpm --filter backend start:dev",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
-    "test": "pnpm --filter frontend test"
+    "test:front": "pnpm --filter frontend test",
+    "test:back": "pnpm --filter backend test"
   }
 }

@@ -11,6 +11,7 @@ export type UnitType =
 export interface UnitData {
   id: string;
   ownerId: string;
+  ownerName: string;
   type: UnitType;
   health: number;
   movementPoints: number;

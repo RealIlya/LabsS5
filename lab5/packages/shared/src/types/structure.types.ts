@@ -10,6 +10,7 @@ export type StructureType =
 export interface BaseStructure {
   id: string;
   ownerId: string;
+  ownerName: string;
 }
 
 export type CityProductionItem =
@@ -21,6 +22,7 @@ export interface CityData extends BaseStructure {
   population: number;
   improvement: CityImprovementType | null;
   fortification: number;
+  isCapital?: boolean;
   production: {
     item: CityProductionItem;
     progressTurns: number;

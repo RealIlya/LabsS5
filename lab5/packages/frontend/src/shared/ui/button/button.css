@@ -27,6 +27,14 @@
   cursor: not-allowed;
 }
 
+.ui-button--icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border-radius: 50%;
+  min-width: auto;
+}
+
 .ui-button__icon {
   display: inline-flex;
 }

@@ -1,32 +1,30 @@
 import { http, HttpResponse } from "msw";
 import { API_CONFIG } from "../shared/config/api.config";
-import type { LobbySummary, LobbyPlayer } from "../entities/lobby/types";
+import type { LobbyState, LobbyPlayerState } from "../entities/lobby/types";
 import type { GameStateDto } from "../entities/game/api/gameApi";
 import type {
   CreateLobbyPayload,
   JoinLobbyPayload,
 } from "../entities/lobby/api/lobbyApi";
 
-const baseUrl = API_CONFIG.baseUrl;
+const baseUrl = API_CONFIG.restBaseUrl;
 const PLAYER_COLORS = ["#5FB49C", "#FFB347", "#6C63FF", "#FF6F91"];
 const MAP_COLUMNS = 12;
 const MAP_ROWS = 10;
 const TERRAIN_SEQUENCE = ["Plains", "Forest", "Hills", "Plains", "Water"];
 
-let lobbyState: LobbySummary | null = null;
+let lobbyState: LobbyState | null = null;
 const gameStates: Record<string, GameStateDto> = {};
 
 function buildPlayer(
   payload: { id: string; nickname: string },
-  options?: { isHost?: boolean; isReady?: boolean }
-): LobbyPlayer {
-  const { isHost = false, isReady = false } = options ?? {};
+  options?: { isReady?: boolean }
+): LobbyPlayerState {
+  const { isReady = false } = options ?? {};
   return {
     id: payload.id,
-    nickname: payload.nickname,
-    rank: isHost ? "Commander" : "Soldier",
+    name: payload.nickname,
     isReady,
-    isHost,
   };
 }
 
@@ -39,6 +37,7 @@ function createEmptyTiles(): GameStateDto["tiles"] {
       x,
       y,
       terrain: TERRAIN_SEQUENCE[(x + y) % TERRAIN_SEQUENCE.length],
+      ownerId: null,
     };
   });
 }
@@ -54,6 +53,20 @@ function recalcPopulation(players: GameStateDto["players"]) {
 }
 
 export const handlers = [
+  http.get(`${baseUrl}${API_CONFIG.endpoints.listLobbies}`, () => {
+    if (!lobbyState) {
+      return HttpResponse.json([]);
+    }
+    return HttpResponse.json([
+      {
+        id: lobbyState.id,
+        name: lobbyState.name,
+        playerCount: lobbyState.players.length,
+        maxPlayers: lobbyState.maxPlayers,
+      },
+    ]);
+  }),
+
   http.post(
     `${baseUrl}${API_CONFIG.endpoints.createLobby}`,
     async ({ request }) => {
@@ -64,29 +77,29 @@ export const handlers = [
 
       lobbyState = {
         id: lobbyId,
+        name: body.lobbyName ?? `${body.playerName}'s Lobby`,
         code,
-        hostId: body.hostId,
+        hostId: body.playerId,
         status: "waiting",
-        players: [
-          buildPlayer(
-            { id: body.hostId, nickname: body.nickname },
-            { isHost: true, isReady: false }
-          ),
-        ],
+        maxPlayers: body.maxPlayers ?? 4,
         gameId: lobbyId,
+        players: [
+          buildPlayer({ id: body.playerId, nickname: body.playerName }),
+        ],
       };
 
       gameStates[lobbyId] = {
         id: lobbyId,
         turn: 1,
-        currentPlayer: body.nickname,
+        currentPlayerId: body.playerId,
+        currentPlayerName: body.playerName,
         phase: "capital-placement",
         population: { current: 0, cap: 0 },
         map: { columns: MAP_COLUMNS, rows: MAP_ROWS },
         players: [
           {
-            id: body.hostId,
-            name: body.nickname,
+            id: body.playerId,
+            name: body.playerName,
             color: PLAYER_COLORS[0],
             populationCap: 0,
             currentPopulation: 0,
@@ -95,6 +108,7 @@ export const handlers = [
           },
         ],
         tiles: createEmptyTiles(),
+        events: [],
       };
 
       await new Promise((resolve) => setTimeout(resolve, 400));
@@ -103,7 +117,7 @@ export const handlers = [
     }
   ),
 
-  http.get(`${baseUrl}/lobbies/:lobbyId`, ({ params }) => {
+  http.get(`${baseUrl}/lobbies/:lobbyId/state`, ({ params }) => {
     if (!lobbyState || params.lobbyId !== lobbyState.id) {
       return HttpResponse.json({ message: "Lobby not found" }, { status: 404 });
     }
@@ -130,11 +144,17 @@ export const handlers = [
           ...lobbyState,
           players: [
             ...lobbyState.players,
-            buildPlayer({ id: body.playerId, nickname: body.nickname }, { isReady: false }),
+            buildPlayer(
+              { id: body.playerId, nickname: body.nickname },
+              { isReady: false }
+            ),
           ],
         };
         const game = gameStates[lobbyState.gameId];
-        if (game && !game.players.some((player) => player.id === body.playerId)) {
+        if (
+          game &&
+          !game.players.some((player) => player.id === body.playerId)
+        ) {
           game.players.push({
             id: body.playerId,
             name: body.nickname,
@@ -153,19 +173,30 @@ export const handlers = [
     }
   ),
 
-  http.patch(`${baseUrl}/lobbies/:lobbyId/ready`, async ({ params, request }) => {
-    if (!lobbyState || params.lobbyId !== lobbyState.id) {
-      return HttpResponse.json({ message: "Lobby not found" }, { status: 404 });
+  http.patch(
+    `${baseUrl}/lobbies/:lobbyId/ready`,
+    async ({ params, request }) => {
+      if (!lobbyState || params.lobbyId !== lobbyState.id) {
+        return HttpResponse.json(
+          { message: "Lobby not found" },
+          { status: 404 }
+        );
+      }
+      const body = (await request.json()) as {
+        playerId: string;
+        isReady: boolean;
+      };
+      lobbyState = {
+        ...lobbyState,
+        players: lobbyState.players.map((player) =>
+          player.id === body.playerId
+            ? { ...player, isReady: body.isReady }
+            : player
+        ),
+      };
+      return HttpResponse.json(lobbyState);
     }
-    const body = (await request.json()) as { playerId: string; isReady: boolean };
-    lobbyState = {
-      ...lobbyState,
-      players: lobbyState.players.map((player) =>
-        player.id === body.playerId ? { ...player, isReady: body.isReady } : player
-      ),
-    };
-    return HttpResponse.json(lobbyState);
-  }),
+  ),
 
   http.post(`${baseUrl}/lobbies/:lobbyId/start`, ({ params }) => {
     if (!lobbyState || params.lobbyId !== lobbyState.id) {
@@ -173,7 +204,10 @@ export const handlers = [
     }
     const allReady = lobbyState.players.every((player) => player.isReady);
     if (!allReady) {
-      return HttpResponse.json({ message: "Players are not ready" }, { status: 400 });
+      return HttpResponse.json(
+        { message: "Players are not ready" },
+        { status: 400 }
+      );
     }
     lobbyState = { ...lobbyState, status: "in-progress" };
     return HttpResponse.json({ gameId: lobbyState.id });
@@ -182,26 +216,48 @@ export const handlers = [
   http.post(
     `${baseUrl}${API_CONFIG.endpoints.placeCapital(":gameId")}`,
     async ({ params, request }) => {
-      const body = (await request.json()) as { playerId: string; tileId: string };
+      const body = (await request.json()) as {
+        playerId: string;
+        tileId: string;
+      };
       const state = params.gameId ? gameStates[params.gameId] : null;
       if (!state) {
-        return HttpResponse.json({ message: "Game not found" }, { status: 404 });
+        return HttpResponse.json(
+          { message: "Game not found" },
+          { status: 404 }
+        );
       }
       if (state.phase !== "capital-placement") {
-        return HttpResponse.json({ message: "Placement finished" }, { status: 400 });
+        return HttpResponse.json(
+          { message: "Placement finished" },
+          { status: 400 }
+        );
       }
       const player = state.players.find((p) => p.id === body.playerId);
       if (!player) {
-        return HttpResponse.json({ message: "Player not found" }, { status: 404 });
+        return HttpResponse.json(
+          { message: "Player not found" },
+          { status: 404 }
+        );
       }
       if (player.capitalCityId) {
-        return HttpResponse.json({ message: "Capital already placed" }, { status: 400 });
+        return HttpResponse.json(
+          { message: "Capital already placed" },
+          { status: 400 }
+        );
       }
       const tile = state.tiles.find((t) => t.id === body.tileId);
       if (!tile) {
-        return HttpResponse.json({ message: "Tile not found" }, { status: 404 });
+        return HttpResponse.json(
+          { message: "Tile not found" },
+          { status: 404 }
+        );
       }
-      if (tile.terrain === "Water" || tile.terrain === "Mountains" || tile.structure) {
+      if (
+        tile.terrain === "Water" ||
+        tile.terrain === "Mountains" ||
+        tile.structure
+      ) {
         return HttpResponse.json({ message: "Invalid tile" }, { status: 400 });
       }
 
@@ -210,12 +266,16 @@ export const handlers = [
         type: "City",
         ownerId: player.id,
         ownerName: player.name,
+        population: 30,
+        improvement: null,
+        fortification: 80,
+        production: null,
         isCapital: true,
       };
-      tile.unit = { type: "Warrior", owner: player.name };
+      tile.ownerId = player.id;
       player.capitalCityId = tile.structure.id;
-      player.populationCap = 50;
-      player.currentPopulation = 35;
+      player.populationCap = Math.max(player.populationCap, 50);
+      player.currentPopulation = 30;
       state.population = recalcPopulation(state.players);
       if (state.players.every((p) => p.capitalCityId)) {
         state.phase = "running";
@@ -224,11 +284,17 @@ export const handlers = [
     }
   ),
 
-  http.get(`${baseUrl}${API_CONFIG.endpoints.gameState(":gameId")}`, ({ params }) => {
-    const state = params.gameId ? gameStates[params.gameId] : null;
-    if (!state) {
-      return HttpResponse.json({ message: "Game not found" }, { status: 404 });
+  http.get(
+    `${baseUrl}${API_CONFIG.endpoints.gameState(":gameId")}`,
+    ({ params }) => {
+      const state = params.gameId ? gameStates[params.gameId] : null;
+      if (!state) {
+        return HttpResponse.json(
+          { message: "Game not found" },
+          { status: 404 }
+        );
+      }
+      return HttpResponse.json(state);
     }
-    return HttpResponse.json(state);
-  }),
+  ),
 ];

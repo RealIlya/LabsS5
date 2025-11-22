@@ -20,13 +20,23 @@ export class MemoryStore {
     return this.lobbiesByCode.get(code.toUpperCase()) ?? null;
   }
 
+  getAllLobbies() {
+    return Array.from(this.lobbies.values());
+  }
+
   saveGame(game: GameState) {
     this.games.set(game.id, game);
     return game;
   }
 
-  getGame(id: string) {
+  getGame(id: string): GameState | null {
     return this.games.get(id) ?? null;
+  }
+
+  clear() {
+    this.lobbies.clear();
+    this.lobbiesByCode.clear();
+    this.games.clear();
   }
 }
 

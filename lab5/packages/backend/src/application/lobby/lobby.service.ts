@@ -7,6 +7,7 @@ import { randomUUID } from "crypto";
 import type { Lobby, LobbyPlayer } from "../../domain/lobby/lobby.types";
 import { memoryStore } from "../../infrastructure/store/memory-store";
 import { GameService } from "../game/game.service";
+import type { LobbyState, LobbySummary, LobbyPlayerState } from "@hex/shared";
 
 const PLAYER_RANKS = [
   "Hex HQ",
@@ -15,12 +16,18 @@ const PLAYER_RANKS = [
   "Frontier Corps",
   "Aegis Team",
 ];
+const DEFAULT_MAX_PLAYERS = 4;
 
 @Injectable()
 export class LobbyService {
   constructor(private readonly gameService: GameService) {}
 
-  async createLobby(hostId: string, nickname: string): Promise<Lobby> {
+  async createLobby(
+    hostId: string,
+    nickname: string,
+    lobbyName?: string,
+    maxPlayers = DEFAULT_MAX_PLAYERS
+  ): Promise<Lobby> {
     const lobbyId = randomUUID();
     const code = lobbyId.slice(-4).toUpperCase();
     const gameId = randomUUID();
@@ -28,10 +35,12 @@ export class LobbyService {
 
     const lobby: Lobby = {
       id: lobbyId,
+      name: lobbyName?.trim() || `${nickname}'s Lobby`,
       code,
       hostId,
       status: "waiting",
       gameId,
+      maxPlayers,
       players: [host],
     };
 
@@ -39,10 +48,20 @@ export class LobbyService {
     return lobby;
   }
 
+  listLobbies(): LobbySummary[] {
+    return memoryStore
+      .getAllLobbies()
+      .map((lobby) => this.toLobbySummary(lobby));
+  }
+
   async joinLobby(code: string, playerId: string, nickname: string) {
     const lobby = this.getLobbyByCodeOrThrow(code);
     if (lobby.status !== "waiting") {
       throw new BadRequestException("Lobby already started");
+    }
+
+    if (lobby.players.length >= lobby.maxPlayers) {
+      throw new BadRequestException("Lobby is full");
     }
 
     const alreadyIn = lobby.players.some((p) => p.id === playerId);
@@ -86,11 +105,16 @@ export class LobbyService {
     return { gameId: gameState.id };
   }
 
-  getLobbyById(lobbyId: string) {
-    return this.getLobbyOrThrow(lobbyId);
+  getLobbyState(lobbyId: string): LobbyState {
+    const lobby = this.getLobbyOrThrow(lobbyId);
+    return this.toLobbyState(lobby);
   }
 
-  private buildPlayer(id: string, nickname: string, isHost: boolean): LobbyPlayer {
+  private buildPlayer(
+    id: string,
+    nickname: string,
+    isHost: boolean
+  ): LobbyPlayer {
     return {
       id,
       nickname,
@@ -121,5 +145,35 @@ export class LobbyService {
       throw new NotFoundException("Lobby not found");
     }
     return lobby;
+  }
+
+  private toLobbySummary(lobby: Lobby): LobbySummary {
+    return {
+      id: lobby.id,
+      name: lobby.name,
+      playerCount: lobby.players.length,
+      maxPlayers: lobby.maxPlayers,
+    };
+  }
+
+  private toLobbyState(lobby: Lobby): LobbyState {
+    return {
+      id: lobby.id,
+      name: lobby.name,
+      code: lobby.code,
+      status: lobby.status,
+      hostId: lobby.hostId,
+      gameId: lobby.gameId,
+      maxPlayers: lobby.maxPlayers,
+      players: lobby.players.map((player) => this.toLobbyPlayerState(player)),
+    };
+  }
+
+  private toLobbyPlayerState(player: LobbyPlayer): LobbyPlayerState {
+    return {
+      id: player.id,
+      name: player.nickname,
+      isReady: player.isReady,
+    };
   }
 }

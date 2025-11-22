@@ -1,21 +1,22 @@
 import { create } from "zustand";
-import type { LobbySummary } from "../types";
+import type { LobbyState } from "../types";
 
-interface LobbyState {
-  lobby: LobbySummary | null;
+interface LobbyStoreState {
+  lobby: LobbyState | null;
   selfId: string | null;
   currentGameId: string | null;
-  setLobby: (data: LobbySummary, selfId: string) => void;
+  setLobby: (data: LobbyState, selfId: string) => void;
   updatePlayerReady: (playerId: string, isReady: boolean) => void;
   setGameId: (gameId: string | null) => void;
   reset: () => void;
 }
 
-export const useLobbyStore = create<LobbyState>((set) => ({
+export const useLobbyStore = create<LobbyStoreState>((set) => ({
   lobby: null,
   selfId: null,
   currentGameId: null,
-  setLobby: (data, selfId) => set({ lobby: data, selfId }),
+  setLobby: (data, selfId) =>
+    set({ lobby: data, selfId, currentGameId: data.gameId ?? null }),
   updatePlayerReady: (playerId, isReady) =>
     set((state) => {
       if (!state.lobby) {

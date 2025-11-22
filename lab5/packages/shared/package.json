@@ -1,7 +1,6 @@
 {
   "name": "@hex/shared",
   "version": "0.0.0",
-  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

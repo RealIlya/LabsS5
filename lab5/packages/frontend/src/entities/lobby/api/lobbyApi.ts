@@ -1,12 +1,14 @@
 import { API_CONFIG } from "../../../shared/config/api.config";
 import { request } from "../../../shared/api/request";
-import type { LobbySummary } from "../types";
+import type { LobbyState, LobbySummary } from "@hex/shared";
 
-const { baseUrl, endpoints } = API_CONFIG;
+const { restBaseUrl, endpoints } = API_CONFIG;
 
 export interface CreateLobbyPayload {
-  hostId: string;
-  nickname: string;
+  playerId: string;
+  playerName: string;
+  lobbyName?: string;
+  maxPlayers?: number;
 }
 
 export interface JoinLobbyPayload {
@@ -30,26 +32,41 @@ export interface StartLobbyResponse {
 }
 
 export const lobbyApi = {
-  getById(lobbyId: string) {
-    return request<LobbySummary>(`${baseUrl}${endpoints.getLobby(lobbyId)}`, {
+  list() {
+    return request<LobbySummary[]>(`${restBaseUrl}${endpoints.listLobbies}`, {
       method: "GET",
     });
   },
+  getState(lobbyId: string) {
+    return request<LobbyState>(
+      `${restBaseUrl}${endpoints.lobbyState(lobbyId)}`,
+      {
+        method: "GET",
+      }
+    );
+  },
   create(payload: CreateLobbyPayload) {
-    return request<LobbySummary>(`${baseUrl}${endpoints.createLobby}`, {
+    return request<LobbyState>(`${restBaseUrl}${endpoints.createLobby}`, {
       method: "POST",
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        hostId: payload.playerId,
+        playerId: payload.playerId,
+        nickname: payload.playerName,
+        playerName: payload.playerName,
+        name: payload.lobbyName,
+        maxPlayers: payload.maxPlayers,
+      }),
     });
   },
   join(payload: JoinLobbyPayload) {
-    return request<LobbySummary>(`${baseUrl}${endpoints.joinLobby}`, {
+    return request<LobbyState>(`${restBaseUrl}${endpoints.joinLobby}`, {
       method: "POST",
       body: JSON.stringify(payload),
     });
   },
   toggleReady(payload: ToggleReadyPayload) {
-    return request<LobbySummary>(
-      `${baseUrl}${endpoints.toggleReady(payload.lobbyId)}`,
+    return request<LobbyState>(
+      `${restBaseUrl}${endpoints.toggleReady(payload.lobbyId)}`,
       {
         method: "PATCH",
         body: JSON.stringify({
@@ -61,7 +78,7 @@ export const lobbyApi = {
   },
   start(payload: StartLobbyPayload) {
     return request<StartLobbyResponse>(
-      `${baseUrl}${endpoints.startLobby(payload.lobbyId)}`,
+      `${restBaseUrl}${endpoints.startLobby(payload.lobbyId)}`,
       { method: "POST" }
     );
   },

@@ -12,7 +12,7 @@ export function useCreateLobbyMutation() {
   const setLobby = useLobbyStore((state) => state.setLobby);
   return useMutation({
     mutationFn: (payload: CreateLobbyPayload) => lobbyApi.create(payload),
-    onSuccess: (data, variables) => setLobby(data, variables.hostId),
+    onSuccess: (data, variables) => setLobby(data, variables.playerId),
   });
 }
 
@@ -39,22 +39,10 @@ export function useToggleReadyMutation() {
 
 export function useStartLobbyMutation() {
   const setGameId = useLobbyStore((state) => state.setGameId);
-  const lobby = useLobbyStore((state) => state.lobby);
-  const selfId = useLobbyStore((state) => state.selfId);
-  const setLobby = useLobbyStore((state) => state.setLobby);
   return useMutation({
     mutationFn: (payload: StartLobbyPayload) => lobbyApi.start(payload),
     onSuccess: (response) => {
       setGameId(response.gameId);
-      if (lobby && selfId) {
-        setLobby(
-          {
-            ...lobby,
-            status: "in-progress",
-          },
-          selfId
-        );
-      }
     },
   });
 }

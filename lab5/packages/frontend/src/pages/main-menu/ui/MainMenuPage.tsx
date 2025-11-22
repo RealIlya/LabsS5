@@ -7,12 +7,8 @@ import {
   useJoinLobbyMutation,
 } from "../../../entities/lobby/model/useLobbyMutations";
 import { useProfileStore } from "../../../entities/profile/model/useProfileStore";
+import { useConnectionStatus } from "../../../shared/hooks/useConnectionStatus";
 import "./MainMenuPage.css";
-
-const mockConnection = {
-  status: "online" as const,
-  latencyMs: 42,
-};
 
 const queuedMatch = {
   id: "SR-2048",
@@ -38,6 +34,7 @@ export function MainMenuPage() {
   const profile = useProfileStore((state) => state.profile);
   const setProfile = useProfileStore((state) => state.setProfile);
   const profileLabel = profile?.nickname ?? t.profileModal.placeholderName;
+  const { isOnline } = useConnectionStatus();
 
   useEffect(() => {
     if (!profile) {
@@ -72,7 +69,10 @@ export function MainMenuPage() {
       return;
     }
     createLobbyMutation.mutate(
-      { hostId: currentProfile.id, nickname: currentProfile.nickname },
+      {
+        playerId: currentProfile.id,
+        playerName: currentProfile.nickname,
+      },
       {
         onSuccess: () => {
           navigate("/lobby");
@@ -189,15 +189,11 @@ export function MainMenuPage() {
       <footer className="main-menu__footer">
         <div className="main-menu__connection">
           <span
-            className={`main-menu__connection-dot main-menu__connection-dot--${mockConnection.status}`}
+            className={`main-menu__connection-dot main-menu__connection-dot--${
+              isOnline ? "online" : "offline"
+            }`}
           />
-          <span>
-            {mockConnection.status === "online"
-              ? t.connectionStable
-              : t.connectionLost}
-            {" · "}
-            {mockConnection.latencyMs} мс
-          </span>
+          <span>{isOnline ? t.connectionStable : t.connectionLost}</span>
         </div>
         <div className="main-menu__footer-info">
           <p className="main-menu__version">{t.versionLabel}: v0.1.0</p>

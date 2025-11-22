@@ -3,7 +3,13 @@
     "target": "ES2020",
     "module": "commonjs",
     "moduleResolution": "Node",
+    "baseUrl": ".",
+    "paths": {
+      "@hex/shared": ["../shared/src/index.ts"],
+      "@hex/shared/*": ["../shared/src/*"]
+    },
     "rootDir": "src",
+    "rootDirs": ["src", "../shared/src"],
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,

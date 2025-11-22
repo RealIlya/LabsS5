@@ -25,6 +25,11 @@
   margin: var(--space-none);
 }
 
+.lobby__status-text {
+  margin: var(--space-xxs) 0 0;
+  color: var(--color-text-secondary);
+}
+
 .lobby__code {
   display: flex;
   flex-direction: column;
@@ -97,6 +102,31 @@
 
 .lobby__actions .ui-button {
   min-width: 160px;
+}
+
+.connection-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(2, 6, 23, 0.72);
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+}
+
+.connection-modal__content {
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: var(--radius-soft);
+  padding: var(--space-xl);
+  text-align: center;
+  color: var(--color-text-contrast);
+  min-width: 280px;
+}
+
+.connection-modal__content h3 {
+  margin-bottom: var(--space-sm);
 }
 
 @media (max-width: var(--breakpoint-mobile)) {
