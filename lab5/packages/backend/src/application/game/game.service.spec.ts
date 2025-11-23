@@ -3,7 +3,7 @@ import { GameService } from "./game.service";
 import type { CityData, UnitData } from "@hex/shared";
 import type { GameState } from "../../domain/game/game-state";
 import type { Lobby } from "../../domain/lobby/lobby.types";
-import { memoryStore } from "../../infrastructure/store/memory-store";
+import { MemoryStore } from "../../infrastructure/store/memory-store";
 import { MapService } from "./map.service";
 
 const makeLobby = (): Lobby => ({
@@ -18,25 +18,21 @@ const makeLobby = (): Lobby => ({
     {
       id: "player-1",
       nickname: "Alpha",
-      rank: "Commander",
       isHost: true,
       isReady: true,
     },
     {
       id: "player-2",
       nickname: "Bravo",
-      rank: "Lieutenant",
       isHost: false,
       isReady: true,
     },
   ],
 });
 
-const findPlaceableTile = (gameId: string) => {
-  const game = memoryStore.getGame(gameId);
-  if (!game) {
-    throw new Error("Game not found");
-  }
+const findPlaceableTile = (gameId: string, store: MemoryStore) => {
+  const game = store.getGame(gameId);
+  if (!game) throw new Error("Game not found");
   return game.tiles.find(
     (tile) =>
       tile.terrain !== "Water" &&
@@ -45,17 +41,57 @@ const findPlaceableTile = (gameId: string) => {
   );
 };
 
-const findSecondTile = (gameId: string, excludeId: string) => {
-  const game = memoryStore.getGame(gameId);
-  if (!game) {
-    throw new Error("Game not found");
-  }
+const findSecondTile = (
+  gameId: string,
+  excludeId: string,
+  store: MemoryStore
+) => {
+  const game = store.getGame(gameId);
+  if (!game) throw new Error("Game not found");
   return game.tiles.find(
     (tile) =>
       tile.id !== excludeId &&
       tile.terrain !== "Water" &&
       tile.terrain !== "Mountains" &&
       !tile.structure
+  );
+};
+
+const isAdjacentToCityOfOther = (
+  gameId: string,
+  tileId: string,
+  ownerId: string,
+  store: MemoryStore
+) => {
+  const game = store.getGame(gameId);
+  if (!game) throw new Error("Game not found");
+  const tile = game.tiles.find((t) => t.id === tileId);
+  if (!tile) throw new Error("Tile not found");
+  const parity = tile.y % 2 === 0 ? "even" : "odd";
+  return offsets[parity].some(({ dx, dy }) => {
+    const neighbor = game.tiles.find(
+      (t) => t.x === tile.x + dx && t.y === tile.y + dy
+    );
+    return (
+      neighbor?.structure?.type === "City" &&
+      neighbor.structure.ownerId !== ownerId
+    );
+  });
+};
+
+const findSafeCityTile = (
+  gameId: string,
+  ownerId: string,
+  store: MemoryStore
+) => {
+  const game = store.getGame(gameId);
+  if (!game) throw new Error("Game not found");
+  return game.tiles.find(
+    (t) =>
+      t.terrain !== "Water" &&
+      t.terrain !== "Mountains" &&
+      !t.structure &&
+      !isAdjacentToCityOfOther(gameId, t.id, ownerId, store)
   );
 };
 
@@ -78,30 +114,9 @@ const offsets = {
   ],
 };
 
-const findAdjacent = (gameId: string, x: number, y: number) => {
-  const game = memoryStore.getGame(gameId);
-  if (!game) {
-    throw new Error("Game not found");
-  }
-  const list = offsets[y % 2 === 0 ? "even" : "odd"];
-  return list
-    .map(({ dx, dy }) =>
-      game.tiles.find((tile) => tile.x === x + dx && tile.y === y + dy)
-    )
-    .find(
-      (tile) =>
-        tile &&
-        !tile.unit &&
-        tile.terrain !== "Water" &&
-        tile.terrain !== "Mountains"
-    );
-};
-
-const getCityTile = (gameId: string, ownerId: string) => {
-  const game = memoryStore.getGame(gameId);
-  if (!game) {
-    throw new Error("Game not found");
-  }
+const getCityTile = (gameId: string, ownerId: string, store: MemoryStore) => {
+  const game = store.getGame(gameId);
+  if (!game) throw new Error("Game not found");
   return game.tiles.find((tile) => tile.structure?.ownerId === ownerId);
 };
 
@@ -110,12 +125,11 @@ const addUnitToTile = (
   tileId: string,
   ownerId: string,
   unitType: UnitData["type"],
-  overrides?: Partial<UnitData>
+  overrides: Partial<UnitData> = {},
+  store: MemoryStore
 ) => {
-  const game = memoryStore.getGame(gameId) as GameState | null;
-  if (!game) {
-    throw new Error("Game not found");
-  }
+  const game = store.getGame(gameId) as GameState | null;
+  if (!game) throw new Error("Game not found");
   const tile = game.tiles.find((t) => t.id === tileId);
   if (!tile) {
     throw new Error("Tile not found");
@@ -134,12 +148,22 @@ const addUnitToTile = (
   return unit;
 };
 
-const addWorkerToTile = (gameId: string, ownerId: string, tileId: string) => {
-  return addUnitToTile(gameId, tileId, ownerId, "Worker");
+const addWorkerToTile = (
+  gameId: string,
+  ownerId: string,
+  tileId: string,
+  store: MemoryStore
+) => {
+  return addUnitToTile(gameId, tileId, ownerId, "Worker", {}, store);
 };
 
-const addSettlerToTile = (gameId: string, ownerId: string, tileId: string) => {
-  const game = memoryStore.getGame(gameId) as GameState | null;
+const addSettlerToTile = (
+  gameId: string,
+  ownerId: string,
+  tileId: string,
+  store: MemoryStore
+) => {
+  const game = store.getGame(gameId) as GameState | null;
   if (!game) {
     throw new Error("Game not found");
   }
@@ -160,17 +184,29 @@ const addSettlerToTile = (gameId: string, ownerId: string, tileId: string) => {
   return unit;
 };
 
-const addWarriorToTile = (gameId: string, ownerId: string, tileId: string) => {
-  return addUnitToTile(gameId, tileId, ownerId, "Warrior", {
-    movementPoints: 1,
-  });
+const addWarriorToTile = (
+  gameId: string,
+  ownerId: string,
+  tileId: string,
+  store: MemoryStore
+) => {
+  return addUnitToTile(
+    gameId,
+    tileId,
+    ownerId,
+    "Warrior",
+    {
+      movementPoints: 1,
+    },
+    store
+  );
 };
 
 const isTilePassable = (tile: GameState["tiles"][number]) =>
   tile.terrain !== "Water" && tile.terrain !== "Mountains" && !tile.structure;
 
-const findAdjacentPair = (gameId: string) => {
-  const game = memoryStore.getGame(gameId) as GameState | null;
+const findAdjacentPair = (gameId: string, store: MemoryStore) => {
+  const game = store.getGame(gameId) as GameState | null;
   if (!game) {
     throw new Error("Game not found");
   }
@@ -194,18 +230,23 @@ const findAdjacentPair = (gameId: string) => {
 };
 
 describe("GameService actions", () => {
-  const service = new GameService(new MapService());
+  const testStore = new MemoryStore();
+  const service = new GameService(new MapService(), testStore);
 
   beforeEach(() => {
-    memoryStore.clear();
+    testStore.clear();
   });
 
   it("switches to running phase once every player has placed a capital", () => {
     const lobby = makeLobby();
     service.createGameForLobby(lobby);
 
-    const firstTile = findPlaceableTile(lobby.gameId);
-    const secondTile = findSecondTile(lobby.gameId, firstTile?.id ?? "");
+    const firstTile = findPlaceableTile(lobby.gameId, testStore);
+    const secondTile = findSecondTile(
+      lobby.gameId,
+      firstTile?.id ?? "",
+      testStore
+    );
     if (!firstTile || !secondTile) {
       throw new Error("Tiles missing");
     }
@@ -223,8 +264,12 @@ describe("GameService actions", () => {
   it("advances the turn when END_TURN action is applied", () => {
     const lobby = makeLobby();
     service.createGameForLobby(lobby);
-    const firstTile = findPlaceableTile(lobby.gameId);
-    const secondTile = findSecondTile(lobby.gameId, firstTile?.id ?? "");
+    const firstTile = findPlaceableTile(lobby.gameId, testStore);
+    const secondTile = findSecondTile(
+      lobby.gameId,
+      firstTile?.id ?? "",
+      testStore
+    );
     if (!firstTile || !secondTile) {
       throw new Error("Tiles missing");
     }
@@ -246,8 +291,12 @@ describe("GameService actions", () => {
   it("completes warrior production after required turns", () => {
     const lobby = makeLobby();
     service.createGameForLobby(lobby);
-    const pair = findAdjacentPair(lobby.gameId);
-    const secondTile = findSecondTile(lobby.gameId, pair?.origin.id ?? "");
+    const pair = findAdjacentPair(lobby.gameId, testStore);
+    const secondTile = findSecondTile(
+      lobby.gameId,
+      pair?.origin.id ?? "",
+      testStore
+    );
     if (!pair || !secondTile) {
       throw new Error("Tiles missing");
     }
@@ -257,7 +306,7 @@ describe("GameService actions", () => {
     pair.neighbor.ownerId = "player-1";
     pair.neighbor.structure = undefined;
 
-    const cityTile = getCityTile(lobby.gameId, "player-1");
+    const cityTile = getCityTile(lobby.gameId, "player-1", testStore);
     if (!cityTile?.structure) {
       throw new Error("City not found");
     }
@@ -295,16 +344,20 @@ describe("GameService actions", () => {
   it("spawns produced unit next to city when tile occupied", () => {
     const lobby = makeLobby();
     service.createGameForLobby(lobby);
-    const pair = findAdjacentPair(lobby.gameId);
+    const pair = findAdjacentPair(lobby.gameId, testStore);
     if (!pair) {
       throw new Error("No adjacent pair");
     }
-    const second = findSecondTile(lobby.gameId, pair.origin.id ?? "");
+    const second = findSecondTile(
+      lobby.gameId,
+      pair.origin.id ?? "",
+      testStore
+    );
     if (!second) throw new Error("Second tile not found");
     service.placeCapital(lobby.gameId, "player-1", pair.origin.id);
     service.placeCapital(lobby.gameId, "player-2", second.id);
 
-    const cityTile = getCityTile(lobby.gameId, "player-1");
+    const cityTile = getCityTile(lobby.gameId, "player-1", testStore);
     if (!cityTile?.structure) {
       throw new Error("City not found");
     }
@@ -354,8 +407,12 @@ describe("GameService actions", () => {
   it("lets a worker build a fort consuming population", () => {
     const lobby = makeLobby();
     service.createGameForLobby(lobby);
-    const buildPair = findAdjacentPair(lobby.gameId);
-    const secondTile = findSecondTile(lobby.gameId, buildPair?.origin.id ?? "");
+    const buildPair = findAdjacentPair(lobby.gameId, testStore);
+    const secondTile = findSecondTile(
+      lobby.gameId,
+      buildPair?.origin.id ?? "",
+      testStore
+    );
     if (!buildPair || !secondTile) {
       throw new Error("Tiles missing");
     }
@@ -365,9 +422,10 @@ describe("GameService actions", () => {
     const worker = addWorkerToTile(
       lobby.gameId,
       "player-1",
-      buildPair.neighbor.id
+      buildPair.neighbor.id,
+      testStore
     );
-    const cityTile = getCityTile(lobby.gameId, "player-1");
+    const cityTile = getCityTile(lobby.gameId, "player-1", testStore);
     if (!cityTile?.structure) {
       throw new Error("City not found");
     }
@@ -398,15 +456,24 @@ describe("GameService actions", () => {
   it("moves a warrior to adjacent tile and exhausts movement", () => {
     const lobby = makeLobby();
     service.createGameForLobby(lobby);
-    const pair = findAdjacentPair(lobby.gameId);
-    const secondTile = findSecondTile(lobby.gameId, pair?.origin.id ?? "");
+    const pair = findAdjacentPair(lobby.gameId, testStore);
+    const secondTile = findSecondTile(
+      lobby.gameId,
+      pair?.origin.id ?? "",
+      testStore
+    );
     if (!pair || !secondTile) {
       throw new Error("Tiles missing");
     }
     service.placeCapital(lobby.gameId, "player-1", pair.origin.id);
     service.placeCapital(lobby.gameId, "player-2", secondTile.id);
 
-    const warrior = addWarriorToTile(lobby.gameId, "player-1", pair.origin.id);
+    const warrior = addWarriorToTile(
+      lobby.gameId,
+      "player-1",
+      pair.origin.id,
+      testStore
+    );
     warrior.movementPoints = 1;
     const destination = pair.neighbor;
 
@@ -429,19 +496,26 @@ describe("GameService actions", () => {
   it("founding a new city increases population cap", () => {
     const lobby = makeLobby();
     service.createGameForLobby(lobby);
-    const firstTile = findPlaceableTile(lobby.gameId);
-    const secondTile = findSecondTile(lobby.gameId, firstTile?.id ?? "");
-    if (!firstTile || !secondTile) {
+    const p1Capital = findPlaceableTile(lobby.gameId, testStore);
+    const p2Capital = findSecondTile(
+      lobby.gameId,
+      p1Capital?.id ?? "",
+      testStore
+    );
+    if (!p1Capital || !p2Capital) {
       throw new Error("Tiles missing");
     }
-    service.placeCapital(lobby.gameId, "player-1", firstTile.id);
-    service.placeCapital(lobby.gameId, "player-2", secondTile.id);
+    service.placeCapital(lobby.gameId, "player-1", p1Capital.id);
+    service.placeCapital(lobby.gameId, "player-2", p2Capital.id);
 
-    const pair = findAdjacentPair(lobby.gameId);
-    if (!pair) {
-      throw new Error("No adjacent tile for settler");
-    }
-    const settler = addSettlerToTile(lobby.gameId, "player-1", pair.origin.id);
+    const safeTile = findSafeCityTile(lobby.gameId, "player-1", testStore);
+    if (!safeTile) throw new Error("No safe tile for new city");
+    const settler = addSettlerToTile(
+      lobby.gameId,
+      "player-1",
+      safeTile.id,
+      testStore
+    );
     const before = service
       .getGame(lobby.gameId)
       .players.find((p) => p.id === "player-1")?.populationCap;

@@ -1,120 +1,37 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Button } from "../../../shared/ui/button";
 import {
   STRUCTURE_RULES,
   UNIT_RULES,
+  type CityData,
   type CityImprovementType,
-  type StructureType,
+  type StandaloneStructureData,
   type TerrainType,
   type UnitType,
 } from "@hex/shared";
 import { translations } from "../../../shared/i18n";
 import { useGameState } from "../../../entities/game/model/useGameState";
-import { placeCapital, submitAction } from "../../../entities/game/api/gameApi";
 import type { PlayerAction } from "@hex/shared";
 import { useLobbyStore } from "../../../entities/lobby/model/useLobbyStore";
 import { useConnectionStatus } from "../../../shared/hooks/useConnectionStatus";
+import { useGameMutations } from "../../../entities/game/model/useGameMutations";
+import { TopBar } from "./components/TopBar";
+import { InfoPanel } from "./components/InfoPanel";
+import { ActionsPanel } from "./components/ActionsPanel";
+import { ActionMenus } from "./components/ActionMenus";
+import { MapTile as TileView } from "./components/MapTile";
+import { useMapCamera } from "./hooks/useMapCamera";
+import { useAutoSelectTile } from "./hooks/useAutoSelectTile";
+import { useActionTargets } from "./hooks/useActionTargets";
+import {
+  HEX_CONFIG,
+  HEX_NEIGHBORS,
+  terrainColor,
+  unitEmoji,
+} from "./mapConfig";
+import type { MapTile } from "./types";
 import "./GameMapPage.css";
-
-interface MapStructure {
-  id: string;
-  type: StructureType;
-  ownerId: string;
-  ownerName: string;
-  isCapital?: boolean;
-}
-
-interface MapUnit {
-  id: string;
-  type: UnitType;
-  ownerId: string;
-  ownerName: string;
-  health: number;
-  isVeteran: boolean;
-  movementPoints?: number;
-}
-
-interface MapTile {
-  id: string;
-  x: number;
-  y: number;
-  terrain: TerrainType;
-  ownerId: string | null;
-  structure?: MapStructure;
-  unit?: MapUnit;
-}
-
-const isTilePassable = (tile: MapTile, playerId: string | null) => {
-  if (tile.terrain === "Water" || tile.terrain === "Mountains") {
-    return false;
-  }
-  if (tile.unit) {
-    return false;
-  }
-  if (tile.structure && tile.structure.ownerId !== playerId) {
-    return false;
-  }
-  return true;
-};
-
-const isAdjacent = (from: MapTile, to: MapTile) => {
-  const offsets = HEX_NEIGHBORS[from.y % 2 === 0 ? "even" : "odd"];
-  return offsets.some(
-    (offset) => from.x + offset.dx === to.x && from.y + offset.dy === to.y
-  );
-};
-
-// --- Constants ---
-const HEX_CONFIG = {
-  SIZE: 60,
-  get HEIGHT() {
-    return this.SIZE * 2;
-  },
-  get WIDTH() {
-    return (Math.sqrt(3) / 2) * this.HEIGHT;
-  },
-  get ROW_SPACING_V() {
-    return this.HEIGHT * 0.75;
-  },
-};
-
-const terrainColor: Record<TerrainType, string> = {
-  Plains: "#86bb63", // Немного более мягкий зеленый
-  Forest: "#4a7c47",
-  Hills: "#d4b483",
-  Mountains: "#718096",
-  Water: "#63b3ed",
-};
-
-const unitEmoji: Record<UnitType, string> = {
-  Warrior: "⚔️",
-  Spearman: "🛡️",
-  Archer: "🏹",
-  Horseman: "🐎",
-  Settler: "🏳️", // Флаг для поселенца более понятен
-  Worker: "🔨",
-};
-
-const HEX_NEIGHBORS = {
-  even: [
-    { dx: 0, dy: -1 },
-    { dx: 1, dy: -1 },
-    { dx: -1, dy: 0 },
-    { dx: 1, dy: 0 },
-    { dx: 0, dy: 1 },
-    { dx: 1, dy: 1 },
-  ],
-  odd: [
-    { dx: -1, dy: -1 },
-    { dx: 0, dy: -1 },
-    { dx: -1, dy: 0 },
-    { dx: 1, dy: 0 },
-    { dx: -1, dy: 1 },
-    { dx: 0, dy: 1 },
-  ],
-};
+import { useProfileStore } from "../../../entities/profile/model/useProfileStore";
 
 export function GameMapPage() {
   const t = useMemo(() => translations.ru.game, []);
@@ -125,89 +42,59 @@ export function GameMapPage() {
   const lobby = useLobbyStore((state) => state.lobby);
   const setGameId = useLobbyStore((state) => state.setGameId);
   const selfId = useLobbyStore((state) => state.selfId);
+  const setSelfId = useLobbyStore((state) => state.setSelfId);
   const connectionStatus = useConnectionStatus();
-
-  const viewportRef = useRef<HTMLDivElement>(null);
-  const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
+  const profile = useProfileStore((state) => state.profile);
 
   const gameIdFromParams = searchParams.get("gameId");
   const effectiveGameId =
     gameIdFromParams ?? storedGameId ?? lobby?.gameId ?? "demo-game";
+  const effectivePlayerId = selfId ?? profile?.id ?? null;
 
   useEffect(() => {
     if (gameIdFromParams) setGameId(gameIdFromParams);
   }, [gameIdFromParams, setGameId]);
 
-  // Resize Observer для полноэкранного контейнера
   useEffect(() => {
-    const updateSize = () => {
-      if (viewportRef.current) {
-        setViewportSize({
-          width: window.innerWidth,
-          height: window.innerHeight,
-        });
-      }
-    };
-    window.addEventListener("resize", updateSize);
-    updateSize(); // Init
-    return () => window.removeEventListener("resize", updateSize);
-  }, []);
+    if (!selfId && profile?.id) {
+      setSelfId(profile.id);
+    }
+  }, [selfId, profile?.id, setSelfId]);
 
   const { data: gameState, isLoading, isError } = useGameState(effectiveGameId);
-  const queryClient = useQueryClient();
-
-  const placeCapitalMutation = useMutation({
-    mutationFn: (tileId: string) => {
-      if (!effectiveGameId || !selfId) throw new Error("Missing identifiers");
-      return placeCapital({
-        gameId: effectiveGameId,
-        tileId,
-        playerId: selfId,
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["game", effectiveGameId] });
-    },
-  });
-
-  const submitActionMutation = useMutation({
-    mutationFn: (action: PlayerAction) => {
-      if (!effectiveGameId || !selfId) {
-        throw new Error("Missing identifiers for action");
-      }
-      return submitAction({
-        gameId: effectiveGameId,
-        playerId: selfId,
-        action,
-      });
-    },
-    onSuccess: (data) => {
-      if (effectiveGameId) {
-        queryClient.setQueryData(["game", effectiveGameId], data);
-      }
-    },
-  });
+  const { placeCapitalMutation, submitActionMutation } = useGameMutations(
+    effectiveGameId,
+    effectivePlayerId
+  );
 
   // --- Data Processing ---
   const mapTiles = useMemo(() => {
     if (!gameState?.tiles) return [];
     return gameState.tiles.map((tile) => ({
       id: tile.id,
-      x: tile.x,
-      y: tile.y,
+      x: Number(tile.x),
+      y: Number(tile.y),
       terrain: tile.terrain as TerrainType,
       ownerId: tile.ownerId ?? null,
       structure: tile.structure
-        ? {
-            id: tile.structure.id,
-            type: tile.structure.type as StructureType,
-            ownerId: tile.structure.ownerId,
-            ownerName: tile.structure.ownerName,
-            isCapital:
-              tile.structure.type === "City"
-                ? Boolean(tile.structure.isCapital)
-                : undefined,
-          }
+        ? tile.structure.type === "City"
+          ? ({
+              id: tile.structure.id,
+              type: "City",
+              ownerId: tile.structure.ownerId,
+              ownerName: tile.structure.ownerName,
+              population: (tile.structure as any).population ?? 0,
+              fortification: (tile.structure as any).fortification ?? 0,
+              improvement: (tile.structure as any).improvement ?? null,
+              isCapital: Boolean((tile.structure as any).isCapital),
+              production: (tile.structure as any).production ?? null,
+            } satisfies CityData)
+          : ({
+              id: tile.structure.id,
+              type: tile.structure.type as StandaloneStructureData["type"],
+              ownerId: tile.structure.ownerId,
+              ownerName: tile.structure.ownerName,
+            } satisfies StandaloneStructureData)
         : undefined,
       unit: tile.unit
         ? {
@@ -223,8 +110,20 @@ export function GameMapPage() {
     }));
   }, [gameState?.tiles]);
 
-  const playerState = selfId
-    ? gameState?.players?.find((p) => p.id === selfId) ?? null
+  const playerColorMap = useMemo(() => {
+    const map = new Map<string, string>();
+    gameState?.players.forEach((p) => map.set(p.id, p.color));
+    return map;
+  }, [gameState?.players]);
+
+  const tileByCoord = useMemo(() => {
+    const coordMap = new Map<string, MapTile>();
+    mapTiles.forEach((t) => coordMap.set(`${t.x},${t.y}`, t));
+    return coordMap;
+  }, [mapTiles]);
+
+  const playerState = effectivePlayerId
+    ? gameState?.players?.find((p) => p.id === effectivePlayerId) ?? null
     : null;
   const isPlacementPhase = gameState?.phase === "capital-placement";
   const needsCapital =
@@ -232,38 +131,33 @@ export function GameMapPage() {
   const waitingForOpponents = isPlacementPhase && !needsCapital;
   const controlsDisabled = isPlacementPhase; // В будущем можно разблокировать для других фаз
   const isMyTurn =
-    Boolean(selfId) &&
+    Boolean(effectivePlayerId) &&
     Boolean(gameState) &&
     !isPlacementPhase &&
-    gameState?.currentPlayerId === selfId;
-  const connectionDown = connectionStatus.status !== "online";
+    gameState?.currentPlayerId === effectivePlayerId;
+  const connectionDown = connectionStatus.status === "offline";
   const connectionMessage = connectionStatus.message ?? t.connectionLost;
 
   // --- Map & Drag Logic ---
   const [selectedTile, setSelectedTile] = useState<MapTile | null>(null);
   const [menuType, setMenuType] = useState<
-    null | "city-production" | "worker-build"
+    null | "city-production" | "city-improvement" | "worker-build"
   >(null);
+  const [activeAction, setActiveAction] = useState<null | "move" | "attack">(
+    null
+  );
+  const [showPlayers, setShowPlayers] = useState(false);
 
-  // Авто-выбор первого тайла
+  // Keep selected tile in sync when backend state changes
   useEffect(() => {
-    if (!selectedTile && mapTiles.length > 0 && !needsCapital) {
-      // Можно центрировать камеру на столице, если она есть
-      setSelectedTile(mapTiles[0]);
+    if (!selectedTile) return;
+    const fresh = mapTiles.find((t) => t.id === selectedTile.id);
+    if (fresh) {
+      setSelectedTile(fresh);
+    } else {
+      setSelectedTile(null);
     }
-  }, [mapTiles, selectedTile, needsCapital]);
-
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [spacePressed, setSpacePressed] = useState(false);
-  const MIN_ZOOM = 0.5;
-  const MAX_ZOOM = 2;
-  const dragState = useRef({
-    active: false,
-    pointerId: 0,
-    start: { x: 0, y: 0 },
-    startOffset: { x: 0, y: 0 },
-  });
+  }, [mapTiles, selectedTile]);
 
   const columns = gameState?.map?.columns ?? 12;
   const rows = gameState?.map?.rows ?? 10;
@@ -271,115 +165,25 @@ export function GameMapPage() {
     (columns - 1) * HEX_CONFIG.WIDTH + HEX_CONFIG.WIDTH * 1.5;
   const mapPixelHeight =
     (rows - 1) * HEX_CONFIG.ROW_SPACING_V + HEX_CONFIG.HEIGHT * 1.5;
-  const scaledWidth = mapPixelWidth * zoom;
-  const scaledHeight = mapPixelHeight * zoom;
   const overscroll = 100;
-  const maxDragX = Math.max(0, scaledWidth - viewportSize.width + overscroll);
-  const maxDragY = Math.max(0, scaledHeight - viewportSize.height + overscroll);
-
-  // Центрирование карты при старте (опционально)
-  useEffect(() => {
-    if (viewportSize.width > 0 && offset.x === 0 && offset.y === 0) {
-      setOffset({
-        x: Math.max(0, (scaledWidth - viewportSize.width) / 2),
-        y: Math.max(0, (scaledHeight - viewportSize.height) / 2),
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [viewportSize.width, viewportSize.height, scaledWidth, scaledHeight]);
-
-  const clamp = (val: number, min: number, max: number) =>
-    Math.min(Math.max(val, min), max);
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.code === "Space") {
-        setSpacePressed(true);
-        event.preventDefault();
-      }
-    };
-    const handleKeyUp = (event: KeyboardEvent) => {
-      if (event.code === "Space") {
-        setSpacePressed(false);
-        event.preventDefault();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
-    };
-  }, []);
-
-  const handlePointerDown: React.PointerEventHandler<HTMLDivElement> = (e) => {
-    const isMiddleButton = e.button === 1;
-    const isSpacePan = e.button === 0 && spacePressed;
-    if (!isMiddleButton && !isSpacePan) {
-      return;
-    }
-    dragState.current = {
-      active: true,
-      pointerId: e.pointerId,
-      start: { x: e.clientX, y: e.clientY },
-      startOffset: { ...offset },
-    };
-    e.currentTarget.setPointerCapture(e.pointerId);
-  };
-
-  const handlePointerMove: React.PointerEventHandler<HTMLDivElement> = (e) => {
-    if (!dragState.current.active) return;
-    e.preventDefault();
-    const dx = e.clientX - dragState.current.start.x;
-    const dy = e.clientY - dragState.current.start.y;
-
-    // Позволяем уходить чуть за границы (overscroll), чтобы видеть края карты
-    setOffset({
-      x: clamp(dragState.current.startOffset.x - dx, -overscroll, maxDragX),
-      y: clamp(dragState.current.startOffset.y - dy, -overscroll, maxDragY),
-    });
-  };
-
-  const endDrag = (e: React.PointerEvent) => {
-    if (dragState.current.active) {
-      dragState.current.active = false;
-      e.currentTarget.releasePointerCapture?.(dragState.current.pointerId);
-    }
-  };
-
-  const handleWheel: React.WheelEventHandler<HTMLElement> = (event) => {
-    event.preventDefault();
-    const rect = viewportRef.current?.getBoundingClientRect();
-    const cursorX = rect ? event.clientX - rect.left : viewportSize.width / 2;
-    const cursorY = rect ? event.clientY - rect.top : viewportSize.height / 2;
-    const delta = event.deltaY;
-    setZoom((prevZoom) => {
-      const nextZoom = clamp(prevZoom - delta * 0.0015, MIN_ZOOM, MAX_ZOOM);
-      if (nextZoom === prevZoom) {
-        return prevZoom;
-      }
-      const ratio = nextZoom / prevZoom;
-      setOffset((prevOffset) => {
-        const nextWidth = mapPixelWidth * nextZoom;
-        const nextHeight = mapPixelHeight * nextZoom;
-        const nextMaxX = Math.max(
-          0,
-          nextWidth - viewportSize.width + overscroll
-        );
-        const nextMaxY = Math.max(
-          0,
-          nextHeight - viewportSize.height + overscroll
-        );
-        const newOffsetX = (prevOffset.x + cursorX) * ratio - cursorX;
-        const newOffsetY = (prevOffset.y + cursorY) * ratio - cursorY;
-        return {
-          x: clamp(newOffsetX, -overscroll, nextMaxX),
-          y: clamp(newOffsetY, -overscroll, nextMaxY),
-        };
-      });
-      return nextZoom;
-    });
-  };
+  const {
+    viewportRef,
+    offset,
+    zoom,
+    handlePointerDown,
+    handlePointerMove,
+    endDrag,
+    handleWheel,
+    spacePressed,
+    isDragging,
+  } = useMapCamera({
+    mapPixelWidth,
+    mapPixelHeight,
+    overscroll,
+  });
+  useAutoSelectTile(mapTiles, needsCapital, selectedTile, (tile) =>
+    setSelectedTile(tile)
+  );
 
   const handleEndTurn = () => {
     if (!isMyTurn || submitActionMutation.isPending) {
@@ -390,14 +194,52 @@ export function GameMapPage() {
   };
 
   // --- Interaction Helpers ---
+  const hasEnemyAdjacentCity = (tile: MapTile) => {
+    const neighbors = HEX_NEIGHBORS[tile.y % 2 === 0 ? "even" : "odd"].map(
+      ({ dx, dy }) => ({
+        x: tile.x + dx,
+        y: tile.y + dy,
+      })
+    );
+    return neighbors.some(({ x, y }) => {
+      const neighbor = tileByCoord.get(`${x},${y}`);
+      return (
+        neighbor?.structure?.type === "City" &&
+        neighbor.structure.ownerId !== effectivePlayerId
+      );
+    });
+  };
+
   const isTileEligibleForCapital = (tile: MapTile | null) =>
     !!tile &&
     tile.terrain !== "Mountains" &&
     tile.terrain !== "Water" &&
-    !tile.structure;
+    !tile.structure &&
+    !hasEnemyAdjacentCity(tile);
+
+  // --- Render Vars (declared early to avoid TDZ in hooks) ---
+  const selectedTileUnit = selectedTile?.unit ?? null;
+  const selectedUnitStats = selectedTileUnit
+    ? UNIT_RULES[selectedTileUnit.type]
+    : null;
+  const selectedCity =
+    selectedTile?.structure?.type === "City" ? selectedTile.structure : null;
+  const remainingMovement =
+    selectedTileUnit && selectedUnitStats
+      ? selectedTileUnit.movementPoints ?? selectedUnitStats.baseStats.movement
+      : 0;
+
+  const { moveTargets, attackTargets } = useActionTargets({
+    activeAction,
+    selectedTile,
+    selectedTileUnit,
+    mapTiles,
+    selfId: effectivePlayerId,
+    canUseActions: remainingMovement > 0,
+  });
 
   const handleSelect = (tile: MapTile) => {
-    if (dragState.current.active || spacePressed) return;
+    if (spacePressed || isDragging) return;
 
     if (needsCapital) {
       setSelectedTile(tile);
@@ -407,19 +249,9 @@ export function GameMapPage() {
       return;
     }
 
-    const selectedHasUnit = Boolean(
-      selectedTile?.unit && selectedTile.unit.ownerId === selfId
-    );
-    const attemptingMove =
-      selectedHasUnit &&
-      isMyTurn &&
-      tile.id !== selectedTile?.id &&
-      isAdjacent(selectedTile as MapTile, tile) &&
-      isTilePassable(tile, selfId ?? null);
-
     if (
-      attemptingMove &&
-      !submitActionMutation.isPending &&
+      activeAction === "move" &&
+      moveTargets.has(tile.id) &&
       selectedTile?.unit
     ) {
       const action: PlayerAction = {
@@ -430,29 +262,38 @@ export function GameMapPage() {
         },
       };
       submitActionMutation.mutate(action, {
-        onSuccess: () => setSelectedTile(tile),
+        onSuccess: () => {
+          setSelectedTile(tile);
+          setActiveAction(null);
+        },
       });
       return;
     }
 
+    if (activeAction === "attack" && attackTargets.has(tile.id)) {
+      if (selectedTile?.unit && tile.unit) {
+        const action: PlayerAction = {
+          type: "ATTACK_UNIT",
+          payload: {
+            attackerId: selectedTile.unit.id,
+            defenderId: tile.unit.id,
+          },
+        };
+        submitActionMutation.mutate(action, {
+          onSuccess: () => {
+            setActiveAction(null);
+            setSelectedTile(tile);
+          },
+        });
+      } else {
+        setActiveAction(null);
+      }
+      return;
+    }
+
     setSelectedTile(tile);
+    setActiveAction(null);
   };
-
-  const getStructureEmoji = (s?: MapStructure) => {
-    if (!s) return null;
-    if (s.type === "City") return s.isCapital ? "🏛️" : "🏰";
-    if (s.type === "Farm") return "🌾";
-    if (s.type === "Fort") return "🧱";
-    return "🏗️";
-  };
-
-  // --- Render Vars ---
-  const selectedTileUnit = selectedTile?.unit ?? null;
-  const selectedUnitStats = selectedTileUnit
-    ? UNIT_RULES[selectedTileUnit.type]
-    : null;
-  const selectedCity =
-    selectedTile?.structure?.type === "City" ? selectedTile.structure : null;
 
   const cityProductionOptions = [
     {
@@ -475,7 +316,7 @@ export function GameMapPage() {
     },
     {
       key: "barracks",
-      label: t.actions.buildBarracks,
+      label: t.actions.produceBarracks,
       cost: STRUCTURE_RULES.Barracks.cost,
       payload: {
         type: "improvement" as const,
@@ -484,7 +325,7 @@ export function GameMapPage() {
     },
     {
       key: "granary",
-      label: t.actions.buildGranary,
+      label: t.actions.produceGranary,
       cost: STRUCTURE_RULES.Granary.cost,
       payload: {
         type: "improvement" as const,
@@ -499,12 +340,14 @@ export function GameMapPage() {
       label: t.actions.buildFort,
       cost: STRUCTURE_RULES.Fort.cost,
       structureType: "Fort" as const,
+      turns: STRUCTURE_RULES.Fort.productionTurns,
     },
     {
       key: "farm",
       label: t.actions.buildFarm,
       cost: STRUCTURE_RULES.Farm.cost,
       structureType: "Farm" as const,
+      turns: STRUCTURE_RULES.Farm.productionTurns,
     },
   ];
 
@@ -526,11 +369,36 @@ export function GameMapPage() {
   const terrainDescription = selectedTile
     ? t.terrainDescriptions[selectedTile.terrain]
     : undefined;
+  const activeProductionTurns =
+    selectedCity?.production?.item?.type === "unit"
+      ? UNIT_RULES[selectedCity.production.item.unitType]?.productionTurns ??
+        null
+      : selectedCity?.production?.item?.type === "improvement"
+      ? STRUCTURE_RULES[selectedCity.production.item.improvementType]
+          ?.productionTurns ?? null
+      : null;
+  const activeProductionProgress = selectedCity?.production?.progressTurns ?? 0;
+  const activeProductionName =
+    selectedCity?.production?.item?.type === "unit"
+      ? t.actions[
+          selectedCity.production.item.unitType === "Warrior"
+            ? "produceWarrior"
+            : selectedCity.production.item.unitType === "Worker"
+            ? "produceWorker"
+            : "produceSettler"
+        ]
+      : selectedCity?.production?.item?.type === "improvement"
+      ? t.actions[
+          selectedCity.production.item.improvementType === "Barracks"
+            ? "produceBarracks"
+            : "produceGranary"
+        ]
+      : null;
 
-  const canFortify = Boolean(
+  const canBuild = Boolean(
     !controlsDisabled &&
       selectedTileUnit &&
-      selectedTileUnit.ownerId === selfId &&
+      selectedTileUnit.ownerId === effectivePlayerId &&
       selectedTileUnit.type === "Worker" &&
       selectedTile &&
       !selectedTile.structure &&
@@ -539,37 +407,82 @@ export function GameMapPage() {
       playerState?.capitalCityId
   );
 
-  const canOpenProductionMenu =
+  const canOpenProductionMenu = !!(
     !controlsDisabled &&
     isMyTurn &&
     selectedCity &&
-    selectedCity.ownerId === selfId &&
-    !submitActionMutation.isPending;
+    selectedCity.ownerId === effectivePlayerId &&
+    !submitActionMutation.isPending
+  );
 
-  const handleProduceWarrior = () => {
-    if (!canOpenProductionMenu || !selectedCity) return;
-    const action: PlayerAction = {
-      type: "SET_CITY_PRODUCTION",
-      payload: {
-        cityId: selectedCity.id,
-        item: { type: "unit", unitType: "Warrior" },
-      },
-    };
-    submitActionMutation.mutate(action);
-  };
+  const canMove = !!(
+    !controlsDisabled &&
+    isMyTurn &&
+    selectedTileUnit?.ownerId === effectivePlayerId &&
+    remainingMovement > 0
+  );
 
-  const canFoundCity =
+  const canAttack = Boolean(
+    !controlsDisabled &&
+      isMyTurn &&
+      selectedTileUnit &&
+      selectedTileUnit.ownerId === effectivePlayerId &&
+      remainingMovement > 0 &&
+      UNIT_RULES[selectedTileUnit.type].abilities.canAttack !== false
+  );
+
+  const canFoundCity = !!(
     !controlsDisabled &&
     isMyTurn &&
     selectedTile &&
     !selectedTile.structure &&
     selectedTile.terrain !== "Water" &&
     selectedTile.terrain !== "Mountains" &&
-    selectedTileUnit?.ownerId === selfId &&
-    selectedTileUnit.type === "Settler";
+    !hasEnemyAdjacentCity(selectedTile) &&
+    selectedTileUnit?.ownerId === effectivePlayerId &&
+    selectedTileUnit.type === "Settler"
+  );
 
-  const handleFortify = () => {
-    if (!canFortify) return;
+  const enemyCityBuffer = useMemo(() => {
+    const buffer = new Set<string>();
+    mapTiles.forEach((tile) => {
+      if (
+        tile.structure?.type === "City" &&
+        tile.structure.ownerId !== effectivePlayerId
+      ) {
+        const parity = tile.y % 2 === 0 ? "even" : "odd";
+        HEX_NEIGHBORS[parity].forEach(({ dx, dy }) => {
+          const neighbor = tileByCoord.get(`${tile.x + dx},${tile.y + dy}`);
+          if (neighbor) buffer.add(neighbor.id);
+        });
+      }
+    });
+    return buffer;
+  }, [effectivePlayerId, mapTiles, tileByCoord]);
+
+  const showCityBuffer =
+    needsCapital ||
+    (selectedTileUnit?.type === "Settler" &&
+      selectedTileUnit.ownerId === effectivePlayerId);
+
+  const hexDistance = (a: MapTile, b: MapTile) => {
+    const toCube = (x: number, y: number) => {
+      const xCube = x - (y - (y & 1)) / 2;
+      const zCube = y;
+      const yCube = -xCube - zCube;
+      return { x: xCube, y: yCube, z: zCube };
+    };
+    const ac = toCube(a.x, a.y);
+    const bc = toCube(b.x, b.y);
+    return Math.max(
+      Math.abs(ac.x - bc.x),
+      Math.abs(ac.y - bc.y),
+      Math.abs(ac.z - bc.z)
+    );
+  };
+
+  const handleBuild = () => {
+    if (!canBuild) return;
     setMenuType("worker-build");
   };
 
@@ -585,6 +498,16 @@ export function GameMapPage() {
   const handleProduceClick = () => {
     if (!canOpenProductionMenu) return;
     setMenuType("city-production");
+  };
+
+  const handleMoveToggle = () => {
+    if (!canMove) return;
+    setActiveAction((prev) => (prev === "move" ? null : "move"));
+  };
+
+  const handleAttackToggle = () => {
+    if (!canAttack) return;
+    setActiveAction((prev) => (prev === "attack" ? null : "attack"));
   };
 
   const submitCityProduction = (
@@ -615,7 +538,18 @@ export function GameMapPage() {
   };
 
   const submitWorkerBuild = (structureType: "Farm" | "Fort") => {
-    if (!selectedTile || !selectedTileUnit || !playerState?.capitalCityId) {
+    if (
+      !selectedTile ||
+      !selectedTileUnit ||
+      !playerState?.capitalCityId ||
+      !effectivePlayerId
+    ) {
+      return;
+    }
+    if (
+      structureType === "Farm" &&
+      selectedTile.ownerId !== effectivePlayerId
+    ) {
       return;
     }
     const action: PlayerAction = {
@@ -632,51 +566,37 @@ export function GameMapPage() {
     });
   };
 
-  if (isLoading)
+  if (isError || !gameState) {
     return (
-      <div className="game flex items-center justify-center text-white">
-        {t.loading}
-      </div>
-    );
-  if (isError || !gameState)
-    return (
-      <div className="game flex items-center justify-center text-red-400">
-        {t.error}
-      </div>
-    );
-
-  return (
-    <div className="game">
-      {/* --- TOP HUD: Stats --- */}
-      <header className="game__top-bar">
-        <div className="game__stats-group">
-          <div className="game__stat-item">
-            <span className="game__stat-label">{t.turn}</span>
-            <span className="game__stat-value">{gameState.turn}</span>
-          </div>
-          <div className="game__stat-item">
-            <span className="game__stat-label">{t.population}</span>
-            <span className="game__stat-value">
-              {gameState.population.current} / {gameState.population.cap}
-            </span>
-          </div>
-          <div className="game__stat-item">
-            {/* Placeholder for Gold/Resources if needed */}
-            <span className="game__stat-label">{t.currentPlayer}</span>
-            <span className="game__stat-value" style={{ color: "#60a5fa" }}>
-              {gameState.currentPlayerName ?? gameState.currentPlayerId}
-            </span>
+      <div className="game">
+        <div className="game__status-overlay error">
+          <div className="game__status-card">
+            <h3>{t.error}</h3>
+            <p>{t.connectionLost}</p>
           </div>
         </div>
+      </div>
+    );
+  }
 
-        {isPlacementPhase && (
-          <div className="game__phase-banner">
-            {needsCapital
-              ? t.capitalPlacement.hint
-              : t.capitalPlacement.waiting}
+  return (
+    <div className={`game ${activeAction ? "game--action-mode" : ""}`}>
+      <TopBar
+        t={t}
+        gameState={gameState}
+        isPlacementPhase={isPlacementPhase}
+        needsCapital={needsCapital}
+        selfPlayer={playerState}
+      />
+
+      {isLoading ? (
+        <div className="game__status-overlay">
+          <div className="game__status-card">
+            <div className="spinner" />
+            <p>{t.loading}</p>
           </div>
-        )}
-      </header>
+        </div>
+      ) : null}
 
       {/* --- MAP VIEWPORT --- */}
       <section
@@ -702,40 +622,32 @@ export function GameMapPage() {
           }}
         >
           {mapTiles.map((tile) => {
-            const offsetX =
-              tile.x * HEX_CONFIG.WIDTH +
-              (tile.y % 2 ? HEX_CONFIG.WIDTH / 2 : 0);
-            const offsetY = tile.y * HEX_CONFIG.ROW_SPACING_V;
             const isBlocked = needsCapital && !isTileEligibleForCapital(tile);
-
+            const proximityBlocked =
+              showCityBuffer && enemyCityBuffer.has(tile.id);
+            const highlighted =
+              activeAction &&
+              (moveTargets.has(tile.id) || attackTargets.has(tile.id));
             return (
-              <div
+              <TileView
                 key={tile.id}
-                className={`
-                  game__tile 
-                  ${selectedTile?.id === tile.id ? "game__tile--selected" : ""}
-                  ${isBlocked ? "game__tile--blocked" : ""}
-                `}
-                onClick={() => handleSelect(tile)}
-                style={{
-                  backgroundColor: terrainColor[tile.terrain],
-                  width: HEX_CONFIG.WIDTH,
-                  height: HEX_CONFIG.HEIGHT,
-                  left: offsetX,
-                  top: offsetY,
-                }}
-              >
-                {tile.structure && (
-                  <span className="game__tile-structure">
-                    {getStructureEmoji(tile.structure)}
-                  </span>
-                )}
-                {tile.unit && (
-                  <span className="game__tile-unit">
-                    {unitEmoji[tile.unit.type]}
-                  </span>
-                )}
-              </div>
+                tile={tile}
+                selected={selectedTile?.id === tile.id}
+                blocked={isBlocked}
+                cityBlocked={proximityBlocked}
+                highlighted={Boolean(highlighted)}
+                territoryColor={
+                  tile.ownerId ? playerColorMap.get(tile.ownerId) : undefined
+                }
+                controlColor={
+                  tile.structure?.type === "Fort"
+                    ? playerColorMap.get(tile.structure.ownerId)
+                    : undefined
+                }
+                hexConfig={HEX_CONFIG}
+                terrainColor={terrainColor}
+                onSelect={handleSelect}
+              />
             );
           })}
         </div>
@@ -743,186 +655,47 @@ export function GameMapPage() {
 
       {/* --- BOTTOM HUD: Split Info & Actions --- */}
       <div className="game__hud-layer">
-        {/* LEFT: Context Info */}
-        <div className="game__hud-left game__hud-panel">
-          {selectedTile ? (
-            <>
-              <div className="game__hud-header">
-                <h2>
-                  {terrainName}
-                  <span
-                    style={{ opacity: 0.5, fontSize: "0.8em", marginLeft: 8 }}
-                  >
-                    ({selectedTile.x}, {selectedTile.y})
-                  </span>
-                </h2>
-                {terrainDescription ? (
-                  <p className="game__hud-subtext">{terrainDescription}</p>
-                ) : null}
-                {selectedTile.structure && (
-                  <p className="game__hud-subtext">
-                    {getStructureEmoji(selectedTile.structure)}{" "}
-                    {selectedTile.structure.type}
-                    {selectedTile.structure.isCapital
-                      ? ` (${t.capitalPlacement.capitalLabel})`
-                      : ""}
-                  </p>
-                )}
-              </div>
+        <InfoPanel
+          t={t}
+          selectedTile={selectedTile}
+          selectedCity={selectedCity}
+          selectedTileUnit={selectedTileUnit}
+          selectedUnitStats={selectedUnitStats}
+          terrainName={terrainName}
+          terrainDescription={terrainDescription}
+          needsCapital={needsCapital}
+          isTileEligibleForCapital={isTileEligibleForCapital}
+          insufficientCityPopulation={insufficientCityPopulation}
+          unitEmoji={unitEmoji}
+          activeProductionTurns={activeProductionTurns}
+          activeProductionProgress={activeProductionProgress}
+          activeProductionName={activeProductionName}
+        />
 
-              {selectedCity && (
-                <div className="game__city-stats">
-                  <span>
-                    {t.ownerLabel}: {selectedCity.ownerName}
-                  </span>
-                  <span>
-                    {t.cityPopulation}: {Math.floor(selectedCity.population)}
-                  </span>
-                </div>
-              )}
-
-              {selectedUnitStats && selectedTileUnit && (
-                <div className="game__unit-stats">
-                  <div className="flex flex-col">
-                    <span className="text-white font-bold flex items-center gap-2">
-                      {unitEmoji[selectedTileUnit.type as UnitType]}{" "}
-                      {selectedTileUnit.type}
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      {t.ownerLabel}: {selectedTile.unit?.ownerName}
-                    </span>
-                  </div>
-                  <div className="flex flex-col gap-1 ml-auto">
-                    <div className="game__stat-row" title={t.unitStats.attack}>
-                      ⚔️ {selectedUnitStats.baseStats.attack}
-                    </div>
-                    <div className="game__stat-row" title={t.unitStats.health}>
-                      ❤️ {selectedUnitStats.baseStats.health}
-                    </div>
-                    <div
-                      className="game__stat-row"
-                      title={t.unitStats.movement}
-                    >
-                      👟
-                      {selectedTile.unit?.movementPoints ??
-                        selectedUnitStats.baseStats.movement}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {!selectedCity && !selectedUnitStats && !needsCapital && (
-                <p className="text-sm text-gray-500 mt-2 italic">
-                  {t.selectPrompt}
-                </p>
-              )}
-
-              {insufficientCityPopulation && (
-                <p className="game__warning">{t.warnings.population}</p>
-              )}
-
-              {needsCapital && (
-                <div
-                  className={`mt-2 text-sm ${
-                    isTileEligibleForCapital(selectedTile)
-                      ? "text-green-400"
-                      : "text-red-400"
-                  }`}
-                >
-                  {isTileEligibleForCapital(selectedTile)
-                    ? t.capitalPlacement.action
-                    : t.capitalPlacement.invalid}
-                </div>
-              )}
-            </>
-          ) : (
-            <p className="text-gray-400">{t.selectPrompt}</p>
-          )}
-        </div>
-
-        {/* RIGHT: Actions */}
-        <div className="game__hud-right">
-          {/* Здесь могут быть уведомления (тосты) */}
-
-          <div className="game__hud-panel flex flex-col gap-3">
-            {/* Кнопки действий юнита (скрыты если не выбран свой юнит) */}
-            <div className="game__actions-grid">
-              <Button
-                variant="secondary"
-                size="icon"
-                disabled={controlsDisabled || !selectedTileUnit || !isMyTurn}
-                title={t.actions.attack}
-                aria-label={t.actions.attack}
-              >
-                ⚔️
-              </Button>
-              <Button
-                variant="secondary"
-                size="icon"
-                disabled={controlsDisabled || !selectedTileUnit || !isMyTurn}
-                title={t.actions.move}
-                aria-label={t.actions.move}
-              >
-                👟
-              </Button>
-              <Button
-                variant="secondary"
-                size="icon"
-                onClick={handleFoundCity}
-                disabled={!canFoundCity}
-                title={t.actions.foundCity}
-                aria-label={t.actions.foundCity}
-              >
-                🏠
-              </Button>
-              <Button
-                variant="secondary"
-                size="icon"
-                onClick={handleFortify}
-                disabled={
-                  controlsDisabled ||
-                  !canFortify ||
-                  submitActionMutation.isPending ||
-                  !isMyTurn
-                }
-                title={t.actions.fortify}
-                aria-label={t.actions.fortify}
-              >
-                🛡️
-              </Button>
-              {/* Слот для строительства */}
-              <Button
-                variant="secondary"
-                size="icon"
-                disabled={controlsDisabled || !selectedTileUnit || !isMyTurn}
-                title={t.actions.build}
-                aria-label={t.actions.build}
-              >
-                🏗️
-              </Button>
-              <Button
-                variant="secondary"
-                size="icon"
-                onClick={handleProduceClick}
-                disabled={!canOpenProductionMenu}
-                title={t.actions.produceWarrior}
-                aria-label={t.actions.produceWarrior}
-              >
-                🏭
-              </Button>
-            </div>
-
-            <Button
-              className="game__end-turn-btn"
-              onClick={handleEndTurn}
-              disabled={
-                controlsDisabled || !isMyTurn || submitActionMutation.isPending
-              }
-            >
-              {waitingForOpponents ? t.capitalPlacement.waiting : t.endTurn}
-            </Button>
-          </div>
-        </div>
+        <ActionsPanel
+          t={t}
+          canFoundCity={canFoundCity}
+          canBuild={canBuild}
+          canOpenProductionMenu={canOpenProductionMenu}
+          canMove={canMove}
+          canAttack={canAttack}
+          moveActive={activeAction === "move"}
+          attackActive={activeAction === "attack"}
+          controlsDisabled={controlsDisabled}
+          isMyTurn={isMyTurn}
+          submitPending={submitActionMutation.isPending}
+          onFoundCity={handleFoundCity}
+          onBuild={handleBuild}
+          onProduce={handleProduceClick}
+          onShowPlayers={() => setShowPlayers(true)}
+          onMoveToggle={handleMoveToggle}
+          onAttackToggle={handleAttackToggle}
+          onEndTurn={handleEndTurn}
+          endTurnDisabled={
+            controlsDisabled || !isMyTurn || submitActionMutation.isPending
+          }
+          waitingForOpponents={waitingForOpponents}
+        />
       </div>
       {connectionDown ? (
         <div className="connection-modal" role="alert">
@@ -932,68 +705,77 @@ export function GameMapPage() {
           </div>
         </div>
       ) : null}
-      {menuType === "city-production" && (
+      <ActionMenus
+        t={t}
+        menuType={menuType}
+        setMenuType={setMenuType}
+        cityProductionOptions={cityProductionOptions}
+        workerBuildOptions={workerBuildOptions}
+        selectedCity={selectedCity}
+        canBuild={canBuild}
+        capitalPopulation={
+          playerState?.capitalCityId
+            ? mapTiles.find(
+                (t) =>
+                  t.structure?.type === "City" &&
+                  t.structure.id === playerState.capitalCityId
+              )?.structure?.population ?? 0
+            : 0
+        }
+        canBuildFarm={
+          selectedTile?.ownerId === effectivePlayerId &&
+          selectedTile?.terrain === "Plains" &&
+          !selectedTile?.structure
+        }
+        canBuildFort={
+          !!selectedTile &&
+          !selectedTile.structure &&
+          (selectedTile.ownerId === null ||
+            selectedTile.ownerId === effectivePlayerId) &&
+          ["Plains", "Hills"].includes(selectedTile.terrain) &&
+          mapTiles.every((t) =>
+            t.structure?.type === "City"
+              ? hexDistance(t, selectedTile) > 2
+              : true
+          )
+        }
+        submitPending={submitActionMutation.isPending}
+        submitCityProduction={submitCityProduction}
+        submitWorkerBuild={submitWorkerBuild}
+      />
+      {showPlayers ? (
         <div className="game__menu" role="dialog">
           <div className="game__menu-content">
             <div className="game__menu-header">
-              <h4>{t.actions.productionMenu}</h4>
-              <Button
-                variant="secondary"
-                size="icon"
-                onClick={() => setMenuType(null)}
+              <h4>{t.playersList}</h4>
+              <button
+                className="game__menu-close"
+                onClick={() => setShowPlayers(false)}
+                aria-label="Закрыть список игроков"
               >
                 ✖
-              </Button>
+              </button>
             </div>
-            <div className="game__menu-list">
-              {cityProductionOptions.map((option) => (
-                <button
-                  key={option.key}
-                  className="game__menu-item"
-                  onClick={() => submitCityProduction(option.payload)}
-                  disabled={
-                    submitActionMutation.isPending ||
-                    !selectedCity ||
-                    selectedCity.population < option.cost
-                  }
-                >
-                  <span>{option.label}</span>
-                  <span className="game__menu-cost">-{option.cost}</span>
-                </button>
+            <ul className="game__players-list">
+              {gameState.players.map((p) => (
+                <li key={p.id} className="game__player-row">
+                  <span className="game__player-name">
+                    <span
+                      className="game__player-color"
+                      style={{ background: p.color }}
+                    />
+                    {p.name}
+                    {p.id === effectivePlayerId ? " (вы)" : ""}
+                  </span>
+                  <span className="game__player-meta">
+                    {p.currentPopulation}/{p.populationCap} · {p.status}
+                  </span>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         </div>
-      )}
-      {menuType === "worker-build" && (
-        <div className="game__menu" role="dialog">
-          <div className="game__menu-content">
-            <div className="game__menu-header">
-              <h4>{t.actions.buildMenu}</h4>
-              <Button
-                variant="secondary"
-                size="icon"
-                onClick={() => setMenuType(null)}
-              >
-                ✖
-              </Button>
-            </div>
-            <div className="game__menu-list">
-              {workerBuildOptions.map((option) => (
-                <button
-                  key={option.key}
-                  className="game__menu-item"
-                  onClick={() => submitWorkerBuild(option.structureType)}
-                  disabled={submitActionMutation.isPending || !canFortify}
-                >
-                  <span>{option.label}</span>
-                  <span className="game__menu-cost">-{option.cost}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      ) : null}
     </div>
   );
 }

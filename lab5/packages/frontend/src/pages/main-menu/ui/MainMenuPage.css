@@ -114,6 +114,7 @@
   align-items: center;
   gap: var(--space-connection-gap);
   font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
 }
 
 .main-menu__connection-dot {
@@ -207,7 +208,18 @@
 
 .main-menu__form-actions {
   display: flex;
+  flex-direction: column;
+
   justify-content: flex-end;
+  gap: var(--space-sm);
+}
+
+.main-menu__form-profile-actions {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(var(--layout-secondary-action-min), 1fr)
+  );
   gap: var(--space-sm);
 }
 

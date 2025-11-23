@@ -16,7 +16,7 @@ export function useConnectionStatus(): ConnectionStatus {
     if (API_CONFIG.useMock || !API_CONFIG.restBaseUrl) {
       return { isOnline: true, status: "online" };
     }
-    return { isOnline: false, status: "checking" };
+    return { isOnline: true, status: "checking" };
   });
 
   useEffect(() => {
@@ -33,11 +33,11 @@ export function useConnectionStatus(): ConnectionStatus {
       try {
         const response = await fetch(url, { method: "GET" });
         if (!cancelled) {
-          setStatus({
-            isOnline: response.ok,
-            status: response.ok ? "online" : "offline",
-            message: response.ok ? undefined : undefined,
-          });
+          setStatus(
+            response.ok
+              ? { isOnline: true, status: "online" }
+              : { isOnline: false, status: "offline" }
+          );
         }
       } catch (error: any) {
         if (!cancelled) {

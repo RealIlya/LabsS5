@@ -5,9 +5,7 @@ const LOCAL_SOCKET_BASE = "http://localhost:9999";
 
 export const API_CONFIG = {
   useMock: USE_MOCK,
-  restBaseUrl: USE_MOCK
-    ? "https://api.hex-strategy.local"
-    : LOCAL_REST_BASE,
+  restBaseUrl: USE_MOCK ? "https://api.hex-strategy.local" : LOCAL_REST_BASE,
   socketBaseUrl: USE_MOCK ? undefined : LOCAL_SOCKET_BASE,
   endpoints: {
     listLobbies: "/lobbies",
@@ -16,6 +14,7 @@ export const API_CONFIG = {
     joinLobby: "/lobbies/join",
     toggleReady: (lobbyId: string) => `/lobbies/${lobbyId}/ready`,
     startLobby: (lobbyId: string) => `/lobbies/${lobbyId}/start`,
+    leaveLobby: (lobbyId: string) => `/lobbies/${lobbyId}/players`,
     gameState: (gameId: string) => `/games/${gameId}`,
     placeCapital: (gameId: string) => `/games/${gameId}/place-capital`,
   },

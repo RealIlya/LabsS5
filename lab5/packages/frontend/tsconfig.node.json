@@ -7,6 +7,7 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
+    "strictNullChecks": true,
     "isolatedModules": true,
     "skipLibCheck": true,
     "strict": true,

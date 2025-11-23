@@ -1,11 +1,13 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
 import type { Lobby } from "../../domain/lobby/lobby.types";
 import type { GameState, GameTileState } from "../../domain/game/game-state";
 import {
+  PlayerData,
   STRUCTURE_RULES,
   TERRAIN_RULES,
   UNIT_RULES,
@@ -28,15 +30,18 @@ import {
   PLAYER_COLORS,
 } from "./game.constants";
 import { getNeighbors, getTile, isTilePlaceable } from "./game.utils";
-import { memoryStore } from "../../infrastructure/store/memory-store";
+import type { StorePort } from "../../infrastructure/store/store.port";
 import { MapService } from "./map.service";
 
 @Injectable()
 export class GameService {
-  constructor(private readonly mapService: MapService) {}
+  constructor(
+    private readonly mapService: MapService,
+    @Inject("StorePort") private readonly memoryStore: StorePort
+  ) {}
 
   getGame(gameId: string): GameState {
-    const game = memoryStore.getGame(gameId);
+    const game = this.memoryStore.getGame(gameId);
     if (!game) {
       throw new NotFoundException("Game not found");
     }
@@ -45,7 +50,7 @@ export class GameService {
 
   createGameForLobby(lobby: Lobby): GameState {
     const gameState = this.buildGameState(lobby);
-    memoryStore.saveGame(gameState);
+    this.memoryStore.saveGame(gameState);
     return gameState;
   }
 
@@ -85,6 +90,14 @@ export class GameService {
       case "FOUND_CITY":
         this.handleFoundCity(game, playerId, action.payload.settlerId);
         break;
+      case "ATTACK_UNIT":
+        this.handleAttackUnit(
+          game,
+          playerId,
+          action.payload.attackerId,
+          action.payload.defenderId
+        );
+        break;
       case "END_TURN":
         this.advanceTurn(game);
         break;
@@ -92,7 +105,7 @@ export class GameService {
         throw new BadRequestException("Action not supported yet");
     }
 
-    memoryStore.saveGame(game);
+    this.memoryStore.saveGame(game);
     return game;
   }
 
@@ -119,6 +132,9 @@ export class GameService {
     }
     if (tile.structure) {
       throw new BadRequestException("Tile already occupied");
+    }
+    if (this.isAdjacentToEnemyCity(game, tile.x, tile.y, player.id)) {
+      throw new BadRequestException("Too close to another player's city");
     }
 
     const structureId = `city-${tile.id}`;
@@ -158,20 +174,20 @@ export class GameService {
       }
     }
 
-    memoryStore.saveGame(game);
+    this.memoryStore.saveGame(game);
     return game;
   }
 
   private buildGameState(lobby: Lobby): GameState {
     const tiles = this.mapService.generateTiles(lobby.id);
 
-    const players = lobby.players.map((player, index) => ({
+    const players: PlayerData[] = lobby.players.map((player, index) => ({
       id: player.id,
       name: player.nickname,
       color: PLAYER_COLORS[index % PLAYER_COLORS.length],
       populationCap: 0,
       currentPopulation: 0,
-      status: "playing" as const,
+      status: "playing",
       capitalCityId: null,
     }));
 
@@ -319,6 +335,11 @@ export class GameService {
     if (settlerTile.structure) {
       throw new BadRequestException("Tile already occupied");
     }
+    if (
+      this.isAdjacentToEnemyCity(game, settlerTile.x, settlerTile.y, playerId)
+    ) {
+      throw new BadRequestException("Too close to another player's city");
+    }
 
     const player = this.getPlayer(game, playerId);
     player.populationCap += CITY_POPULATION_CAP_BONUS;
@@ -346,6 +367,51 @@ export class GameService {
         acquiredTileIds: acquired,
       },
     });
+  }
+
+  private isAdjacentToEnemyCity(
+    game: GameState,
+    x: number,
+    y: number,
+    ownerId: string
+  ): boolean {
+    const neighborCoords = getNeighbors(x, y);
+    return neighborCoords.some(({ x: nx, y: ny }) => {
+      const neighbor = getTile(game.tiles, nx, ny);
+      return (
+        neighbor &&
+        neighbor.structure?.type === "City" &&
+        neighbor.structure.ownerId !== ownerId
+      );
+    });
+  }
+
+  private isWithinDistanceOfCity(
+    game: GameState,
+    tile: GameTileState,
+    maxDistance: number
+  ) {
+    return game.tiles.some((t) => {
+      if (t.structure?.type !== "City") return false;
+      const dist = this.hexDistance(tile, t);
+      return dist <= maxDistance;
+    });
+  }
+
+  private hexDistance(a: GameTileState, b: GameTileState) {
+    const toCube = (x: number, y: number) => {
+      const xCube = x - (y - (y & 1)) / 2;
+      const zCube = y;
+      const yCube = -xCube - zCube;
+      return { x: xCube, y: yCube, z: zCube };
+    };
+    const ac = toCube(a.x, a.y);
+    const bc = toCube(b.x, b.y);
+    return Math.max(
+      Math.abs(ac.x - bc.x),
+      Math.abs(ac.y - bc.y),
+      Math.abs(ac.z - bc.z)
+    );
   }
 
   private handleBuildStructure(
@@ -381,6 +447,9 @@ export class GameService {
     if (targetTile.structure) {
       throw new BadRequestException("Tile already has a structure");
     }
+    if (targetTile.ownerId && targetTile.ownerId !== playerId) {
+      throw new BadRequestException("Cannot build in foreign territory");
+    }
 
     const cityTile = this.getCityTile(game, fromCityId);
     if (!cityTile || cityTile.structure?.type !== "City") {
@@ -396,6 +465,24 @@ export class GameService {
     const rule = STRUCTURE_RULES[structureType];
     if (!rule || rule.category !== "Standalone") {
       throw new BadRequestException("Structure not buildable");
+    }
+
+    if (structureType === "Farm" && targetTile.ownerId !== playerId) {
+      throw new BadRequestException(
+        "Farm must be built within owned territory"
+      );
+    }
+    if (structureType === "Farm" && targetTile.terrain !== "Plains") {
+      throw new BadRequestException("Farm can only be built on Plains");
+    }
+    if (structureType === "Fort") {
+      if (targetTile.terrain !== "Plains" && targetTile.terrain !== "Hills") {
+        throw new BadRequestException("Fort can only be built on Plains or Hills");
+      }
+      const tooCloseToCity = this.isWithinDistanceOfCity(game, targetTile, 2);
+      if (tooCloseToCity) {
+        throw new BadRequestException("Fort too close to a city");
+      }
     }
 
     if (sourceCity.population < rule.cost) {
@@ -428,6 +515,55 @@ export class GameService {
         position,
       },
     });
+  }
+
+  private handleAttackUnit(
+    game: GameState,
+    playerId: string,
+    attackerId: string,
+    defenderId: string
+  ) {
+    const attackerTile = this.findUnitTile(game, attackerId);
+    const defenderTile = this.findUnitTile(game, defenderId);
+    if (!attackerTile?.unit || !defenderTile?.unit) {
+      throw new NotFoundException("Attacker or defender not found");
+    }
+    const attacker = attackerTile.unit;
+    const defender = defenderTile.unit;
+
+    if (attacker.ownerId !== playerId) {
+      throw new BadRequestException("Cannot attack with foreign unit");
+    }
+    if (attacker.ownerId === defender.ownerId) {
+      throw new BadRequestException("Cannot attack your own unit");
+    }
+    if (!attacker.movementPoints || attacker.movementPoints <= 0) {
+      throw new BadRequestException("Unit has no movement points");
+    }
+    if (!this.areTilesAdjacent(attackerTile, defenderTile)) {
+      throw new BadRequestException("Defender not adjacent");
+    }
+
+    const attackPower = UNIT_RULES[attacker.type].baseStats.attack;
+    defender.health -= attackPower;
+    attacker.movementPoints = Math.max(0, attacker.movementPoints - 1);
+
+    this.pushEvent(game, {
+      type: "UNIT_ATTACKED",
+      payload: { attackerId, defenderId },
+    });
+    if (defender.health > 0) {
+      this.pushEvent(game, {
+        type: "UNIT_TOOK_DAMAGE",
+        payload: { unitId: defenderId, damageDealt: attackPower, newHealth: defender.health },
+      });
+    } else {
+      defenderTile.unit = undefined;
+      this.pushEvent(game, {
+        type: "UNIT_DIED",
+        payload: { unitId: defenderId },
+      });
+    }
   }
 
   private startPlayerTurn(
@@ -463,7 +599,8 @@ export class GameService {
   private resetMovementForPlayer(game: GameState, playerId: string) {
     game.tiles.forEach((tile) => {
       if (tile.unit?.ownerId === playerId) {
-        tile.unit.movementPoints = 1;
+        const baseMovement = UNIT_RULES[tile.unit.type].baseStats.movement;
+        tile.unit.movementPoints = baseMovement;
       }
     });
   }
@@ -592,7 +729,7 @@ export class GameService {
       ownerName,
       type,
       health: stats.health,
-      movementPoints: 1,
+      movementPoints: stats.movement,
       isVeteran: false,
     };
   }

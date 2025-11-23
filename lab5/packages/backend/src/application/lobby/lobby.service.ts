@@ -1,26 +1,23 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
 import { randomUUID } from "crypto";
 import type { Lobby, LobbyPlayer } from "../../domain/lobby/lobby.types";
-import { memoryStore } from "../../infrastructure/store/memory-store";
+import type { StorePort } from "../../infrastructure/store/store.port";
 import { GameService } from "../game/game.service";
 import type { LobbyState, LobbySummary, LobbyPlayerState } from "@hex/shared";
 
-const PLAYER_RANKS = [
-  "Hex HQ",
-  "Shield Ops",
-  "Nova Guard",
-  "Frontier Corps",
-  "Aegis Team",
-];
 const DEFAULT_MAX_PLAYERS = 4;
 
 @Injectable()
 export class LobbyService {
-  constructor(private readonly gameService: GameService) {}
+  constructor(
+    private readonly gameService: GameService,
+    @Inject("StorePort") private readonly memoryStore: StorePort
+  ) {}
 
   async createLobby(
     hostId: string,
@@ -44,12 +41,12 @@ export class LobbyService {
       players: [host],
     };
 
-    memoryStore.saveLobby(lobby);
+    this.memoryStore.saveLobby(lobby);
     return lobby;
   }
 
   listLobbies(): LobbySummary[] {
-    return memoryStore
+    return this.memoryStore
       .getAllLobbies()
       .map((lobby) => this.toLobbySummary(lobby));
   }
@@ -67,7 +64,7 @@ export class LobbyService {
     const alreadyIn = lobby.players.some((p) => p.id === playerId);
     if (!alreadyIn) {
       lobby.players.push(this.buildPlayer(playerId, nickname, false));
-      memoryStore.saveLobby(lobby);
+      this.memoryStore.saveLobby(lobby);
     }
     return lobby;
   }
@@ -86,7 +83,32 @@ export class LobbyService {
     lobby.players = lobby.players.map((player) =>
       player.id === playerId ? { ...player, isReady } : player
     );
-    memoryStore.saveLobby(lobby);
+    this.memoryStore.saveLobby(lobby);
+    return lobby;
+  }
+
+  async leaveLobby(lobbyId: string, playerId: string) {
+    const lobby = this.getLobbyOrThrow(lobbyId);
+    if (lobby.status !== "waiting") {
+      throw new BadRequestException("Lobby already started");
+    }
+
+    const before = lobby.players.length;
+    lobby.players = lobby.players.filter((p) => p.id !== playerId);
+    if (before === lobby.players.length) {
+      throw new BadRequestException("Player not found in lobby");
+    }
+
+    if (lobby.players.length === 0) {
+      this.memoryStore.removeLobby(lobby.id);
+      return null;
+    }
+
+    if (!lobby.players.some((p) => p.id === lobby.hostId)) {
+      lobby.hostId = lobby.players[0].id;
+    }
+
+    this.memoryStore.saveLobby(lobby);
     return lobby;
   }
 
@@ -101,7 +123,7 @@ export class LobbyService {
     }
     const gameState = this.gameService.createGameForLobby(lobby);
     lobby.status = "in-progress";
-    memoryStore.saveLobby(lobby);
+    this.memoryStore.saveLobby(lobby);
     return { gameId: gameState.id };
   }
 
@@ -120,19 +142,11 @@ export class LobbyService {
       nickname,
       isHost,
       isReady: false,
-      rank: PLAYER_RANKS[this.rankIndex(id)],
     };
   }
 
-  private rankIndex(seed: string) {
-    const hash = seed
-      .split("")
-      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return hash % PLAYER_RANKS.length;
-  }
-
   private getLobbyOrThrow(lobbyId: string): Lobby {
-    const lobby = memoryStore.getLobby(lobbyId);
+    const lobby = this.memoryStore.getLobby(lobbyId);
     if (!lobby) {
       throw new NotFoundException("Lobby not found");
     }
@@ -140,7 +154,7 @@ export class LobbyService {
   }
 
   private getLobbyByCodeOrThrow(code: string): Lobby {
-    const lobby = memoryStore.getLobbyByCode(code);
+    const lobby = this.memoryStore.getLobbyByCode(code);
     if (!lobby) {
       throw new NotFoundException("Lobby not found");
     }

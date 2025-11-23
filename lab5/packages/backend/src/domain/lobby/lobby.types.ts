@@ -1,7 +1,6 @@
 export interface LobbyPlayer {
   id: string;
   nickname: string;
-  rank: string;
   isHost: boolean;
   isReady: boolean;
 }

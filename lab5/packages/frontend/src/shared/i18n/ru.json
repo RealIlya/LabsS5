@@ -1,6 +1,6 @@
 {
   "mainMenu": {
-    "tagline": "Пока мы строим Новый Город, они уже теряют свои столицы, потому что в них заходим мы. Ходи и дыши, я молчу.",
+    "tagline": "Пока мы строим Новый Город, они уже теряют свои столицы, потому что в них заходим мы. Ходи и дыши, я молчу. Готов?",
     "title": "The Settler's Hope",
     "subtitle": "Пошаговая стратегия о росте и завоевании.",
     "create": "Создать игру",
@@ -8,6 +8,7 @@
     "returnToLobby": "Вернуться в лобби",
     "training": "Обучение",
     "settings": "Настройки",
+    "logout": "Выйти из профиля",
     "profileLabel": "Никнейм",
     "queuedPrefix": "В очереди",
     "connectionStable": "Связь: стабильна",
@@ -84,6 +85,7 @@
     "playerListTitle": "Игроки",
     "ready": "Готов",
     "notReady": "Не готов",
+    "copyCode": "Скопировать код",
     "toggleReady": "Отметить готовность",
     "start": "Начать игру",
     "startDisabled": "Ждём всех игроков",
@@ -100,6 +102,7 @@
   "game": {
     "turn": "Ход",
     "currentPlayer": "Игрок",
+    "playersList": "Игроки",
     "population": "Население",
     "endTurn": "Завершить ход",
     "endTurnDisabled": "Действия завершены",
@@ -115,18 +118,18 @@
     "actions": {
       "attack": "Атаковать",
       "move": "Переместить",
-      "build": "Построить",
-      "fortify": "Укрепить",
       "foundCity": "Основать город",
+      "produce": "Произвести",
+      "build": "Построить",
+      "productionMenu": "Производство в городе",
+      "buildMenu": "Строительство",
       "produceWarrior": "Произвести воина",
       "produceWorker": "Произвести рабочего",
       "produceSettler": "Произвести поселенца",
-      "buildBarracks": "Построить казармы",
-      "buildGranary": "Построить амбар",
+      "produceBarracks": "Построить казармы",
+      "produceGranary": "Построить амбар",
       "buildFort": "Построить форт",
-      "buildFarm": "Построить ферму",
-      "productionMenu": "Производство в городе",
-      "buildMenu": "Строительство"
+      "buildFarm": "Построить ферму"
     },
     "terrainNames": {
       "Plains": "Равнины",

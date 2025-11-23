@@ -8,12 +8,9 @@ import {
 } from "../../../entities/lobby/model/useLobbyMutations";
 import { useProfileStore } from "../../../entities/profile/model/useProfileStore";
 import { useConnectionStatus } from "../../../shared/hooks/useConnectionStatus";
+import { useLobbyStore } from "../../../entities/lobby/model/useLobbyStore";
 import "./MainMenuPage.css";
-
-const queuedMatch = {
-  id: "SR-2048",
-  description: "В очереди на матч",
-};
+import cn from "classnames";
 
 export function MainMenuPage() {
   const navigate = useNavigate();
@@ -31,8 +28,11 @@ export function MainMenuPage() {
   const joinLobbyMutation = useJoinLobbyMutation();
   const isJoining = joinLobbyMutation.isPending;
   const isCreating = createLobbyMutation.isPending;
+  const ongoingGameId = useLobbyStore((state) => state.currentGameId);
+  const resetLobby = useLobbyStore((state) => state.reset);
   const profile = useProfileStore((state) => state.profile);
   const setProfile = useProfileStore((state) => state.setProfile);
+  const clearProfile = useProfileStore((state) => state.clearProfile);
   const profileLabel = profile?.nickname ?? t.profileModal.placeholderName;
   const { isOnline } = useConnectionStatus();
 
@@ -135,6 +135,29 @@ export function MainMenuPage() {
     setProfileModalOpen(false);
   };
 
+  const handleLogout = () => {
+    clearProfile();
+    resetLobby();
+    setProfileModalOpen(false);
+    setSettingsOpen(false);
+    navigate("/");
+  };
+
+  const handleOpenProfileModal = () => {
+    setSettingsOpen(false);
+    setProfileModalOpen(true);
+    setProfileNickname(profile?.nickname ?? "");
+    setProfilePassword(profile?.password ?? "");
+    setProfileError(null);
+  };
+
+
+  const handleReturn = () => {
+    const gameId = ongoingGameId;
+    if (!gameId) return;
+    navigate(`/game?gameId=${gameId}`);
+  };
+
   return (
     <div className="main-menu">
       <div className="main-menu__profile-card">
@@ -142,18 +165,6 @@ export function MainMenuPage() {
           <p className="main-menu__profile-label">{t.profileLabel}</p>
           <p className="main-menu__profile-name">{profileLabel}</p>
         </div>
-        <Button
-          variant="secondary"
-          className="main-menu__profile-edit"
-          onClick={() => {
-            setProfileModalOpen(true);
-            setProfileError(null);
-            setProfileNickname(profile?.nickname ?? "");
-            setProfilePassword("");
-          }}
-        >
-          {profile ? t.profileModal.edit : t.profileModal.create}
-        </Button>
       </div>
 
       <header className="main-menu__hero">
@@ -167,16 +178,16 @@ export function MainMenuPage() {
           {t.create}
         </Button>
         <Button onClick={handleJoin}>{t.join}</Button>
-        {queuedMatch ? (
-          <Button variant="secondary">
-            {t.returnToLobby}: {queuedMatch.description} ({queuedMatch.id})
+        {ongoingGameId ? (
+          <Button variant="secondary" onClick={handleReturn}>
+            {t.returnToLobby}: {ongoingGameId}
           </Button>
         ) : null}
         <div className="main-menu__secondary-actions">
           <Button
             variant="secondary"
             onClick={() => setTutorialOpen(true)}
-            aria-label="Открыть учебник"
+            aria-label="Открыть обучение"
           >
             {t.training}
           </Button>
@@ -189,9 +200,10 @@ export function MainMenuPage() {
       <footer className="main-menu__footer">
         <div className="main-menu__connection">
           <span
-            className={`main-menu__connection-dot main-menu__connection-dot--${
-              isOnline ? "online" : "offline"
-            }`}
+            className={cn(
+              "main-menu__connection-dot",
+              `main-menu__connection-dot--${isOnline ? "online" : "offline"}`
+            )}
           />
           <span>{isOnline ? t.connectionStable : t.connectionLost}</span>
         </div>
@@ -223,6 +235,7 @@ export function MainMenuPage() {
                 <span className="main-menu__form-error">{profileError}</span>
               ) : null}
               <div className="main-menu__form-actions">
+                <Button type="submit">{t.profileModal.submit}</Button>
                 <Button
                   type="button"
                   variant="secondary"
@@ -237,7 +250,6 @@ export function MainMenuPage() {
                 >
                   {t.profileModal.cancel}
                 </Button>
-                <Button type="submit">{t.profileModal.submit}</Button>
               </div>
             </form>
           </div>
@@ -254,9 +266,22 @@ export function MainMenuPage() {
                 <li key={item}>{item}</li>
               ))}
             </ul>
-            <Button variant="secondary" onClick={() => setSettingsOpen(false)}>
-              {t.settingsModal.close}
-            </Button>
+            <div className="main-menu__form-actions">
+              <div className="main-menu__form-profile-actions">
+                <Button variant="secondary" onClick={handleOpenProfileModal}>
+                  {t.profileModal.edit}
+                </Button>
+                <Button variant="secondary" onClick={handleLogout}>
+                  {t.logout}
+                </Button>
+              </div>
+              <Button
+                variant="secondary"
+                onClick={() => setSettingsOpen(false)}
+              >
+                {t.settingsModal.close}
+              </Button>
+            </div>
           </div>
         </div>
       ) : null}
@@ -277,6 +302,9 @@ export function MainMenuPage() {
                 <span className="main-menu__form-error">{joinError}</span>
               ) : null}
               <div className="main-menu__form-actions">
+                <Button type="submit" disabled={isJoining}>
+                  {isJoining ? t.joinModal.loading : t.joinModal.submit}
+                </Button>
                 <Button
                   type="button"
                   variant="secondary"
@@ -287,9 +315,6 @@ export function MainMenuPage() {
                   }}
                 >
                   {t.joinModal.cancel}
-                </Button>
-                <Button type="submit" disabled={isJoining}>
-                  {isJoining ? t.joinModal.loading : t.joinModal.submit}
                 </Button>
               </div>
             </form>

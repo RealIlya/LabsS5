@@ -5,6 +5,7 @@ import {
   type JoinLobbyPayload,
   type ToggleReadyPayload,
   type StartLobbyPayload,
+  type LeaveLobbyPayload,
 } from "../api/lobbyApi";
 import { useLobbyStore } from "./useLobbyStore";
 
@@ -44,5 +45,13 @@ export function useStartLobbyMutation() {
     onSuccess: (response) => {
       setGameId(response.gameId);
     },
+  });
+}
+
+export function useLeaveLobbyMutation() {
+  const reset = useLobbyStore((state) => state.reset);
+  return useMutation({
+    mutationFn: (payload: LeaveLobbyPayload) => lobbyApi.leave(payload),
+    onSuccess: () => reset(),
   });
 }

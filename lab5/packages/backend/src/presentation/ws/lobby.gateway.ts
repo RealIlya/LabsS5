@@ -96,4 +96,8 @@ export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {
   emitError(lobbyId: string, message: string) {
     this.server.to(lobbyId).emit("lobby:error", { message });
   }
+
+  emitLobbyRemoved(lobbyId: string) {
+    this.server.to(lobbyId).emit("lobby:removed", { lobbyId });
+  }
 }

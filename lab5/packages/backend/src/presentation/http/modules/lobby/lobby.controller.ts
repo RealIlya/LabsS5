@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -11,6 +12,7 @@ import { LobbyService } from "../../../../application/lobby/lobby.service";
 import { CreateLobbyDto } from "./dto/create-lobby.dto";
 import { JoinLobbyDto } from "./dto/join-lobby.dto";
 import { ToggleReadyDto } from "./dto/toggle-ready.dto";
+import { LeaveLobbyDto } from "./dto/leave-lobby.dto";
 import { LobbyGateway } from "../../../ws/lobby.gateway";
 
 @Controller("api/lobbies")
@@ -83,5 +85,17 @@ export class LobbyController {
     await this.lobbyGateway.emitLobbyState(lobbyId);
     this.lobbyGateway.emitGameStarted(lobbyId, gameId);
     return { gameId };
+  }
+
+  @Delete(":id/players")
+  async leave(@Param("id") lobbyId: string, @Body() dto: LeaveLobbyDto) {
+    const lobby = await this.lobbyService.leaveLobby(lobbyId, dto.playerId);
+    if (lobby) {
+      await this.lobbyGateway.emitLobbyState(lobby.id);
+      return this.lobbyService.getLobbyState(lobby.id);
+    }
+    // Lobby removed completely
+    this.lobbyGateway.emitLobbyRemoved(lobbyId);
+    return { removed: true };
   }
 }

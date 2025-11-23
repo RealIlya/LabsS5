@@ -31,6 +31,11 @@ export interface StartLobbyResponse {
   gameId: string;
 }
 
+export interface LeaveLobbyPayload {
+  lobbyId: string;
+  playerId: string;
+}
+
 export const lobbyApi = {
   list() {
     return request<LobbySummary[]>(`${restBaseUrl}${endpoints.listLobbies}`, {
@@ -80,6 +85,15 @@ export const lobbyApi = {
     return request<StartLobbyResponse>(
       `${restBaseUrl}${endpoints.startLobby(payload.lobbyId)}`,
       { method: "POST" }
+    );
+  },
+  leave(payload: LeaveLobbyPayload) {
+    return request<{ removed?: boolean }>(
+      `${restBaseUrl}${endpoints.leaveLobby(payload.lobbyId)}`,
+      {
+        method: "DELETE",
+        body: JSON.stringify({ playerId: payload.playerId }),
+      }
     );
   },
 };

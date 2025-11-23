@@ -13,7 +13,7 @@ interface ProfileState {
   clearProfile: () => void;
 }
 
-const storageKey = "hex-strategy-profile";
+const storageKey = "strategy-profile";
 
 export const useProfileStore = create<ProfileState>()(
   persist(
