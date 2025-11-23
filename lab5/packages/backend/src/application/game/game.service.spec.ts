@@ -229,6 +229,33 @@ const findAdjacentPair = (gameId: string, store: MemoryStore) => {
   return null;
 };
 
+const hexDistance = (a: { x: number; y: number }, b: { x: number; y: number }) => {
+  const toCube = (x: number, y: number) => {
+    const xCube = x - (y - (y & 1)) / 2;
+    const zCube = y;
+    const yCube = -xCube - zCube;
+    return { x: xCube, y: yCube, z: zCube };
+  };
+  const ac = toCube(a.x, a.y);
+  const bc = toCube(b.x, b.y);
+  return Math.max(
+    Math.abs(ac.x - bc.x),
+    Math.abs(ac.y - bc.y),
+    Math.abs(ac.z - bc.z)
+  );
+};
+
+const findFortSpot = (gameId: string, store: MemoryStore) => {
+  const game = store.getGame(gameId);
+  if (!game) throw new Error("Game not found");
+  const cities = game.tiles.filter((t) => t.structure?.type === "City");
+  return game.tiles.find((t) => {
+    if (!isTilePassable(t) || t.structure || t.terrain === "Forest") return false;
+    // distance > 2 from any city
+    return cities.every((c) => hexDistance(c, t) > 2);
+  });
+};
+
 describe("GameService actions", () => {
   const testStore = new MemoryStore();
   const service = new GameService(new MapService(), testStore);
@@ -407,22 +434,27 @@ describe("GameService actions", () => {
   it("lets a worker build a fort consuming population", () => {
     const lobby = makeLobby();
     service.createGameForLobby(lobby);
-    const buildPair = findAdjacentPair(lobby.gameId, testStore);
-    const secondTile = findSecondTile(
+    const p1Capital = findPlaceableTile(lobby.gameId, testStore);
+    const p2Capital = findSecondTile(
       lobby.gameId,
-      buildPair?.origin.id ?? "",
+      p1Capital?.id ?? "",
       testStore
     );
-    if (!buildPair || !secondTile) {
+    if (!p1Capital || !p2Capital) {
       throw new Error("Tiles missing");
     }
-    service.placeCapital(lobby.gameId, "player-1", buildPair.origin.id);
-    service.placeCapital(lobby.gameId, "player-2", secondTile.id);
+    service.placeCapital(lobby.gameId, "player-1", p1Capital.id);
+    service.placeCapital(lobby.gameId, "player-2", p2Capital.id);
+
+    const fortSpot = findFortSpot(lobby.gameId, testStore);
+    if (!fortSpot) {
+      throw new Error("No valid fort spot");
+    }
 
     const worker = addWorkerToTile(
       lobby.gameId,
       "player-1",
-      buildPair.neighbor.id,
+      fortSpot.id,
       testStore
     );
     const cityTile = getCityTile(lobby.gameId, "player-1", testStore);
@@ -438,14 +470,14 @@ describe("GameService actions", () => {
       payload: {
         workerId: worker.id,
         structureType: "Fort",
-        position: { x: buildPair.neighbor.x, y: buildPair.neighbor.y },
+        position: { x: fortSpot.x, y: fortSpot.y },
         fromCityId: city.id,
       },
     });
 
     const updated = service.getGame(lobby.gameId);
     const originTile = updated.tiles.find(
-      (tile) => tile.id === buildPair.neighbor.id
+      (tile) => tile.id === fortSpot.id
     );
     expect(originTile?.structure?.type).toBe("Fort");
     const updatedCity = updated.tiles.find((tile) => tile.id === cityTile.id)

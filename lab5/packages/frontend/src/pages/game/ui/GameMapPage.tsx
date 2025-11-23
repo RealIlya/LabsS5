@@ -271,12 +271,12 @@ export function GameMapPage() {
     }
 
     if (activeAction === "attack" && attackTargets.has(tile.id)) {
-      if (selectedTile?.unit && tile.unit) {
+      if (selectedTile?.unit && (tile.unit || tile.structure)) {
         const action: PlayerAction = {
           type: "ATTACK_UNIT",
           payload: {
             attackerId: selectedTile.unit.id,
-            defenderId: tile.unit.id,
+            defenderId: tile.unit?.id ?? tile.structure?.id ?? "",
           },
         };
         submitActionMutation.mutate(action, {
@@ -301,6 +301,24 @@ export function GameMapPage() {
       label: t.actions.produceWarrior,
       cost: UNIT_RULES.Warrior.cost,
       payload: { type: "unit" as const, unitType: "Warrior" as UnitType },
+    },
+    {
+      key: "spearman",
+      label: t.actions.produceSpearman,
+      cost: UNIT_RULES.Spearman.cost,
+      payload: { type: "unit" as const, unitType: "Spearman" as UnitType },
+    },
+    {
+      key: "archer",
+      label: t.actions.produceArcher,
+      cost: UNIT_RULES.Archer.cost,
+      payload: { type: "unit" as const, unitType: "Archer" as UnitType },
+    },
+    {
+      key: "horseman",
+      label: t.actions.produceHorseman,
+      cost: UNIT_RULES.Horseman.cost,
+      payload: { type: "unit" as const, unitType: "Horseman" as UnitType },
     },
     {
       key: "worker",
@@ -385,13 +403,19 @@ export function GameMapPage() {
             ? "produceWarrior"
             : selectedCity.production.item.unitType === "Worker"
             ? "produceWorker"
-            : "produceSettler"
+            : selectedCity.production.item.unitType === "Settler"
+            ? "produceSettler"
+            : selectedCity.production.item.unitType === "Spearman"
+            ? "produceSpearman"
+            : selectedCity.production.item.unitType === "Archer"
+            ? "produceArcher"
+            : "produceHorseman"
         ]
       : selectedCity?.production?.item?.type === "improvement"
       ? t.actions[
           selectedCity.production.item.improvementType === "Barracks"
-            ? "produceBarracks"
-            : "produceGranary"
+            ? "buildBarracks"
+            : "buildGranary"
         ]
       : null;
 
@@ -566,13 +590,25 @@ export function GameMapPage() {
     });
   };
 
-  if (isError || !gameState) {
+  if (isError) {
     return (
       <div className="game">
         <div className="game__status-overlay error">
           <div className="game__status-card">
             <h3>{t.error}</h3>
             <p>{t.connectionLost}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  if (!gameState) {
+    return (
+      <div className="game">
+        <div className="game__status-overlay">
+          <div className="game__status-card">
+            <div className="spinner" />
+            <p>{t.selectPrompt}</p>
           </div>
         </div>
       </div>

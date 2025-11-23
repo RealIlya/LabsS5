@@ -50,7 +50,17 @@ export function InfoPanel({
               <p className="game__hud-subtext">{terrainDescription}</p>
             ) : null}
             {selectedTile.structure && (
-              <p className="game__hud-subtext">
+              <p
+                className="game__hud-subtext"
+                title={
+                  selectedTile.structure.type === "City"
+                    ? t.hints.structures.City
+                    : t.hints.structures[
+                        selectedTile.structure
+                          .type as keyof typeof t.hints.structures
+                      ]
+                }
+              >
                 {selectedTile.structure.type}
                 {selectedTile.structure.type === "City" &&
                 selectedTile.structure.isCapital
@@ -80,20 +90,22 @@ export function InfoPanel({
 
           {selectedUnitStats && selectedTileUnit && (
             <div className="game__unit-stats">
-              <div>
-                <span>
-                  {unitEmoji[selectedTileUnit.type]} {selectedTileUnit.type}
-                </span>
-                <span>
+              <div title={t.hints.units[selectedTileUnit.type] ?? undefined}>
+                <div className="game__stat-row">
+                  {unitEmoji[selectedTileUnit.type]}{" "}
+                  {t.units?.[selectedTileUnit.type] ?? selectedTileUnit.type}
+                </div>
+                <div className="game__stat-row">
                   {t.ownerLabel}: {selectedTileUnit.ownerName}
-                </span>
+                </div>
               </div>
               <div>
                 <div className="game__stat-row" title={t.unitStats.attack}>
                   ⚔️ {selectedUnitStats.baseStats.attack}
                 </div>
                 <div className="game__stat-row" title={t.unitStats.health}>
-                  ❤️ {selectedUnitStats.baseStats.health}
+                  ❤️ {selectedTileUnit.health} /{" "}
+                  {selectedUnitStats.baseStats.health}
                 </div>
                 <div className="game__stat-row" title={t.unitStats.movement}>
                   👟

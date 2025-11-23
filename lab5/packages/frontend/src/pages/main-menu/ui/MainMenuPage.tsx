@@ -151,7 +151,6 @@ export function MainMenuPage() {
     setProfileError(null);
   };
 
-
   const handleReturn = () => {
     const gameId = ongoingGameId;
     if (!gameId) return;

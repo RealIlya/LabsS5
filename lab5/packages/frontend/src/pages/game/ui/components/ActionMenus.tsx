@@ -66,6 +66,8 @@ export function ActionMenus({
         )
       : cityProductionOptions;
   const hasImprovement = Boolean(selectedCity?.improvement);
+  const unitHints = t.hints.units;
+  const structureHints = t.hints.structures;
 
   return (
     <>
@@ -94,13 +96,19 @@ export function ActionMenus({
                   !selectedCity ||
                   (selectedCity.population ?? 0) < option.cost ||
                   (hasImprovement && option.payload.type === "improvement");
+                const title =
+                  option.payload.type === "unit"
+                    ? unitHints[option.payload.unitType]
+                    : structureHints[option.payload.improvementType];
                 return (
                   <button
                     key={option.key}
                     className="game__menu-item"
                     onClick={() => submitCityProduction(option.payload)}
                     disabled={disabled}
-                    title={`${option.label} · ${option.cost} / ${turns} ${t.turn}`}
+                    title={`${option.label} · ${option.cost} / ${turns} ${t.turn}${
+                      title ? " — " + title : ""
+                    }`}
                   >
                     <span>
                       {option.label} ({option.cost} / {turns} {t.turn})
@@ -135,13 +143,16 @@ export function ActionMenus({
                   !canBuild ||
                   capitalPopulation < option.cost ||
                   !allowedByTerrain;
+                const title = structureHints[option.structureType];
                 return (
                   <button
                     key={option.key}
                     className="game__menu-item"
                     onClick={() => submitWorkerBuild(option.structureType)}
                     disabled={disabled}
-                    title={`${option.label} · ${option.cost} / ${option.turns} ${t.turn}`}
+                    title={`${option.label} · ${option.cost} / ${option.turns} ${t.turn}${
+                      title ? " — " + title : ""
+                    }`}
                   >
                     <span>
                       {option.label} ({option.cost} / {option.turns} {t.turn})

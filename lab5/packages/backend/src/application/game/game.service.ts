@@ -524,46 +524,145 @@ export class GameService {
     defenderId: string
   ) {
     const attackerTile = this.findUnitTile(game, attackerId);
-    const defenderTile = this.findUnitTile(game, defenderId);
-    if (!attackerTile?.unit || !defenderTile?.unit) {
+    const defenderTile =
+      this.findUnitTile(game, defenderId) ??
+      game.tiles.find((t) => t.structure?.id === defenderId);
+    if (!attackerTile?.unit || !defenderTile) {
       throw new NotFoundException("Attacker or defender not found");
     }
     const attacker = attackerTile.unit;
-    const defender = defenderTile.unit;
 
     if (attacker.ownerId !== playerId) {
       throw new BadRequestException("Cannot attack with foreign unit");
     }
-    if (attacker.ownerId === defender.ownerId) {
-      throw new BadRequestException("Cannot attack your own unit");
-    }
     if (!attacker.movementPoints || attacker.movementPoints <= 0) {
       throw new BadRequestException("Unit has no movement points");
     }
-    if (!this.areTilesAdjacent(attackerTile, defenderTile)) {
-      throw new BadRequestException("Defender not adjacent");
+
+    const baseRange = UNIT_RULES[attacker.type].abilities.range ?? 1;
+    const rangeBonus =
+      attacker.type === "Archer" && attackerTile.terrain === "Hills" ? 1 : 0;
+    const allowedRange = baseRange + rangeBonus;
+    if (this.hexDistance(attackerTile, defenderTile) > allowedRange) {
+      throw new BadRequestException("Target out of range");
     }
 
-    const attackPower = UNIT_RULES[attacker.type].baseStats.attack;
-    defender.health -= attackPower;
-    attacker.movementPoints = Math.max(0, attacker.movementPoints - 1);
+    const attackPowerBase = UNIT_RULES[attacker.type].baseStats.attack;
+    let attackPower = attackPowerBase;
 
+    if (defenderTile.unit) {
+      const defender = defenderTile.unit;
+      if (attacker.ownerId === defender.ownerId) {
+        throw new BadRequestException("Cannot attack your own unit");
+      }
+      if (attacker.type === "Spearman" && defender.type === "Horseman") {
+        attackPower *= 2;
+      }
+
+      const terrainBonus =
+        TERRAIN_RULES[defenderTile.terrain]?.defenseBonus ?? 0;
+      const damage = Math.max(
+        0,
+        Math.round(attackPower * (1 - terrainBonus))
+      );
+      defender.health -= damage;
+      attacker.movementPoints = Math.max(0, attacker.movementPoints - 1);
+
+      this.pushEvent(game, {
+        type: "UNIT_ATTACKED",
+        payload: { attackerId, defenderId },
+      });
+      if (defender.health > 0) {
+        this.pushEvent(game, {
+          type: "UNIT_TOOK_DAMAGE",
+          payload: {
+            unitId: defenderId,
+            damageDealt: damage,
+            newHealth: defender.health,
+          },
+        });
+      } else {
+        defenderTile.unit = undefined;
+        this.pushEvent(game, {
+          type: "UNIT_DIED",
+          payload: { unitId: defenderId },
+        });
+      }
+      return;
+    }
+
+    if (defenderTile.structure?.type === "City") {
+      const city = defenderTile.structure;
+      if (city.ownerId === attacker.ownerId) {
+        throw new BadRequestException("Cannot attack own city");
+      }
+      city.fortification = Math.max(0, city.fortification - attackPower);
+      attacker.movementPoints = Math.max(0, attacker.movementPoints - 1);
+      this.pushEvent(game, {
+        type: "UNIT_ATTACKED",
+        payload: { attackerId, defenderId },
+      });
+      if (city.fortification <= 0) {
+        const isCapital = city.isCapital && this.getPlayer(game, city.ownerId);
+        this.destroyCity(game, defenderTile, city);
+        if (isCapital) {
+          this.defeatPlayer(game, city.ownerId);
+        }
+      }
+    }
+  }
+
+  private destroyCity(
+    game: GameState,
+    cityTile: GameTileState,
+    city: CityData
+  ) {
+    cityTile.structure = undefined;
+    this.releaseTerritory(game, cityTile, city.ownerId);
     this.pushEvent(game, {
-      type: "UNIT_ATTACKED",
-      payload: { attackerId, defenderId },
+      type: "CITY_DESTROYED",
+      payload: { cityId: city.id },
     });
-    if (defender.health > 0) {
-      this.pushEvent(game, {
-        type: "UNIT_TOOK_DAMAGE",
-        payload: { unitId: defenderId, damageDealt: attackPower, newHealth: defender.health },
-      });
-    } else {
-      defenderTile.unit = undefined;
-      this.pushEvent(game, {
-        type: "UNIT_DIED",
-        payload: { unitId: defenderId },
-      });
-    }
+  }
+
+  private releaseTerritory(
+    game: GameState,
+    origin: GameTileState,
+    ownerId: string
+  ) {
+    const tilesToRelease = [
+      origin,
+      ...getNeighbors(origin.x, origin.y)
+        .map(({ x, y }) => getTile(game.tiles, x, y))
+        .filter((t): t is GameTileState => Boolean(t)),
+    ];
+    tilesToRelease.forEach((t) => {
+      if (t.ownerId === ownerId) {
+        t.ownerId = null;
+      }
+      if (t.structure?.ownerId === ownerId && t.structure.type !== "City") {
+        t.structure = undefined;
+      }
+      if (t.unit?.ownerId === ownerId) {
+        t.unit = undefined;
+      }
+    });
+  }
+
+  private defeatPlayer(game: GameState, playerId: string) {
+    const player = this.getPlayer(game, playerId);
+    player.status = "defeated";
+    game.tiles.forEach((tile) => {
+      if (tile.unit?.ownerId === playerId) {
+        tile.unit = undefined;
+      }
+      if (tile.structure?.ownerId === playerId) {
+        tile.structure = undefined;
+      }
+      if (tile.ownerId === playerId) {
+        tile.ownerId = null;
+      }
+    });
   }
 
   private startPlayerTurn(
@@ -581,10 +680,11 @@ export class GameService {
     player: GameState["players"][number]
   ) {
     this.recalculatePopulation(game);
-    if (
-      player.populationCap <= 0 ||
-      player.currentPopulation >= player.populationCap
-    ) {
+    if (player.populationCap <= 0) {
+      // Фоллбек: если по какой-то причине лимит сброшен, ставим запас над текущим населением
+      player.populationCap = Math.max(10, player.currentPopulation + 10);
+    }
+    if (player.currentPopulation >= player.populationCap) {
       return;
     }
     const cities = this.getPlayerCities(game, player.id);

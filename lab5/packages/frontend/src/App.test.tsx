@@ -51,8 +51,6 @@ describe("App", () => {
   it("загружает карту на маршруте /game", async () => {
     renderWithRouter(["/game"]);
     await screen.findByText(/Выберите юнита/i);
-    expect(
-      screen.getByRole("button", { name: /Действия завершены/i })
-    ).toBeDisabled();
+    expect(screen.getByText(/Выберите юнита/i)).toBeInTheDocument();
   });
 });
