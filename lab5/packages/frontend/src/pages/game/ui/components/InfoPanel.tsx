@@ -1,6 +1,6 @@
+import { type StandaloneStructureType, type CityData } from "@hex/shared";
 import type { MapTile, MapUnit } from "../types";
 import type { UNIT_RULES, UnitType } from "@hex/shared";
-import type { CityData } from "@hex/shared";
 
 interface InfoPanelProps {
   t: typeof import("../../../../shared/i18n").translations.ru.game;
@@ -17,6 +17,7 @@ interface InfoPanelProps {
   activeProductionTurns: number | null;
   activeProductionProgress: number;
   activeProductionName: string | null;
+  onClose: () => void;
 }
 
 export function InfoPanel({
@@ -34,107 +35,258 @@ export function InfoPanel({
   activeProductionTurns,
   activeProductionProgress,
   activeProductionName,
+  onClose,
 }: InfoPanelProps) {
-  return (
-    <div className="game__hud-left game__hud-panel">
-      {selectedTile ? (
-        <>
-          <div className="game__hud-header">
-            <h2>
-              {terrainName}
-              <span style={{ opacity: 0.5, fontSize: "0.8em", marginLeft: 8 }}>
-                ({selectedTile.x}, {selectedTile.y})
-              </span>
-            </h2>
-            {terrainDescription ? (
-              <p className="game__hud-subtext">{terrainDescription}</p>
-            ) : null}
-            {selectedTile.structure && (
-              <p
-                className="game__hud-subtext"
-                title={
-                  selectedTile.structure.type === "City"
-                    ? t.hints.structures.City
-                    : t.hints.structures[
-                        selectedTile.structure
-                          .type as keyof typeof t.hints.structures
-                      ]
-                }
-              >
-                {selectedTile.structure.type}
-                {selectedTile.structure.type === "City" &&
-                selectedTile.structure.isCapital
-                  ? ` (${t.capitalPlacement.capitalLabel})`
-                  : ""}
-              </p>
-            )}
-          </div>
+  if (!selectedTile) {
+    return null;
+  }
 
-          {selectedCity && (
-            <div className="game__city-stats">
-              <span>
+  const infoLabels = t.infoPanel;
+  const standaloneStructure =
+    selectedTile.structure && selectedTile.structure.type !== "City"
+      ? selectedTile.structure
+      : null;
+  const standaloneHint = standaloneStructure
+    ? t.hints.structures[standaloneStructure.type] ?? standaloneStructure.type
+    : null;
+  const standaloneStructureCard =
+    standaloneStructure && t.structureCards
+      ? t.structureCards[standaloneStructure.type as StandaloneStructureType]
+      : null;
+  const standaloneDescription =
+    standaloneStructureCard?.description ?? standaloneHint ?? null;
+  const structureOwnerSubtitle = standaloneStructure
+    ? standaloneStructure.ownerName
+      ? `${t.ownerLabel}: ${standaloneStructure.ownerName}`
+      : `${t.ownerLabel}: ${standaloneStructure.ownerId}`
+    : null;
+  const structureIcons: Record<StandaloneStructureType, string> = {
+    Farm: "🌾",
+    Fort: "🛡️",
+  };
+  const ownerSubtitle = selectedTile.ownerName
+    ? `${t.ownerLabel}: ${selectedTile.ownerName}`
+    : selectedTile.ownerId
+    ? `${t.ownerLabel}: ${selectedTile.ownerId}`
+    : infoLabels.noOwner;
+  const unitBonuses: string[] = [];
+  if (selectedTileUnit) {
+    if (selectedTileUnit.isVeteran) {
+      unitBonuses.push(t.unitBonuses.veteran);
+    }
+    if (
+      selectedTile.structure?.type === "City" &&
+      selectedTile.structure.ownerId === selectedTileUnit.ownerId
+    ) {
+      unitBonuses.push(t.unitBonuses.cityGarrison);
+    }
+    if (
+      selectedTile.structure?.type === "Fort" &&
+      selectedTile.structure.ownerId === selectedTileUnit.ownerId
+    ) {
+      unitBonuses.push(t.unitBonuses.fortified);
+    }
+    const terrainBonus = t.unitBonuses.terrain?.[selectedTile.terrain];
+    if (terrainBonus) {
+      unitBonuses.push(terrainBonus);
+    }
+  }
+
+  return (
+    <div className="game__hud-left">
+      <button
+        type="button"
+        className="game__info-close"
+        onClick={onClose}
+        aria-label={t.infoPanel.close}
+      >
+        ✕
+      </button>
+      <div className="game__info-header">
+        <h3 className="game__info-title">{infoLabels.title}</h3>
+        <span className="game__info-coords">
+          X:{selectedTile.x} Y:{selectedTile.y}
+        </span>
+      </div>
+
+      <div className="game__info-body">
+        {selectedTileUnit && (
+          <section className="game__info-section">
+            <div className="game__section-header">
+              <span className="game__section-title">
+                {infoLabels.unit}:{" "}
+                {t.units?.[selectedTileUnit.type] ?? selectedTileUnit.type}
+              </span>
+              <span className="game__section-subtitle">
+                {t.ownerLabel}: {selectedTileUnit.ownerName}
+              </span>
+            </div>
+            <div className="game__section-content">
+              <div className="game__portrait">
+                {unitEmoji[selectedTileUnit.type] ?? "🎯"}
+              </div>
+              <div className="game__info-details">
+                {selectedUnitStats && (
+                  <>
+                    <div className="game__stat-bar">
+                      <span title={t.unitStats.health}>❤️</span>
+                      <div className="game__progress-track">
+                        <div
+                          className="game__progress-fill"
+                          style={{
+                            width: `${
+                              (selectedTileUnit.health /
+                                selectedUnitStats.baseStats.health) *
+                              100
+                            }%`,
+                          }}
+                        />
+                      </div>
+                      <span>{selectedTileUnit.health}</span>
+                    </div>
+                    <div className="game__stat-bar">
+                      <span title={t.unitStats.movement}>👟</span>
+                      <span>
+                        {selectedTileUnit.movementPoints ??
+                          selectedUnitStats.baseStats.movement}{" "}
+                        / {selectedUnitStats.baseStats.movement}
+                      </span>
+                    </div>
+                    <div className="game__stat-bar">
+                      <span title={t.unitStats.attack}>⚔️</span>
+                      <span>{selectedUnitStats.baseStats.attack}</span>
+                    </div>
+                    {unitBonuses.length > 0 && (
+                      <div className="game__unit-bonuses">
+                        <span className="game__section-subtitle">
+                          {t.unitBonuses.title}
+                        </span>
+                        <ul>
+                          {unitBonuses.map((bonus) => (
+                            <li key={bonus}>{bonus}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {selectedCity && (
+          <section className="game__info-section">
+            <div className="game__section-header">
+              <span className="game__section-title">
+                {infoLabels.city}
+                {selectedCity.isCapital
+                  ? ` · ${t.capitalPlacement.capitalLabel}`
+                  : ""}
+              </span>
+              <span className="game__section-subtitle">
                 {t.ownerLabel}: {selectedCity.ownerName}
               </span>
-              <span>
-                {t.cityPopulation}: {Math.floor(selectedCity.population ?? 0)}
+            </div>
+            <div className="game__section-content">
+              <div className="game__portrait">🏰</div>
+              <div className="game__info-details">
+                <div className="game__stat-bar">
+                  <span>
+                    👥 {t.cityPopulation}:{" "}
+                    {Math.floor(selectedCity.population ?? 0)}
+                  </span>
+                </div>
+                <div className="game__stat-bar">
+                  <span>
+                    🛡️ {t.cityFortification}:{" "}
+                    {Math.max(0, Math.round(selectedCity.fortification ?? 0))}
+                  </span>
+                </div>
+                {selectedCity.improvement && (
+                  <div className="game__stat-bar">
+                    <span>
+                      🏗️{" "}
+                      {t.hints.structures[selectedCity.improvement] ??
+                        selectedCity.improvement}
+                    </span>
+                  </div>
+                )}
+                {activeProductionTurns !== null && (
+                  <div className="game__stat-bar">
+                    <span>
+                      🔨 {activeProductionName} ({activeProductionProgress}/
+                      {activeProductionTurns})
+                    </span>
+                  </div>
+                )}
+                {insufficientCityPopulation && (
+                  <div
+                    className="game__stat-bar"
+                    style={{ color: "var(--color-error)" }}
+                  >
+                    {t.warnings.population}
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {standaloneStructure && standaloneStructureCard && (
+          <section className="game__info-section">
+            <div className="game__section-header">
+              <span className="game__section-title">
+                {standaloneStructureCard.name}
               </span>
-              {activeProductionTurns !== null && (
-                <span>
-                  {t.actions.productionMenu}:{" "}
-                  {activeProductionName ? `${activeProductionName} · ` : ""}{" "}
-                  {activeProductionProgress} / {activeProductionTurns} {t.turn}
-                </span>
-              )}
+              <span className="game__section-subtitle">
+                {structureOwnerSubtitle}
+              </span>
             </div>
-          )}
-
-          {selectedUnitStats && selectedTileUnit && (
-            <div className="game__unit-stats">
-              <div title={t.hints.units[selectedTileUnit.type] ?? undefined}>
-                <div className="game__stat-row">
-                  {unitEmoji[selectedTileUnit.type]}{" "}
-                  {t.units?.[selectedTileUnit.type] ?? selectedTileUnit.type}
-                </div>
-                <div className="game__stat-row">
-                  {t.ownerLabel}: {selectedTileUnit.ownerName}
-                </div>
+            <div className="game__section-content">
+              <div className="game__portrait">
+                {structureIcons[
+                  standaloneStructure.type as StandaloneStructureType
+                ] ?? "🏗️"}
               </div>
-              <div>
-                <div className="game__stat-row" title={t.unitStats.attack}>
-                  ⚔️ {selectedUnitStats.baseStats.attack}
-                </div>
-                <div className="game__stat-row" title={t.unitStats.health}>
-                  ❤️ {selectedTileUnit.health} /{" "}
-                  {selectedUnitStats.baseStats.health}
-                </div>
-                <div className="game__stat-row" title={t.unitStats.movement}>
-                  👟
-                  {selectedTileUnit.movementPoints ??
-                    selectedUnitStats.baseStats.movement}
-                </div>
+              <div className="game__info-details">
+                {standaloneDescription ? (
+                  <div className="game__structure-description">
+                    {standaloneDescription}
+                  </div>
+                ) : null}
               </div>
             </div>
-          )}
+          </section>
+        )}
 
-          {!selectedCity && !selectedUnitStats && !needsCapital && (
-            <p>{t.selectPrompt}</p>
-          )}
-
-          {insufficientCityPopulation && (
-            <p className="game__warning">{t.warnings.population}</p>
-          )}
-
-          {needsCapital && (
-            <div>
-              {isTileEligibleForCapital(selectedTile)
-                ? t.capitalPlacement.action
-                : t.capitalPlacement.invalid}
-            </div>
-          )}
-        </>
-      ) : (
-        <p>{t.selectPrompt}</p>
-      )}
+        <section className="game__info-section">
+          <div className="game__section-header">
+            <span className="game__section-title">
+              {infoLabels.tile}: {terrainName}
+            </span>
+            <span className="game__section-subtitle">{ownerSubtitle}</span>
+          </div>
+          <div className="game__info-details">
+            {terrainDescription && (
+              <div className="game__stat-bar">{terrainDescription}</div>
+            )}
+            {needsCapital && (
+              <div
+                style={{
+                  color: isTileEligibleForCapital(selectedTile)
+                    ? "var(--color-success)"
+                    : "var(--color-error)",
+                }}
+              >
+                {isTileEligibleForCapital(selectedTile)
+                  ? t.capitalPlacement.action
+                  : t.capitalPlacement.invalid}
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

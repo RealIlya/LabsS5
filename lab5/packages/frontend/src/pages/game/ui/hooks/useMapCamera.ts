@@ -6,14 +6,16 @@ interface UseMapCameraProps {
   overscroll: number;
   minZoom?: number;
   maxZoom?: number;
+  stepZoom?: number;
 }
 
 export function useMapCamera({
   mapPixelWidth,
   mapPixelHeight,
   overscroll,
-  minZoom = 0.5,
-  maxZoom = 3,
+  minZoom = 0.8,
+  maxZoom = 1,
+  stepZoom = 0.0002,
 }: UseMapCameraProps) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
@@ -125,7 +127,7 @@ export function useMapCamera({
     const cursorY = rect ? event.clientY - rect.top : viewportSize.height / 2;
     const delta = event.deltaY;
     setZoom((prevZoom) => {
-      const nextZoom = clamp(prevZoom - delta * 0.0005, minZoom, maxZoom);
+      const nextZoom = clamp(prevZoom - delta * stepZoom, minZoom, maxZoom);
       if (nextZoom === prevZoom) return prevZoom;
       const ratio = nextZoom / prevZoom;
       setOffset((prevOffset) => {

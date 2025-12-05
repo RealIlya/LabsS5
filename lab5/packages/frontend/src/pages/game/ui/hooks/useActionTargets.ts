@@ -49,7 +49,6 @@ export const useActionTargets = ({
       return new Set<string>();
 
     const targets = new Set<string>();
-    // Выбираем правильный набор смещений в зависимости от четности ряда (y)
     const parity = selectedTile.y % 2 === 0 ? "even" : "odd";
 
     HEX_NEIGHBORS[parity]

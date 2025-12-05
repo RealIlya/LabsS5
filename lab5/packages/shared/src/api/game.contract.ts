@@ -65,7 +65,7 @@ export type BuildStructureAction = {
     workerId: string;
     structureType: "Farm" | "Fort";
     position: HexCoord;
-    fromCityId: string;
+    fromCityId?: string;
   };
 };
 

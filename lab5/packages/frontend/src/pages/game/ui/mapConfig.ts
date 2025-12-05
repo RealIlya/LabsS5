@@ -45,6 +45,14 @@ export const terrainColor: Record<TerrainType, string> = {
   Water: "#63b3ed",
 };
 
+export const terrainTexture: Record<TerrainType, string> = {
+  Plains: "/tiles/Plain.png",
+  Forest: "/tiles/Forest.png",
+  Hills: "/tiles/Hill.png",
+  Mountains: "/tiles/Mountain.png",
+  Water: "/tiles/Water.png",
+};
+
 export const unitEmoji: Record<UnitType, string> = {
   Warrior: "⚔️",
   Spearman: "🛡️",

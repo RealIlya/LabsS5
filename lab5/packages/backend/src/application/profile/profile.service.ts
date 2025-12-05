@@ -26,7 +26,6 @@ export class ProfileService {
       }
     }
 
-    // Prevent duplicate nicknames with different IDs
     const nicknameTaken = this.memoryStore.findProfileByNickname(
       payload.nickname
     );

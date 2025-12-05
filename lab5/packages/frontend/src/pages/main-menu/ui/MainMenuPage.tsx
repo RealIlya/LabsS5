@@ -186,7 +186,7 @@ export function MainMenuPage() {
           <Button
             variant="secondary"
             onClick={() => setTutorialOpen(true)}
-            aria-label="Открыть обучение"
+            aria-label={t.aria.openTutorial}
           >
             {t.training}
           </Button>
@@ -259,12 +259,7 @@ export function MainMenuPage() {
         <div className="main-menu__modal" role="dialog" aria-modal="true">
           <div className="main-menu__modal-content">
             <h2>{t.settingsModal.title}</h2>
-            <p>{t.settingsModal.description}</p>
-            <ul>
-              {t.settingsModal.items.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
+
             <div className="main-menu__form-actions">
               <div className="main-menu__form-profile-actions">
                 <Button variant="secondary" onClick={handleOpenProfileModal}>

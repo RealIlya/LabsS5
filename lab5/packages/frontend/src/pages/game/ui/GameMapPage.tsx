@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   STRUCTURE_RULES,
@@ -27,11 +27,15 @@ import {
   HEX_CONFIG,
   HEX_NEIGHBORS,
   terrainColor,
+  terrainTexture,
   unitEmoji,
 } from "./mapConfig";
 import type { MapTile } from "./types";
 import "./GameMapPage.css";
 import { useProfileStore } from "../../../entities/profile/model/useProfileStore";
+import { Button } from "../../../shared/ui/button";
+
+type PlayerCityTile = MapTile & { structure: CityData };
 
 export function GameMapPage() {
   const t = useMemo(() => translations.ru.game, []);
@@ -68,6 +72,12 @@ export function GameMapPage() {
   );
 
   // --- Data Processing ---
+  const playerNameMap = useMemo(() => {
+    const map = new Map<string, string>();
+    gameState?.players.forEach((p) => map.set(p.id, p.name));
+    return map;
+  }, [gameState?.players]);
+
   const mapTiles = useMemo(() => {
     if (!gameState?.tiles) return [];
     return gameState.tiles.map((tile) => ({
@@ -76,6 +86,9 @@ export function GameMapPage() {
       y: Number(tile.y),
       terrain: tile.terrain as TerrainType,
       ownerId: tile.ownerId ?? null,
+      ownerName: tile.ownerId
+        ? playerNameMap.get(tile.ownerId) ?? (tile as any).ownerName ?? null
+        : null,
       structure: tile.structure
         ? tile.structure.type === "City"
           ? ({
@@ -108,7 +121,7 @@ export function GameMapPage() {
           }
         : undefined,
     }));
-  }, [gameState?.tiles]);
+  }, [gameState?.tiles, playerNameMap]);
 
   const playerColorMap = useMemo(() => {
     const map = new Map<string, string>();
@@ -122,18 +135,30 @@ export function GameMapPage() {
     return coordMap;
   }, [mapTiles]);
 
+  const playerCityTiles = useMemo(
+    () =>
+      mapTiles.filter(
+        (tile): tile is PlayerCityTile =>
+          tile.structure?.type === "City" &&
+          tile.structure.ownerId === effectivePlayerId
+      ),
+    [effectivePlayerId, mapTiles]
+  );
+
   const playerState = effectivePlayerId
     ? gameState?.players?.find((p) => p.id === effectivePlayerId) ?? null
     : null;
+  const playerDefeated = playerState?.status === "defeated";
   const isPlacementPhase = gameState?.phase === "capital-placement";
   const needsCapital =
     Boolean(playerState) && isPlacementPhase && !playerState?.capitalCityId;
   const waitingForOpponents = isPlacementPhase && !needsCapital;
-  const controlsDisabled = isPlacementPhase; // В будущем можно разблокировать для других фаз
+  const controlsDisabled = isPlacementPhase || playerDefeated; // В будущем можно разблокировать для других фаз
   const isMyTurn =
     Boolean(effectivePlayerId) &&
     Boolean(gameState) &&
     !isPlacementPhase &&
+    !playerDefeated &&
     gameState?.currentPlayerId === effectivePlayerId;
   const connectionDown = connectionStatus.status === "offline";
   const connectionMessage = connectionStatus.message ?? t.connectionLost;
@@ -147,8 +172,14 @@ export function GameMapPage() {
     null
   );
   const [showPlayers, setShowPlayers] = useState(false);
+  const [autoSelectEnabled, setAutoSelectEnabled] = useState(true);
 
-  // Keep selected tile in sync when backend state changes
+  const clearSelection = useCallback(() => {
+    setAutoSelectEnabled(false);
+    setSelectedTile(null);
+    setActiveAction(null);
+  }, []);
+
   useEffect(() => {
     if (!selectedTile) return;
     const fresh = mapTiles.find((t) => t.id === selectedTile.id);
@@ -181,8 +212,12 @@ export function GameMapPage() {
     mapPixelHeight,
     overscroll,
   });
-  useAutoSelectTile(mapTiles, needsCapital, selectedTile, (tile) =>
-    setSelectedTile(tile)
+  useAutoSelectTile(
+    mapTiles,
+    needsCapital,
+    selectedTile,
+    autoSelectEnabled,
+    (tile) => setSelectedTile(tile)
   );
 
   const handleEndTurn = () => {
@@ -217,7 +252,7 @@ export function GameMapPage() {
     !tile.structure &&
     !hasEnemyAdjacentCity(tile);
 
-  // --- Render Vars (declared early to avoid TDZ in hooks) ---
+  // --- Render Vars ---
   const selectedTileUnit = selectedTile?.unit ?? null;
   const selectedUnitStats = selectedTileUnit
     ? UNIT_RULES[selectedTileUnit.type]
@@ -240,6 +275,7 @@ export function GameMapPage() {
 
   const handleSelect = (tile: MapTile) => {
     if (spacePressed || isDragging) return;
+    setAutoSelectEnabled(true);
 
     if (needsCapital) {
       setSelectedTile(tile);
@@ -428,7 +464,7 @@ export function GameMapPage() {
       !selectedTile.structure &&
       selectedTile.terrain !== "Water" &&
       selectedTile.terrain !== "Mountains" &&
-      playerState?.capitalCityId
+      playerCityTiles.length > 0
   );
 
   const canOpenProductionMenu = !!(
@@ -489,7 +525,7 @@ export function GameMapPage() {
     (selectedTileUnit?.type === "Settler" &&
       selectedTileUnit.ownerId === effectivePlayerId);
 
-  const hexDistance = (a: MapTile, b: MapTile) => {
+  const hexDistance = useCallback((a: MapTile, b: MapTile) => {
     const toCube = (x: number, y: number) => {
       const xCube = x - (y - (y & 1)) / 2;
       const zCube = y;
@@ -503,12 +539,32 @@ export function GameMapPage() {
       Math.abs(ac.y - bc.y),
       Math.abs(ac.z - bc.z)
     );
-  };
+  }, []);
 
   const handleBuild = () => {
     if (!canBuild) return;
     setMenuType("worker-build");
   };
+
+  const farmDonorCity = useMemo(() => {
+    if (
+      !selectedTile ||
+      !effectivePlayerId ||
+      selectedTile.ownerId !== effectivePlayerId
+    ) {
+      return null;
+    }
+    let closest: PlayerCityTile | null = null;
+    let closestDistance = Number.POSITIVE_INFINITY;
+    playerCityTiles.forEach((cityTile) => {
+      const distance = hexDistance(selectedTile, cityTile);
+      if (distance <= 1 && distance < closestDistance) {
+        closest = cityTile as PlayerCityTile;
+        closestDistance = distance;
+      }
+    });
+    return closest;
+  }, [effectivePlayerId, hexDistance, playerCityTiles, selectedTile]);
 
   const handleFoundCity = () => {
     if (!canFoundCity || !selectedTileUnit) return;
@@ -561,13 +617,11 @@ export function GameMapPage() {
     });
   };
 
-  const submitWorkerBuild = (structureType: "Farm" | "Fort") => {
-    if (
-      !selectedTile ||
-      !selectedTileUnit ||
-      !playerState?.capitalCityId ||
-      !effectivePlayerId
-    ) {
+  const submitWorkerBuild = (
+    structureType: "Farm" | "Fort",
+    donorCityId?: string | null
+  ) => {
+    if (!selectedTile || !selectedTileUnit || !effectivePlayerId) {
       return;
     }
     if (
@@ -576,13 +630,20 @@ export function GameMapPage() {
     ) {
       return;
     }
+    let fromCityId: string | null = donorCityId ?? null;
+    if (structureType === "Farm") {
+      fromCityId = farmDonorCity?.structure.id ?? null;
+    }
+    if (!fromCityId) {
+      return;
+    }
     const action: PlayerAction = {
       type: "BUILD_STRUCTURE",
       payload: {
         workerId: selectedTileUnit.id,
         structureType,
         position: { x: selectedTile.x, y: selectedTile.y },
-        fromCityId: playerState.capitalCityId,
+        fromCityId,
       },
     };
     submitActionMutation.mutate(action, {
@@ -607,7 +668,6 @@ export function GameMapPage() {
       <div className="game">
         <div className="game__status-overlay">
           <div className="game__status-card">
-            <div className="spinner" />
             <p>{t.selectPrompt}</p>
           </div>
         </div>
@@ -623,6 +683,8 @@ export function GameMapPage() {
         isPlacementPhase={isPlacementPhase}
         needsCapital={needsCapital}
         selfPlayer={playerState}
+        playerDefeated={playerDefeated}
+        onShowPlayers={() => setShowPlayers(true)}
       />
 
       {isLoading ? (
@@ -634,7 +696,6 @@ export function GameMapPage() {
         </div>
       ) : null}
 
-      {/* --- MAP VIEWPORT --- */}
       <section
         className="game__viewport"
         ref={viewportRef}
@@ -682,6 +743,7 @@ export function GameMapPage() {
                 }
                 hexConfig={HEX_CONFIG}
                 terrainColor={terrainColor}
+                terrainTextures={terrainTexture}
                 onSelect={handleSelect}
               />
             );
@@ -689,7 +751,6 @@ export function GameMapPage() {
         </div>
       </section>
 
-      {/* --- BOTTOM HUD: Split Info & Actions --- */}
       <div className="game__hud-layer">
         <InfoPanel
           t={t}
@@ -706,6 +767,7 @@ export function GameMapPage() {
           activeProductionTurns={activeProductionTurns}
           activeProductionProgress={activeProductionProgress}
           activeProductionName={activeProductionName}
+          onClose={clearSelection}
         />
 
         <ActionsPanel
@@ -723,7 +785,6 @@ export function GameMapPage() {
           onFoundCity={handleFoundCity}
           onBuild={handleBuild}
           onProduce={handleProduceClick}
-          onShowPlayers={() => setShowPlayers(true)}
           onMoveToggle={handleMoveToggle}
           onAttackToggle={handleAttackToggle}
           onEndTurn={handleEndTurn}
@@ -749,15 +810,8 @@ export function GameMapPage() {
         workerBuildOptions={workerBuildOptions}
         selectedCity={selectedCity}
         canBuild={canBuild}
-        capitalPopulation={
-          playerState?.capitalCityId
-            ? mapTiles.find(
-                (t) =>
-                  t.structure?.type === "City" &&
-                  t.structure.id === playerState.capitalCityId
-              )?.structure?.population ?? 0
-            : 0
-        }
+        playerCities={playerCityTiles}
+        farmCityId={farmDonorCity?.structure.id ?? null}
         canBuildFarm={
           selectedTile?.ownerId === effectivePlayerId &&
           selectedTile?.terrain === "Plains" &&
@@ -784,31 +838,53 @@ export function GameMapPage() {
           <div className="game__menu-content">
             <div className="game__menu-header">
               <h4>{t.playersList}</h4>
-              <button
-                className="game__menu-close"
+              <Button
+                variant="secondary"
+                size="icon"
                 onClick={() => setShowPlayers(false)}
-                aria-label="Закрыть список игроков"
+                aria-label={t.playersClose}
               >
                 ✖
-              </button>
+              </Button>
             </div>
-            <ul className="game__players-list">
-              {gameState.players.map((p) => (
-                <li key={p.id} className="game__player-row">
-                  <span className="game__player-name">
-                    <span
-                      className="game__player-color"
-                      style={{ background: p.color }}
-                    />
-                    {p.name}
-                    {p.id === effectivePlayerId ? " (вы)" : ""}
-                  </span>
-                  <span className="game__player-meta">
-                    {p.currentPopulation}/{p.populationCap} · {p.status}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <div className="game__players-table-wrapper">
+              <table className="game__players-table">
+                <thead>
+                  <tr>
+                    <th>{t.playersTable.name}</th>
+                    <th>{t.playersTable.population}</th>
+                    <th>{t.playersTable.status}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {gameState.players.map((p) => {
+                    const statusLabel =
+                      (t.statuses as Record<string, string>)[p.status] ??
+                      p.status;
+                    return (
+                      <tr key={p.id}>
+                        <td>
+                          <span className="game__player-name">
+                            <span
+                              className="game__player-color"
+                              style={{ background: p.color }}
+                            />
+                            {p.name}
+                            {p.id === effectivePlayerId
+                              ? ` ${t.playersYou}`
+                              : ""}
+                          </span>
+                        </td>
+                        <td>
+                          {p.currentPopulation}/{p.populationCap}
+                        </td>
+                        <td>{statusLabel}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       ) : null}

@@ -6,6 +6,8 @@ interface TopBarProps {
   isPlacementPhase: boolean;
   needsCapital: boolean;
   selfPlayer: GameStateDto["players"][number] | null;
+  playerDefeated: boolean;
+  onShowPlayers: () => void;
 }
 
 export function TopBar({
@@ -14,10 +16,25 @@ export function TopBar({
   isPlacementPhase,
   needsCapital,
   selfPlayer,
+  playerDefeated,
+  onShowPlayers,
 }: TopBarProps) {
   const populationCurrent =
     selfPlayer?.currentPopulation ?? gameState.population.current;
   const populationCap = selfPlayer?.populationCap ?? gameState.population.cap;
+
+  const phaseNode = playerDefeated ? (
+        <div className="game__phase-banner game__phase-banner--defeat">
+          {t.defeatedBanner}
+        </div>
+      ) : isPlacementPhase ? (
+        <div className="game__phase-banner">
+          {needsCapital ? t.capitalPlacement.hint : t.capitalPlacement.waiting}
+        </div>
+      ) : (
+        <div style={{ width: 24 }} />
+      );
+
   return (
     <header className="game__top-bar">
       <div className="game__stats-group">
@@ -39,11 +56,17 @@ export function TopBar({
         </div>
       </div>
 
-      {isPlacementPhase && (
-        <div className="game__phase-banner">
-          {needsCapital ? t.capitalPlacement.hint : t.capitalPlacement.waiting}
-        </div>
-      )}
+      <div className="game__top-controls">
+        {phaseNode}
+        <button
+          type="button"
+          className="game__players-btn"
+          onClick={onShowPlayers}
+          title={t.playersList}
+        >
+          👥 <span>{t.playersList}</span>
+        </button>
+      </div>
     </header>
   );
 }

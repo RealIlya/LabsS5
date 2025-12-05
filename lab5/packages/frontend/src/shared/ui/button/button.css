@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-button-gap);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-soft);
   padding: var(--space-button-padding-y) var(--space-button-padding-x);
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-body);

@@ -5,11 +5,23 @@ export function useAutoSelectTile(
   mapTiles: MapTile[],
   needsCapital: boolean,
   selectedTile: MapTile | null,
+  autoSelectEnabled: boolean,
   setSelectedTile: (tile: MapTile) => void
 ) {
   useEffect(() => {
-    if (!selectedTile && mapTiles.length > 0 && !needsCapital) {
+    if (
+      autoSelectEnabled &&
+      !selectedTile &&
+      mapTiles.length > 0 &&
+      !needsCapital
+    ) {
       setSelectedTile(mapTiles[0]);
     }
-  }, [mapTiles, selectedTile, needsCapital, setSelectedTile]);
+  }, [
+    mapTiles,
+    selectedTile,
+    needsCapital,
+    autoSelectEnabled,
+    setSelectedTile,
+  ]);
 }

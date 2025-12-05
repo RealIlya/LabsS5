@@ -94,7 +94,6 @@ export class LobbyController {
       await this.lobbyGateway.emitLobbyState(lobby.id);
       return this.lobbyService.getLobbyState(lobby.id);
     }
-    // Lobby removed completely
     this.lobbyGateway.emitLobbyRemoved(lobbyId);
     return { removed: true };
   }

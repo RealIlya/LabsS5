@@ -26,6 +26,7 @@ export interface MapTile {
   y: number;
   terrain: TerrainType;
   ownerId: string | null;
+  ownerName: string | null;
   structure?: MapStructure;
   unit?: MapUnit;
 }

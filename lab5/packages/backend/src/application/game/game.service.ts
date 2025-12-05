@@ -421,7 +421,7 @@ export class GameService {
       workerId: string;
       structureType: "Farm" | "Fort";
       position: HexCoord;
-      fromCityId: string;
+      fromCityId?: string;
     }
   ) {
     const { workerId, structureType, position, fromCityId } = payload;
@@ -451,15 +451,28 @@ export class GameService {
       throw new BadRequestException("Cannot build in foreign territory");
     }
 
-    const cityTile = this.getCityTile(game, fromCityId);
-    if (!cityTile || cityTile.structure?.type !== "City") {
-      throw new BadRequestException("City not found");
-    }
-    const sourceCity = cityTile.structure as CityData;
-    if (sourceCity.ownerId !== playerId) {
-      throw new BadRequestException(
-        "Cannot spend population from foreign city"
-      );
+    let sourceCity: CityData | null = null;
+    if (structureType === "Farm") {
+      sourceCity = this.findTerritoryCity(game, playerId, targetTile);
+      if (!sourceCity) {
+        throw new BadRequestException(
+          "Farm must belong to one of your city territories"
+        );
+      }
+    } else {
+      if (!fromCityId) {
+        throw new BadRequestException("City donor required");
+      }
+      const cityTile = this.getCityTile(game, fromCityId);
+      if (!cityTile || cityTile.structure?.type !== "City") {
+        throw new BadRequestException("City not found");
+      }
+      if (cityTile.structure.ownerId !== playerId) {
+        throw new BadRequestException(
+          "Cannot spend population from foreign city"
+        );
+      }
+      sourceCity = cityTile.structure as CityData;
     }
 
     const rule = STRUCTURE_RULES[structureType];
@@ -477,12 +490,18 @@ export class GameService {
     }
     if (structureType === "Fort") {
       if (targetTile.terrain !== "Plains" && targetTile.terrain !== "Hills") {
-        throw new BadRequestException("Fort can only be built on Plains or Hills");
+        throw new BadRequestException(
+          "Fort can only be built on Plains or Hills"
+        );
       }
       const tooCloseToCity = this.isWithinDistanceOfCity(game, targetTile, 2);
       if (tooCloseToCity) {
         throw new BadRequestException("Fort too close to a city");
       }
+    }
+
+    if (!sourceCity) {
+      throw new BadRequestException("Population source city missing");
     }
 
     if (sourceCity.population < rule.cost) {
@@ -561,10 +580,7 @@ export class GameService {
 
       const terrainBonus =
         TERRAIN_RULES[defenderTile.terrain]?.defenseBonus ?? 0;
-      const damage = Math.max(
-        0,
-        Math.round(attackPower * (1 - terrainBonus))
-      );
+      const damage = Math.max(0, Math.round(attackPower * (1 - terrainBonus)));
       defender.health -= damage;
       attacker.movementPoints = Math.max(0, attacker.movementPoints - 1);
 
@@ -799,6 +815,27 @@ export class GameService {
     );
   }
 
+  private findTerritoryCity(
+    game: GameState,
+    playerId: string,
+    tile: GameTileState
+  ): CityData | null {
+    if (tile.ownerId !== playerId) {
+      return null;
+    }
+    const cities = this.getPlayerCities(game, playerId);
+    let closest: { city: CityData; distance: number } | null = null;
+    cities.forEach((city) => {
+      const cityTile = this.getCityTile(game, city.id);
+      if (!cityTile) return;
+      const distance = this.hexDistance(tile, cityTile);
+      if (distance <= 1 && (!closest || distance < closest.distance)) {
+        closest = { city, distance };
+      }
+    });
+    return closest?.city ?? null;
+  }
+
   private getPlayer(game: GameState, playerId: string) {
     const player = game.players.find((p) => p.id === playerId);
     if (!player) {
@@ -900,13 +937,24 @@ export class GameService {
       this.progressCityProduction(game, currentPlayer.id);
     }
 
-    const nextIndex =
-      currentIndex >= 0 ? (currentIndex + 1) % game.players.length : 0;
-    const nextPlayer = game.players[nextIndex];
-    if (!nextPlayer) {
-      throw new BadRequestException("No players available for turn rotation");
+    const totalPlayers = game.players.length;
+    const baseIndex = currentIndex >= 0 ? currentIndex : totalPlayers - 1;
+    let nextPlayer: GameState["players"][number] | null = null;
+    let nextIndex = baseIndex;
+    for (let offset = 1; offset <= totalPlayers; offset += 1) {
+      const candidateIndex = (baseIndex + offset) % totalPlayers;
+      const candidate = game.players[candidateIndex];
+      if (candidate && candidate.status !== "defeated") {
+        nextPlayer = candidate;
+        nextIndex = candidateIndex;
+        break;
+      }
     }
-    if (nextIndex === 0) {
+
+    if (!nextPlayer) {
+      throw new BadRequestException("No active players available for turn rotation");
+    }
+    if (currentIndex >= 0 && nextIndex <= currentIndex) {
       game.turn += 1;
     }
 

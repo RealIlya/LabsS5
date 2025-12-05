@@ -1,5 +1,3 @@
-import { Button } from "../../../../shared/ui/button";
-
 interface ActionsPanelProps {
   t: typeof import("../../../../shared/i18n").translations.ru.game;
   canFoundCity: boolean;
@@ -15,7 +13,6 @@ interface ActionsPanelProps {
   onFoundCity: () => void;
   onBuild: () => void;
   onProduce: () => void;
-  onShowPlayers: () => void;
   onMoveToggle: () => void;
   onAttackToggle: () => void;
   onEndTurn: () => void;
@@ -38,84 +35,76 @@ export function ActionsPanel({
   onFoundCity,
   onBuild,
   onProduce,
-  onShowPlayers,
   onMoveToggle,
   onAttackToggle,
   onEndTurn,
   endTurnDisabled,
   waitingForOpponents,
 }: ActionsPanelProps) {
+  const anyUnitActions =
+    canAttack || canMove || canFoundCity || canBuild || canOpenProductionMenu;
+
   return (
     <div className="game__hud-right">
-      <div className="game__hud-panel">
-        <div className="game__actions-grid">
-          <Button
-            variant="secondary"
-            size="icon"
+      {anyUnitActions && (
+        <div className="game__unit-actions">
+          <button
+            className={`game__mini-btn ${
+              attackActive ? "game__mini-btn--active" : ""
+            }`}
             disabled={controlsDisabled || !canAttack || !isMyTurn}
-            title={t.actions.attack}
-            aria-label={t.actions.attack}
             onClick={onAttackToggle}
-            className={attackActive ? "game__action-active" : undefined}
+            title={t.actions.attack}
           >
             ⚔️
-          </Button>
-          <Button
-            variant="secondary"
-            size="icon"
+          </button>
+          <button
+            className={`game__mini-btn ${
+              moveActive ? "game__mini-btn--active" : ""
+            }`}
             disabled={controlsDisabled || !canMove || !isMyTurn}
-            title={t.actions.move}
-            aria-label={t.actions.move}
             onClick={onMoveToggle}
-            className={moveActive ? "game__action-active" : undefined}
+            title={t.actions.move}
           >
             👟
-          </Button>
-          <Button
-            variant="secondary"
-            size="icon"
-            onClick={onFoundCity}
+          </button>
+          <button
+            className="game__mini-btn"
             disabled={!canFoundCity}
+            onClick={onFoundCity}
             title={t.actions.foundCity}
-            aria-label={t.actions.foundCity}
           >
             🏠
-          </Button>
-          <Button
-            variant="secondary"
-            size="icon"
-            onClick={onBuild}
+          </button>
+          <button
+            className="game__mini-btn"
             disabled={
               controlsDisabled || !canBuild || submitPending || !isMyTurn
             }
+            onClick={onBuild}
             title={t.actions.build}
-            aria-label={t.actions.build}
           >
             🏗️
-          </Button>
-          <Button
-            variant="secondary"
-            size="icon"
-            onClick={onProduce}
+          </button>
+          <button
+            className="game__mini-btn"
             disabled={!canOpenProductionMenu}
+            onClick={onProduce}
             title={t.actions.produce}
-            aria-label={t.actions.produce}
           >
             🏭
-          </Button>
+          </button>
         </div>
+      )}
 
-        <Button variant="secondary" onClick={onShowPlayers}>
-          {t.playersList}
-        </Button>
-
-        <Button
+      <div className="game__end-turn-container">
+        <button
           className="game__end-turn-btn"
           onClick={onEndTurn}
           disabled={endTurnDisabled}
         >
-          {waitingForOpponents ? t.capitalPlacement.waiting : t.endTurn}
-        </Button>
+          {waitingForOpponents ? "⏳" : t.endTurn}
+        </button>
       </div>
     </div>
   );

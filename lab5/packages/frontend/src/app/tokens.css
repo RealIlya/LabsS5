@@ -5,7 +5,7 @@
   --font-weight-regular: 400;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
-  --font-size-label: 0.8rem;
+  --font-size-label: 0.75rem;
   --font-size-rank: 0.85rem;
   --font-size-body: 1rem;
   --font-size-section-title: clamp(2rem, 4vw, 3rem);
@@ -18,8 +18,8 @@
   --layout-max-width: 1200px;
   --layout-hero-max-width: 720px;
   --layout-hero-subtitle-width: 520px;
-  --layout-actions-max-width: 560px;
-  --layout-secondary-action-min: 180px;
+  --layout-actions-max-width: 400px;
+  --layout-secondary-action-min: 160px;
   --card-min-width: 220px;
 
   /* Spacing scale */
@@ -43,66 +43,78 @@
 
   /* Radii */
   --radius-card: 18px;
-  --radius-soft: 16px;
+  --radius-soft: 8px;
   --radius-pill: 999px;
 
   /* Shadows & blur */
-  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.2);
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.4);
   --shadow-success: 0 0 12px rgba(72, 187, 120, 0.7);
-  --blur-card: 6px;
+  --blur-card: 12px;
 
   /* Color palette */
-  --color-primary: #5a99e5;
-  --color-primary-hover: #74aef5;
-  --color-primary-disabled: rgba(90, 153, 229, 0.45);
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-primary-disabled: rgba(59, 130, 246, 0.5);
 
-  --color-secondary: rgba(15, 23, 42, 0.85);
-  --color-secondary-hover: rgba(90, 153, 229, 0.12);
-  --color-secondary-disabled: rgba(229, 157, 90, 0.45);
+  --color-secondary: rgba(30, 41, 59, 0.9);
+  --color-secondary-hover: rgba(51, 65, 85, 0.9);
+  --color-secondary-disabled: rgba(30, 41, 59, 0.5);
 
-  --color-accent: #e59d5a;
-  --color-accent-hover: #eea968;
+  --color-accent: #f59e0b;
+  --color-accent-hover: #d97706;
 
-  --color-bg-main: rgba(15, 23, 42, 0.85);
-  --color-bg-surface: #1e2738;
-  --color-bg-overlay: rgba(45, 55, 72, 0.6);
+  --color-bg-main: #0f172a;
+  --color-bg-surface: #1e293b;
+  --color-bg-overlay: rgba(15, 23, 42, 0.8);
   --color-page-bg: var(--color-bg-main);
   --color-surface-overlay: var(--color-bg-overlay);
 
   --color-border-soft: rgba(148, 163, 184, 0.2);
-  --color-border-primary: rgba(90, 153, 229, 0.8);
-  --color-border-primary-faded: rgba(90, 153, 229, 0.12);
-  --color-border-strong: rgba(148, 163, 184, 0.35);
+  --color-border-primary: rgba(59, 130, 246, 0.5);
+  --color-border-primary-faded: rgba(59, 130, 246, 0.1);
+  --color-border-strong: rgba(148, 163, 184, 0.4);
 
-  --color-text-primary: #f7fafc;
-  --color-text-secondary: #abc5e7;
-  --color-text-body: #0f172a;
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #94a3b8;
+  --color-text-body: #f1f5f9;
   --color-text-contrast: var(--color-text-primary);
-  --color-text-muted: rgba(226, 232, 240, 0.7);
+  --color-text-muted: rgba(241, 245, 249, 0.6);
   --color-text-neutral: var(--color-text-primary);
-  --color-text-subtle: rgba(248, 250, 252, 0.6);
-  --color-text-card-muted: rgba(15, 23, 42, 0.8);
+  --color-text-subtle: rgba(248, 250, 252, 0.5);
+  --color-text-card-muted: rgba(148, 163, 184, 0.8);
 
-  --color-highlight: #ffffff;
-  --color-success: #48bb78;
-  --color-error: #f56565;
+  --color-highlight: #fbbf24;
+  --color-success: #22c55e;
+  --color-error: #ef4444;
 
-  --color-overlay-strong: rgba(2, 6, 23, 0.75);
-  --color-overlay-soft: rgba(0, 0, 0, 0.45);
+  --color-overlay-strong: rgba(2, 6, 23, 0.85);
+  --color-overlay-soft: rgba(0, 0, 0, 0.5);
+
+  /* HUD Specific - Strategy Game Vibe */
+  --color-hud-bg: rgba(15, 23, 42, 0.95);
+  --color-hud-border: rgba(251, 191, 36, 0.4);
+  --color-hud-accent: #fbbf24;
 
   /* Gradients */
-  --gradient-page: radial-gradient(circle at top, #1e293b 0%, #0b1120 55%);
+  --gradient-page: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
   --gradient-map: radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%);
+  --gradient-panel: linear-gradient(
+    180deg,
+    rgba(30, 41, 59, 0.95) 0%,
+    rgba(15, 23, 42, 0.98) 100%
+  );
+  --gradient-button: linear-gradient(to bottom, #3b82f6, #1d4ed8);
+  --gradient-button-hover: linear-gradient(to bottom, #60a5fa, #2563eb);
 
   /* Sizes */
   --size-emoji: 2rem;
   --size-connection-dot: 0.75rem;
   --breakpoint-mobile: 640px;
 
-  /* General shadows/radii */
-  --shadow-strong: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-  --blur-strong: 8px;
-  --radius-md: 12px;
+  /* General shadows */
+  --shadow-strong: 0 8px 16px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 15px rgba(59, 130, 246, 0.3);
+  --blur-strong: 12px;
   --z-map: 0;
   --z-hud: 100;
 }

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "../../../shared/ui/button";
 import type {
   LobbyPlayerState,
   LobbyState,
@@ -16,6 +15,12 @@ import { API_CONFIG } from "../../../shared/config/api.config";
 import { lobbyApi } from "../../../entities/lobby/api/lobbyApi";
 import { io, type Socket } from "socket.io-client";
 import { useConnectionStatus } from "../../../shared/hooks/useConnectionStatus";
+import {
+  LobbyHeader,
+  LobbyPlayersList,
+  LobbyFooter,
+  ConnectionStatusModal,
+} from "./components";
 import "./LobbyPage.css";
 
 const fallbackPlayers: LobbyPlayerState[] = [
@@ -40,6 +45,8 @@ export function LobbyPage() {
   const lobbyCode = lobby?.code ?? "----";
   const lobbyId = lobby?.id ?? null;
   const lobbyStatus = lobby?.status ?? "waiting";
+  const statusText =
+    lobbyStatus === "waiting" ? t.statusPreparing : t.statusLaunching;
   const lobbyGameId = lobby?.gameId ?? null;
   const setLobby = useLobbyStore((state) => state.setLobby);
   const setGameId = useLobbyStore((state) => state.setGameId);
@@ -48,7 +55,6 @@ export function LobbyPage() {
   const toggleReadyMutation = useToggleReadyMutation();
   const startLobbyMutation = useStartLobbyMutation();
   const leaveLobbyMutation = useLeaveLobbyMutation();
-  const isStarting = startLobbyMutation.isPending;
   const socketRef = useRef<Socket | null>(null);
   const connectionStatus = useConnectionStatus();
   const [socketError, setSocketError] = useState<string | null>(null);
@@ -217,107 +223,75 @@ export function LobbyPage() {
     }
   };
 
+  const handleLeaveLobby = () => {
+    if (lobby && selfId) {
+      leaveLobbyMutation.mutate(
+        { lobbyId: lobby.id, playerId: selfId },
+        { onSettled: () => navigate("/") }
+      );
+    } else {
+      navigate("/");
+    }
+  };
+
+  const readyDisabled =
+    toggleReadyMutation.isPending || lobbyStatus !== "waiting";
+  const startDisabled =
+    !isHost ||
+    !allReady ||
+    lobbyStatus !== "waiting" ||
+    startLobbyMutation.isPending;
+  const startLabel = isHost
+    ? allReady
+      ? `🚀 ${t.start}`
+      : t.startDisabled
+    : t.waitingHost;
+  const highlightStart = allReady;
+  const headerTitle = lobby?.name ?? t.waiting;
+
   return (
     <div className="lobby">
-      <header className="lobby__header">
-        <div className="lobby__header-row">
-          <div>
-            <p>{t.title}</p>
-            <h1>{lobby?.name ?? t.waiting}</h1>
-          </div>
-          <div className="lobby__code" aria-label={t.codeLabel}>
-            <span>{t.codeLabel}</span>
-            <strong>{lobbyCode}</strong>
-            <Button
-              variant="secondary"
-              size="icon"
-              onClick={handleCopyCode}
-              title={t.copyCode}
-            >
-              📋
-            </Button>
-          </div>
+      <div className="lobby__container">
+        <LobbyHeader
+          title={headerTitle}
+          statusLabel={t.statusLabel}
+          statusText={statusText}
+          codeLabel={t.codeLabel}
+          lobbyCode={lobbyCode}
+          copyStatus={copyStatus}
+          onCopyCode={handleCopyCode}
+          copyTooltip={t.copyCode}
+        />
+
+        <div className="lobby__content">
+          <LobbyPlayersList
+            players={players}
+            maxPlayers={lobby?.maxPlayers}
+            effectiveSelfId={effectiveSelfId}
+            selfId={selfId}
+            hostId={lobby?.hostId ?? null}
+            readyDisabled={readyDisabled}
+            onToggleReady={handleToggleReady}
+            t={t}
+          />
         </div>
-        <p className="lobby__status-text">
-          {lobbyStatus === "waiting" ? t.waiting : t.start}
-        </p>
-      </header>
 
-      <section className="lobby__players">
-        <h2>
-          {t.playerListTitle}
-          {lobby ? ` · ${players.length}/${lobby.maxPlayers}` : ""}
-        </h2>
-        <ul>
-          {players.map((player) => (
-            <li key={player.id} className="lobby__player-row">
-              <div>
-                <strong>
-                  {player.name}{" "}
-                  {player.id === effectiveSelfId ? t.youLabel : ""}
-                </strong>
-                {lobby && player.id === lobby.hostId ? (
-                  <span className="lobby__host-tag">{t.hostLabel}</span>
-                ) : null}
-              </div>
-              <div className="lobby__player-actions">
-                {player.id === selfId ? (
-                  <Button
-                    variant="secondary"
-                    onClick={handleToggleReady}
-                    aria-label={t.toggleReady}
-                    disabled={
-                      toggleReadyMutation.isPending || lobbyStatus !== "waiting"
-                    }
-                  >
-                    {player.isReady ? t.ready : t.notReady}
-                  </Button>
-                ) : null}
-              </div>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <footer className="lobby__actions">
-        <Button
-          variant="secondary"
-          onClick={() => {
-            if (lobby && selfId) {
-              leaveLobbyMutation.mutate(
-                { lobbyId: lobby.id, playerId: selfId },
-                {
-                  onSettled: () => navigate("/"),
-                }
-              );
-            } else {
-              navigate("/");
-            }
-          }}
-          disabled={leaveLobbyMutation.isPending}
-        >
-          {t.leave}
-        </Button>
-        <Button
-          disabled={
-            !isHost ||
-            !allReady ||
-            lobbyStatus !== "waiting" ||
-            startLobbyMutation.isPending
-          }
-          onClick={handleStart}
-        >
-          {allReady ? t.start : t.startDisabled}
-        </Button>
-      </footer>
+        <LobbyFooter
+          onLeave={handleLeaveLobby}
+          onStart={handleStart}
+          leaveDisabled={leaveLobbyMutation.isPending}
+          startDisabled={startDisabled}
+          leaveLabel={t.leave}
+          startLabel={startLabel}
+          highlightStart={highlightStart}
+        />
+      </div>
 
       {connectionDown ? (
-        <div className="connection-modal" role="alert">
-          <div className="connection-modal__content">
-            <h3>{t.connectionLost}</h3>
-            <p>{connectionMessage ?? t.connectionRetry}</p>
-          </div>
-        </div>
+        <ConnectionStatusModal
+          title={t.connectionLost}
+          message={connectionMessage ?? t.connectionRetry}
+        />
       ) : null}
     </div>
   );
