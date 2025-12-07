@@ -29,6 +29,7 @@
   transform-origin: top left;
   will-change: transform;
   z-index: var(--z-map);
+  /* overflow: visible; */
 }
 
 .game__tile {
@@ -128,11 +129,17 @@
   image-rendering: pixelated;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
   z-index: 2;
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 80px;
 }
 
 .game__tile--blocked {
-  filter: grayscale(0.8) brightness(0.6);
-  cursor: not-allowed;
+  filter: grayscale(0.65) brightness(0.7);
+  cursor: pointer;
 }
 
 .game__tile--city-blocked::after {

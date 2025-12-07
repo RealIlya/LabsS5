@@ -13,7 +13,7 @@ export function useMapCamera({
   mapPixelWidth,
   mapPixelHeight,
   overscroll,
-  minZoom = 0.8,
+  minZoom = 0.5,
   maxZoom = 1,
   stepZoom = 0.0002,
 }: UseMapCameraProps) {
@@ -32,6 +32,24 @@ export function useMapCamera({
 
   const clamp = (val: number, min: number, max: number) =>
     Math.min(Math.max(val, min), max);
+
+  const getBounds = (scaledWidth: number, scaledHeight: number) => {
+    const { width: vw, height: vh } = viewportSize;
+    const centerX = (scaledWidth - vw) / 2;
+    const centerY = (scaledHeight - vh) / 2;
+
+    const minX = scaledWidth <= vw ? centerX - overscroll : -overscroll;
+    const maxX =
+      scaledWidth <= vw ? centerX + overscroll : scaledWidth - vw + overscroll;
+
+    const minY = scaledHeight <= vh ? centerY - overscroll : -overscroll;
+    const maxY =
+      scaledHeight <= vh
+        ? centerY + overscroll
+        : scaledHeight - vh + overscroll;
+
+    return { minX, maxX, minY, maxY, centerX, centerY };
+  };
 
   useEffect(() => {
     const updateSize = () => {
@@ -64,10 +82,21 @@ export function useMapCamera({
   }, []);
 
   useEffect(() => {
-    if (viewportSize.width > 0 && offset.x === 0 && offset.y === 0) {
+    if (
+      viewportSize.width > 0 &&
+      viewportSize.height > 0 &&
+      offset.x === 0 &&
+      offset.y === 0
+    ) {
+      const scaledWidth = mapPixelWidth * zoom;
+      const scaledHeight = mapPixelHeight * zoom;
+      const { minX, maxX, minY, maxY, centerX, centerY } = getBounds(
+        scaledWidth,
+        scaledHeight
+      );
       setOffset({
-        x: Math.max(0, (mapPixelWidth * zoom - viewportSize.width) / 2),
-        y: Math.max(0, (mapPixelHeight * zoom - viewportSize.height) / 2),
+        x: clamp(centerX, minX, maxX),
+        y: clamp(centerY, minY, maxY),
       });
     }
   }, [
@@ -100,15 +129,11 @@ export function useMapCamera({
 
     const scaledWidth = mapPixelWidth * zoom;
     const scaledHeight = mapPixelHeight * zoom;
-    const maxDragX = Math.max(0, scaledWidth - viewportSize.width + overscroll);
-    const maxDragY = Math.max(
-      0,
-      scaledHeight - viewportSize.height + overscroll
-    );
+    const { minX, maxX, minY, maxY } = getBounds(scaledWidth, scaledHeight);
 
     setOffset({
-      x: clamp(dragState.current.startOffset.x - dx, -overscroll, maxDragX),
-      y: clamp(dragState.current.startOffset.y - dy, -overscroll, maxDragY),
+      x: clamp(dragState.current.startOffset.x - dx, minX, maxX),
+      y: clamp(dragState.current.startOffset.y - dy, minY, maxY),
     });
   };
 
@@ -133,22 +158,27 @@ export function useMapCamera({
       setOffset((prevOffset) => {
         const nextWidth = mapPixelWidth * nextZoom;
         const nextHeight = mapPixelHeight * nextZoom;
-        const nextMaxX = Math.max(
-          0,
-          nextWidth - viewportSize.width + overscroll
-        );
-        const nextMaxY = Math.max(
-          0,
-          nextHeight - viewportSize.height + overscroll
-        );
+        const { minX, maxX, minY, maxY } = getBounds(nextWidth, nextHeight);
         const newOffsetX = (prevOffset.x + cursorX) * ratio - cursorX;
         const newOffsetY = (prevOffset.y + cursorY) * ratio - cursorY;
         return {
-          x: clamp(newOffsetX, -overscroll, nextMaxX),
-          y: clamp(newOffsetY, -overscroll, nextMaxY),
+          x: clamp(newOffsetX, minX, maxX),
+          y: clamp(newOffsetY, minY, maxY),
         };
       });
       return nextZoom;
+    });
+  };
+
+  const centerOn = (worldX: number, worldY: number) => {
+    const scaledWidth = mapPixelWidth * zoom;
+    const scaledHeight = mapPixelHeight * zoom;
+    const { minX, maxX, minY, maxY } = getBounds(scaledWidth, scaledHeight);
+    const targetX = worldX * zoom - viewportSize.width / 2;
+    const targetY = worldY * zoom - viewportSize.height / 2;
+    setOffset({
+      x: clamp(targetX, minX, maxX),
+      y: clamp(targetY, minY, maxY),
     });
   };
 
@@ -157,6 +187,7 @@ export function useMapCamera({
     viewportSize,
     offset,
     zoom,
+    centerOn,
     handlePointerDown,
     handlePointerMove,
     endDrag,

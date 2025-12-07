@@ -60,11 +60,26 @@ export class GameService {
     action: PlayerAction
   ): GameState {
     const game = this.getGame(gameId);
-    if (game.phase !== "running") {
+
+    if (game.phase === "finished") {
       throw new BadRequestException("Game is not running");
     }
+
     if (game.currentPlayerId !== playerId) {
       throw new BadRequestException("Not your turn");
+    }
+
+    if (
+      game.phase === "capital-placement" &&
+      action.type !== "MOVE_UNIT" &&
+      action.type !== "FOUND_CITY" &&
+      action.type !== "END_TURN"
+    ) {
+      throw new BadRequestException("Action not allowed during capital placement");
+    }
+
+    if (game.phase !== "running" && game.phase !== "capital-placement") {
+      throw new BadRequestException("Game is not running");
     }
 
     switch (action.type) {
@@ -133,6 +148,9 @@ export class GameService {
     if (tile.structure) {
       throw new BadRequestException("Tile already occupied");
     }
+    if (!tile.unit || tile.unit.type !== "Settler" || tile.unit.ownerId !== player.id) {
+      throw new BadRequestException("Capital must be founded by your settler");
+    }
     if (this.isAdjacentToEnemyCity(game, tile.x, tile.y, player.id)) {
       throw new BadRequestException("Too close to another player's city");
     }
@@ -152,6 +170,15 @@ export class GameService {
     tile.structure = city;
     tile.ownerId = player.id;
     const acquiredTileIds = this.claimInitialTerritory(game, tile, player.id);
+
+    const spawnTile = this.findSpawnTile(game, tile, player.id);
+    if (spawnTile) {
+      const warrior = this.createUnit(player.id, player.name, "Warrior");
+      spawnTile.unit = warrior;
+    }
+
+    // Consume settler who founded the capital
+    tile.unit = undefined;
 
     player.capitalCityId = structureId;
     player.populationCap = Math.max(player.populationCap, 50);
@@ -191,7 +218,7 @@ export class GameService {
       capitalCityId: null,
     }));
 
-    return {
+    const game: GameState = {
       id: lobby.gameId,
       turn: 1,
       currentPlayerId: lobby.players[0]?.id ?? "",
@@ -206,6 +233,24 @@ export class GameService {
       tiles,
       events: [],
     };
+
+    // Spawn initial settlers for each player with boosted movement
+    game.players.forEach((player) => {
+      const candidates = game.tiles.filter(
+        (tile) =>
+          isTilePlaceable(tile) && !tile.structure && !tile.unit
+      );
+      if (candidates.length === 0) {
+        return;
+      }
+      const index = Math.floor(Math.random() * candidates.length);
+      const spawnTile = candidates[index];
+      const settler = this.createUnit(player.id, player.name, "Settler");
+      settler.movementPoints = 8;
+      spawnTile.unit = settler;
+    });
+
+    return game;
   }
 
   private recalculatePopulation(game: GameState) {
@@ -232,8 +277,8 @@ export class GameService {
     path: HexCoord[],
     unitId: string
   ) {
-    if (path.length !== 1) {
-      throw new BadRequestException("Only single-step moves are supported");
+    if (path.length < 1) {
+      throw new BadRequestException("Empty path is not allowed");
     }
     const fromTile = this.findUnitTile(game, unitId);
     if (!fromTile || !fromTile.unit) {
@@ -246,29 +291,39 @@ export class GameService {
       throw new BadRequestException("Unit has no movement points");
     }
 
-    const destination = path[0];
-    const toTile = getTile(game.tiles, destination.x, destination.y);
-    if (!toTile) {
-      throw new BadRequestException("Destination out of bounds");
-    }
-    if (!this.areTilesAdjacent(fromTile, toTile)) {
-      throw new BadRequestException("Destination not adjacent");
-    }
-    if (!isTilePlaceable(toTile) && toTile.structure?.ownerId !== playerId) {
-      throw new BadRequestException("Destination blocked");
-    }
-    if (toTile.unit) {
-      throw new BadRequestException("Destination already occupied");
-    }
+    let currentTile = fromTile;
+    let remaining = fromTile.unit.movementPoints;
+    const unitSnapshot = fromTile.unit;
 
-    const movementCost = 1;
-    if (fromTile.unit.movementPoints < movementCost) {
-      throw new BadRequestException("Insufficient movement points");
-    }
+    path.forEach((step, index) => {
+      if (remaining <= 0) {
+        throw new BadRequestException("Unit has no movement points");
+      }
+      const toTile = getTile(game.tiles, step.x, step.y);
+      if (!toTile) {
+        throw new BadRequestException("Destination out of bounds");
+      }
+      if (!this.areTilesAdjacent(currentTile, toTile)) {
+        throw new BadRequestException("Destination not adjacent");
+      }
+      if (!isTilePlaceable(toTile) && toTile.structure?.ownerId !== playerId) {
+        throw new BadRequestException("Destination blocked");
+      }
+      if (toTile.unit) {
+        throw new BadRequestException("Destination already occupied");
+      }
 
-    const remaining = fromTile.unit.movementPoints - movementCost;
-    toTile.unit = { ...fromTile.unit, movementPoints: remaining };
-    fromTile.unit = undefined;
+      const movementCost = 1;
+      if (remaining < movementCost) {
+        throw new BadRequestException("Insufficient movement points");
+      }
+
+      remaining -= movementCost;
+      // move unit step by step
+      currentTile.unit = undefined;
+      toTile.unit = { ...unitSnapshot, movementPoints: remaining };
+      currentTile = toTile;
+    });
 
     this.pushEvent(game, {
       type: "UNIT_MOVED",
@@ -566,8 +621,7 @@ export class GameService {
       throw new BadRequestException("Target out of range");
     }
 
-    const attackPowerBase = UNIT_RULES[attacker.type].baseStats.attack;
-    let attackPower = attackPowerBase;
+    let attackPower = attacker.attack;
 
     if (defenderTile.unit) {
       const defender = defenderTile.unit;
@@ -580,6 +634,7 @@ export class GameService {
 
       const terrainBonus =
         TERRAIN_RULES[defenderTile.terrain]?.defenseBonus ?? 0;
+
       const damage = Math.max(0, Math.round(attackPower * (1 - terrainBonus)));
       defender.health -= damage;
       attacker.movementPoints = Math.max(0, attacker.movementPoints - 1);
@@ -679,6 +734,20 @@ export class GameService {
         tile.ownerId = null;
       }
     });
+
+    const alivePlayers = game.players.filter((p) => p.status !== "defeated");
+    if (alivePlayers.length <= 1) {
+      game.phase = "finished";
+      const winner = alivePlayers[0];
+      if (winner) {
+        this.pushEvent(game, {
+          type: "GAME_FINISHED",
+          payload: {
+            winnerId: winner.id,
+          },
+        });
+      }
+    }
   }
 
   private startPlayerTurn(
@@ -781,7 +850,9 @@ export class GameService {
     if (!spawnTile) {
       return null;
     }
-    const unit = this.createUnit(city.ownerId, city.ownerName, unitType);
+    const unit = this.createUnit(city.ownerId, city.ownerName, unitType, {
+      isVeteran: city.improvement === "Barracks",
+    });
     spawnTile.unit = unit;
     return unit;
   }
@@ -824,16 +895,18 @@ export class GameService {
       return null;
     }
     const cities = this.getPlayerCities(game, playerId);
-    let closest: { city: CityData; distance: number } | null = null;
+    let bestCity: CityData | null = null;
+    let bestDistance = Number.POSITIVE_INFINITY;
     cities.forEach((city) => {
       const cityTile = this.getCityTile(game, city.id);
       if (!cityTile) return;
       const distance = this.hexDistance(tile, cityTile);
-      if (distance <= 1 && (!closest || distance < closest.distance)) {
-        closest = { city, distance };
+      if (distance <= 1 && distance < bestDistance) {
+        bestCity = city;
+        bestDistance = distance;
       }
     });
-    return closest?.city ?? null;
+    return bestCity;
   }
 
   private getPlayer(game: GameState, playerId: string) {
@@ -858,16 +931,37 @@ export class GameService {
     return STRUCTURE_RULES[item.improvementType].productionTurns;
   }
 
-  private createUnit(ownerId: string, ownerName: string, type: UnitType) {
-    const stats = UNIT_RULES[type].baseStats;
+  private createUnit(
+    ownerId: string,
+    ownerName: string,
+    type: UnitType,
+    options?: { isVeteran?: boolean }
+  ) {
+    const baseStats = UNIT_RULES[type].baseStats;
+    const isVeteran = options?.isVeteran ?? false;
+
+    let attack = baseStats.attack;
+    let health = baseStats.health;
+    const movement = baseStats.movement;
+
+    if (isVeteran) {
+      const veteranBonus = STRUCTURE_RULES.Barracks.effects.veteranBonus;
+      if (veteranBonus) {
+        attack = Math.round(attack * (1 + veteranBonus.attack));
+        health = Math.round(health * (1 + veteranBonus.health));
+      }
+    }
+
     return {
       id: `${ownerId}-${type}-${Math.random().toString(36).slice(2, 10)}`,
       ownerId,
       ownerName,
       type,
-      health: stats.health,
-      movementPoints: stats.movement,
-      isVeteran: false,
+      health,
+      maxHealth: health,
+      attack,
+      movementPoints: movement,
+      isVeteran,
     };
   }
 
@@ -952,7 +1046,9 @@ export class GameService {
     }
 
     if (!nextPlayer) {
-      throw new BadRequestException("No active players available for turn rotation");
+      throw new BadRequestException(
+        "No active players available for turn rotation"
+      );
     }
     if (currentIndex >= 0 && nextIndex <= currentIndex) {
       game.turn += 1;

@@ -62,32 +62,32 @@ export const STRUCTURE_RULES: StructureRules = {
     },
   },
   Barracks: {
-    cost: 40,
-    productionTurns: 5,
+    cost: 30,
+    productionTurns: 4,
     category: "CityImprovement",
     effects: {
       veteranBonus: { attack: 0.1, health: 0.1 },
     },
   },
   Granary: {
-    cost: 40,
-    productionTurns: 5,
+    cost: 30,
+    productionTurns: 4,
     category: "CityImprovement",
     effects: {
       populationGrowthBonus: 0.5,
     },
   },
   Farm: {
-    cost: 20,
-    productionTurns: 6,
+    cost: 10,
+    productionTurns: 3,
     category: "Standalone",
     effects: {
       empirePopulationCapIncrease: 5,
     },
   },
   Fort: {
-    cost: 50,
-    productionTurns: 10,
+    cost: 38,
+    productionTurns: 5,
     category: "Standalone",
     effects: {
       garrisonDefenseBonus: 1,

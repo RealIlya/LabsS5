@@ -25,8 +25,7 @@ export function useConnectionStatus(): ConnectionStatus {
       return undefined;
     }
 
-    const apiBase = API_CONFIG.restBaseUrl.replace(/\/api$/, "");
-    const url = `${apiBase}/status`;
+    const url = `${API_CONFIG.restBaseUrl}/status`;
     let cancelled = false;
 
     const checkHealth = async () => {

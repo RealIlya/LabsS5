@@ -20,7 +20,7 @@ interface SubmitActionPayload {
 }
 
 @WebSocketGateway({
-  namespace: "game",
+  namespace: "ws/game",
   cors: { origin: true, credentials: true },
 })
 export class GameGateway {
@@ -57,5 +57,10 @@ export class GameGateway {
         .to(payload.gameId)
         .emit("game:error", { message: error.message ?? "Action failed" });
     }
+  }
+
+  broadcastGameUpdate(gameId: string) {
+    const game = this.gameService.getGame(gameId);
+    this.server.to(gameId).emit("game:update", game);
   }
 }

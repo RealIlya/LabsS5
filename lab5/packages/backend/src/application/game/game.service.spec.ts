@@ -1,6 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { GameService } from "./game.service";
-import { STRUCTURE_RULES, type CityData, type UnitData } from "@hex/shared";
+import {
+  STRUCTURE_RULES,
+  UNIT_RULES,
+  type CityData,
+  type UnitData,
+} from "@hex/shared";
 import type { GameState } from "../../domain/game/game-state";
 import type { Lobby } from "../../domain/lobby/lobby.types";
 import { MemoryStore } from "../../infrastructure/store/memory-store";
@@ -134,13 +139,16 @@ const addUnitToTile = (
   if (!tile) {
     throw new Error("Tile not found");
   }
+  const base = UNIT_RULES[unitType].baseStats;
   const unit: UnitData = {
     id: `${ownerId}-${unitType}-${Date.now()}`,
     ownerId,
     ownerName: ownerId,
     type: unitType,
-    health: 10,
-    movementPoints: 2,
+    health: base.health,
+    maxHealth: base.health,
+    attack: base.attack,
+    movementPoints: base.movement,
     isVeteran: false,
     ...overrides,
   };
@@ -163,25 +171,7 @@ const addSettlerToTile = (
   tileId: string,
   store: MemoryStore
 ) => {
-  const game = store.getGame(gameId) as GameState | null;
-  if (!game) {
-    throw new Error("Game not found");
-  }
-  const tile = game.tiles.find((t) => t.id === tileId);
-  if (!tile) {
-    throw new Error("Tile not found");
-  }
-  const unit: UnitData = {
-    id: `${ownerId}-settler-${Date.now()}`,
-    ownerId,
-    ownerName: ownerId,
-    type: "Settler",
-    health: 10,
-    movementPoints: 2,
-    isVeteran: false,
-  };
-  tile.unit = unit;
-  return unit;
+  return addUnitToTile(gameId, tileId, ownerId, "Settler", {}, store);
 };
 
 const addWarriorToTile = (
@@ -203,7 +193,10 @@ const addWarriorToTile = (
 };
 
 const isTilePassable = (tile: GameState["tiles"][number]) =>
-  tile.terrain !== "Water" && tile.terrain !== "Mountains" && !tile.structure;
+  tile.terrain !== "Water" &&
+  tile.terrain !== "Mountains" &&
+  !tile.structure &&
+  !tile.unit;
 
 const findAdjacentPair = (gameId: string, store: MemoryStore) => {
   const game = store.getGame(gameId) as GameState | null;
@@ -211,7 +204,7 @@ const findAdjacentPair = (gameId: string, store: MemoryStore) => {
     throw new Error("Game not found");
   }
   for (const tile of game.tiles) {
-    if (!isTilePassable(tile) || tile.unit) continue;
+    if (!isTilePassable(tile)) continue;
     const neighbor = offsets[tile.y % 2 === 0 ? "even" : "odd"]
       .map(({ dx, dy }) =>
         game.tiles.find(
@@ -289,6 +282,22 @@ const ensureFarmSpot = (
   throw new Error("No neighboring tile for farm");
 };
 
+const getSettlerTileForPlayer = (
+  gameId: string,
+  ownerId: string,
+  store: MemoryStore
+) => {
+  const game = store.getGame(gameId);
+  if (!game) throw new Error("Game not found");
+  const tile = game.tiles.find(
+    (t) => t.unit?.type === "Settler" && t.unit.ownerId === ownerId
+  );
+  if (!tile) {
+    throw new Error(`Settler for ${ownerId} not found`);
+  }
+  return tile;
+};
+
 describe("GameService actions", () => {
   const testStore = new MemoryStore();
   const service = new GameService(new MapService(), testStore);
@@ -301,21 +310,22 @@ describe("GameService actions", () => {
     const lobby = makeLobby();
     service.createGameForLobby(lobby);
 
-    const firstTile = findPlaceableTile(lobby.gameId, testStore);
-    const secondTile = findSecondTile(
+    const p1SettlerTile = getSettlerTileForPlayer(
       lobby.gameId,
-      firstTile?.id ?? "",
+      "player-1",
       testStore
     );
-    if (!firstTile || !secondTile) {
-      throw new Error("Tiles missing");
-    }
+    const p2SettlerTile = getSettlerTileForPlayer(
+      lobby.gameId,
+      "player-2",
+      testStore
+    );
 
-    service.placeCapital(lobby.gameId, "player-1", firstTile.id);
+    service.placeCapital(lobby.gameId, "player-1", p1SettlerTile.id);
     let game = service.getGame(lobby.gameId);
     expect(game.phase).toBe("capital-placement");
 
-    service.placeCapital(lobby.gameId, "player-2", secondTile.id);
+    service.placeCapital(lobby.gameId, "player-2", p2SettlerTile.id);
     game = service.getGame(lobby.gameId);
     expect(game.phase).toBe("running");
     expect(game.currentPlayerId).toBe("player-1");
@@ -324,17 +334,19 @@ describe("GameService actions", () => {
   it("advances the turn when END_TURN action is applied", () => {
     const lobby = makeLobby();
     service.createGameForLobby(lobby);
-    const firstTile = findPlaceableTile(lobby.gameId, testStore);
-    const secondTile = findSecondTile(
+    const p1SettlerTile = getSettlerTileForPlayer(
       lobby.gameId,
-      firstTile?.id ?? "",
+      "player-1",
       testStore
     );
-    if (!firstTile || !secondTile) {
-      throw new Error("Tiles missing");
-    }
-    service.placeCapital(lobby.gameId, "player-1", firstTile.id);
-    service.placeCapital(lobby.gameId, "player-2", secondTile.id);
+    const p2SettlerTile = getSettlerTileForPlayer(
+      lobby.gameId,
+      "player-2",
+      testStore
+    );
+
+    service.placeCapital(lobby.gameId, "player-1", p1SettlerTile.id);
+    service.placeCapital(lobby.gameId, "player-2", p2SettlerTile.id);
 
     const before = service.getGame(lobby.gameId);
     expect(before.currentPlayerId).toBe("player-1");
@@ -351,20 +363,20 @@ describe("GameService actions", () => {
   it("completes warrior production after required turns", () => {
     const lobby = makeLobby();
     service.createGameForLobby(lobby);
-    const pair = findAdjacentPair(lobby.gameId, testStore);
-    const secondTile = findSecondTile(
+
+    const p1SettlerTile = getSettlerTileForPlayer(
       lobby.gameId,
-      pair?.origin.id ?? "",
+      "player-1",
       testStore
     );
-    if (!pair || !secondTile) {
-      throw new Error("Tiles missing");
-    }
-    service.placeCapital(lobby.gameId, "player-1", pair.origin.id);
-    service.placeCapital(lobby.gameId, "player-2", secondTile.id);
-    // гарантируем свободный соседний тайл для спавна
-    pair.neighbor.ownerId = "player-1";
-    pair.neighbor.structure = undefined;
+    const p2SettlerTile = getSettlerTileForPlayer(
+      lobby.gameId,
+      "player-2",
+      testStore
+    );
+
+    service.placeCapital(lobby.gameId, "player-1", p1SettlerTile.id);
+    service.placeCapital(lobby.gameId, "player-2", p2SettlerTile.id);
 
     const cityTile = getCityTile(lobby.gameId, "player-1", testStore);
     if (!cityTile?.structure) {
@@ -404,18 +416,20 @@ describe("GameService actions", () => {
   it("spawns produced unit next to city when tile occupied", () => {
     const lobby = makeLobby();
     service.createGameForLobby(lobby);
-    const pair = findAdjacentPair(lobby.gameId, testStore);
-    if (!pair) {
-      throw new Error("No adjacent pair");
-    }
-    const second = findSecondTile(
+
+    const p1SettlerTile = getSettlerTileForPlayer(
       lobby.gameId,
-      pair.origin.id ?? "",
+      "player-1",
       testStore
     );
-    if (!second) throw new Error("Second tile not found");
-    service.placeCapital(lobby.gameId, "player-1", pair.origin.id);
-    service.placeCapital(lobby.gameId, "player-2", second.id);
+    const p2SettlerTile = getSettlerTileForPlayer(
+      lobby.gameId,
+      "player-2",
+      testStore
+    );
+
+    service.placeCapital(lobby.gameId, "player-1", p1SettlerTile.id);
+    service.placeCapital(lobby.gameId, "player-2", p2SettlerTile.id);
 
     const cityTile = getCityTile(lobby.gameId, "player-1", testStore);
     if (!cityTile?.structure) {
@@ -427,6 +441,8 @@ describe("GameService actions", () => {
       ownerName: "player-1",
       type: "Warrior",
       health: 20,
+      maxHealth: 20,
+      attack: 10,
       movementPoints: 0,
       isVeteran: false,
     };
@@ -453,7 +469,9 @@ describe("GameService actions", () => {
     });
 
     const updated = service.getGame(lobby.gameId);
-    const originTile = updated.tiles.find((tile) => tile.id === pair.origin.id);
+    const originTile = updated.tiles.find(
+      (tile) => tile.id === cityTile.id
+    );
     expect(originTile?.unit?.id).toBe("garrison");
     const producedTile = updated.tiles.find(
       (tile) =>
@@ -467,17 +485,18 @@ describe("GameService actions", () => {
   it("lets a worker build a fort consuming population", () => {
     const lobby = makeLobby();
     service.createGameForLobby(lobby);
-    const p1Capital = findPlaceableTile(lobby.gameId, testStore);
-    const p2Capital = findSecondTile(
+    const p1SettlerTile = getSettlerTileForPlayer(
       lobby.gameId,
-      p1Capital?.id ?? "",
+      "player-1",
       testStore
     );
-    if (!p1Capital || !p2Capital) {
-      throw new Error("Tiles missing");
-    }
-    service.placeCapital(lobby.gameId, "player-1", p1Capital.id);
-    service.placeCapital(lobby.gameId, "player-2", p2Capital.id);
+    const p2SettlerTile = getSettlerTileForPlayer(
+      lobby.gameId,
+      "player-2",
+      testStore
+    );
+    service.placeCapital(lobby.gameId, "player-1", p1SettlerTile.id);
+    service.placeCapital(lobby.gameId, "player-2", p2SettlerTile.id);
 
     const fortSpot = findFortSpot(lobby.gameId, testStore);
     if (!fortSpot) {
@@ -519,17 +538,18 @@ describe("GameService actions", () => {
   it("builds a farm using the population of the owning city", () => {
     const lobby = makeLobby();
     service.createGameForLobby(lobby);
-    const p1Capital = findPlaceableTile(lobby.gameId, testStore);
-    const p2Capital = findSecondTile(
+    const p1SettlerTile = getSettlerTileForPlayer(
       lobby.gameId,
-      p1Capital?.id ?? "",
+      "player-1",
       testStore
     );
-    if (!p1Capital || !p2Capital) {
-      throw new Error("Tiles missing");
-    }
-    service.placeCapital(lobby.gameId, "player-1", p1Capital.id);
-    service.placeCapital(lobby.gameId, "player-2", p2Capital.id);
+    const p2SettlerTile = getSettlerTileForPlayer(
+      lobby.gameId,
+      "player-2",
+      testStore
+    );
+    service.placeCapital(lobby.gameId, "player-1", p1SettlerTile.id);
+    service.placeCapital(lobby.gameId, "player-2", p2SettlerTile.id);
 
     const farmSpot = ensureFarmSpot(lobby.gameId, "player-1", testStore);
     const worker = addWorkerToTile(
@@ -594,22 +614,24 @@ describe("GameService actions", () => {
   it("destroys an enemy city when its fortification drops to zero", () => {
     const lobby = makeLobby();
     service.createGameForLobby(lobby);
-    const p1Capital = findPlaceableTile(lobby.gameId, testStore);
-    const p2Capital = findSecondTile(
+    const p1SettlerTile = getSettlerTileForPlayer(
       lobby.gameId,
-      p1Capital?.id ?? "",
+      "player-1",
       testStore
     );
-    if (!p1Capital || !p2Capital) {
-      throw new Error("Tiles missing");
-    }
-    service.placeCapital(lobby.gameId, "player-1", p1Capital.id);
-    service.placeCapital(lobby.gameId, "player-2", p2Capital.id);
+    const p2SettlerTile = getSettlerTileForPlayer(
+      lobby.gameId,
+      "player-2",
+      testStore
+    );
+    service.placeCapital(lobby.gameId, "player-1", p1SettlerTile.id);
+    service.placeCapital(lobby.gameId, "player-2", p2SettlerTile.id);
 
     const cityTile = getCityTile(lobby.gameId, "player-2", testStore);
     if (!cityTile?.structure) {
       throw new Error("Enemy city not found");
     }
+    cityTile.unit = undefined;
     const neighborId = ensureAdjacentAttackerTile(
       lobby.gameId,
       cityTile.id,
@@ -641,22 +663,24 @@ describe("GameService actions", () => {
   it("defeats a player when their capital is destroyed", () => {
     const lobby = makeLobby();
     service.createGameForLobby(lobby);
-    const p1Capital = findPlaceableTile(lobby.gameId, testStore);
-    const p2Capital = findSecondTile(
+    const p1SettlerTile = getSettlerTileForPlayer(
       lobby.gameId,
-      p1Capital?.id ?? "",
+      "player-1",
       testStore
     );
-    if (!p1Capital || !p2Capital) {
-      throw new Error("Tiles missing");
-    }
-    service.placeCapital(lobby.gameId, "player-1", p1Capital.id);
-    service.placeCapital(lobby.gameId, "player-2", p2Capital.id);
+    const p2SettlerTile = getSettlerTileForPlayer(
+      lobby.gameId,
+      "player-2",
+      testStore
+    );
+    service.placeCapital(lobby.gameId, "player-1", p1SettlerTile.id);
+    service.placeCapital(lobby.gameId, "player-2", p2SettlerTile.id);
 
     const cityTile = getCityTile(lobby.gameId, "player-2", testStore);
     if (!cityTile?.structure) {
       throw new Error("Enemy capital not found");
     }
+    cityTile.unit = undefined;
     const neighborId = ensureAdjacentAttackerTile(
       lobby.gameId,
       cityTile.id,
@@ -689,18 +713,24 @@ describe("GameService actions", () => {
   it("moves a warrior to adjacent tile and exhausts movement", () => {
     const lobby = makeLobby();
     service.createGameForLobby(lobby);
-    const pair = findAdjacentPair(lobby.gameId, testStore);
-    const secondTile = findSecondTile(
+
+    const p1SettlerTile = getSettlerTileForPlayer(
       lobby.gameId,
-      pair?.origin.id ?? "",
+      "player-1",
       testStore
     );
-    if (!pair || !secondTile) {
-      throw new Error("Tiles missing");
-    }
-    service.placeCapital(lobby.gameId, "player-1", pair.origin.id);
-    service.placeCapital(lobby.gameId, "player-2", secondTile.id);
+    const p2SettlerTile = getSettlerTileForPlayer(
+      lobby.gameId,
+      "player-2",
+      testStore
+    );
+    service.placeCapital(lobby.gameId, "player-1", p1SettlerTile.id);
+    service.placeCapital(lobby.gameId, "player-2", p2SettlerTile.id);
 
+    const pair = findAdjacentPair(lobby.gameId, testStore);
+    if (!pair) {
+      throw new Error("No adjacent pair");
+    }
     const warrior = addWarriorToTile(
       lobby.gameId,
       "player-1",
@@ -729,17 +759,18 @@ describe("GameService actions", () => {
   it("founding a new city increases population cap", () => {
     const lobby = makeLobby();
     service.createGameForLobby(lobby);
-    const p1Capital = findPlaceableTile(lobby.gameId, testStore);
-    const p2Capital = findSecondTile(
+    const p1SettlerTile = getSettlerTileForPlayer(
       lobby.gameId,
-      p1Capital?.id ?? "",
+      "player-1",
       testStore
     );
-    if (!p1Capital || !p2Capital) {
-      throw new Error("Tiles missing");
-    }
-    service.placeCapital(lobby.gameId, "player-1", p1Capital.id);
-    service.placeCapital(lobby.gameId, "player-2", p2Capital.id);
+    const p2SettlerTile = getSettlerTileForPlayer(
+      lobby.gameId,
+      "player-2",
+      testStore
+    );
+    service.placeCapital(lobby.gameId, "player-1", p1SettlerTile.id);
+    service.placeCapital(lobby.gameId, "player-2", p2SettlerTile.id);
 
     const safeTile = findSafeCityTile(lobby.gameId, "player-1", testStore);
     if (!safeTile) throw new Error("No safe tile for new city");

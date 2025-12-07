@@ -86,7 +86,8 @@ export function InfoPanel({
     ) {
       unitBonuses.push(t.unitBonuses.fortified);
     }
-    const terrainBonus = t.unitBonuses.terrain?.[selectedTile.terrain];
+    const terrainBonus =
+      t.unitBonuses.terrain?.[selectedTile.terrain as "Forest" | "Hills"];
     if (terrainBonus) {
       unitBonuses.push(terrainBonus);
     }
@@ -131,18 +132,32 @@ export function InfoPanel({
                     <div className="game__stat-bar">
                       <span title={t.unitStats.health}>❤️</span>
                       <div className="game__progress-track">
-                        <div
-                          className="game__progress-fill"
-                          style={{
-                            width: `${
-                              (selectedTileUnit.health /
-                                selectedUnitStats.baseStats.health) *
-                              100
-                            }%`,
-                          }}
-                        />
+                        {(() => {
+                          const maxHealth =
+                            selectedTileUnit.maxHealth ??
+                            selectedUnitStats.baseStats.health;
+                          const percent = Math.min(
+                            100,
+                            (selectedTileUnit.health / maxHealth) * 100
+                          );
+                          return (
+                            <div
+                              className="game__progress-fill"
+                              style={{ width: `${percent}%` }}
+                            />
+                          );
+                        })()}
                       </div>
-                      <span>{selectedTileUnit.health}</span>
+                      {(() => {
+                        const maxHealth =
+                          selectedTileUnit.maxHealth ??
+                          selectedUnitStats.baseStats.health;
+                        return (
+                          <span>
+                            {selectedTileUnit.health} / {maxHealth}
+                          </span>
+                        );
+                      })()}
                     </div>
                     <div className="game__stat-bar">
                       <span title={t.unitStats.movement}>👟</span>
@@ -154,7 +169,10 @@ export function InfoPanel({
                     </div>
                     <div className="game__stat-bar">
                       <span title={t.unitStats.attack}>⚔️</span>
-                      <span>{selectedUnitStats.baseStats.attack}</span>
+                      <span>
+                        {selectedTileUnit.attack ??
+                          selectedUnitStats.baseStats.attack}
+                      </span>
                     </div>
                     {unitBonuses.length > 0 && (
                       <div className="game__unit-bonuses">

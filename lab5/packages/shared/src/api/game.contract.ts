@@ -19,7 +19,7 @@ export interface HttpContractEntry<Payload, Response> {
   response: Response;
 }
 
-export type GamePhase = "capital-placement" | "running";
+export type GamePhase = "capital-placement" | "running" | "finished";
 
 export type GameStructureState = StructureData;
 
@@ -196,6 +196,13 @@ export interface GameFinishedEvent {
   };
 }
 
+export interface CityDestroyedEvent {
+  type: "CITY_DESTROYED";
+  payload: {
+    cityId: string;
+  };
+}
+
 export type GameEvent =
   | TurnChangedEvent
   | UnitMovedEvent
@@ -208,7 +215,8 @@ export type GameEvent =
   | CityFortificationChangedEvent
   | CityCapturedEvent
   | PlayerDefeatedEvent
-  | GameFinishedEvent;
+  | GameFinishedEvent
+  | CityDestroyedEvent;
 
 export const API_CONTRACT = {
   http: {

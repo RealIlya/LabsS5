@@ -114,7 +114,7 @@
   /* General shadows */
   --shadow-strong: 0 8px 16px rgba(0, 0, 0, 0.6);
   --shadow-glow: 0 0 15px rgba(59, 130, 246, 0.3);
-  --blur-strong: 12px;
+  --blur-strong: 2px;
   --z-map: 0;
   --z-hud: 100;
 }

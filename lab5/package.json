@@ -1,12 +1,13 @@
 {
   "name": "hex-strategy-monorepo",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "packageManager": "pnpm@8.15.8",
   "scripts": {
     "dev:front": "pnpm --filter frontend dev",
     "dev:back": "pnpm --filter backend start:dev",
-    "build": "pnpm -r build",
+    "build": "pnpm --filter @hex/shared build && pnpm --filter frontend build && pnpm --filter backend build",
+    "test": "pnpm run test:back && pnpm run test:front",
     "lint": "pnpm -r lint",
     "test:front": "pnpm --filter frontend test",
     "test:back": "pnpm --filter backend test"

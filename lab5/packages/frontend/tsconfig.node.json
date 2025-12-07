@@ -12,6 +12,7 @@
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
     "baseUrl": ".",
     "paths": {
       "@hex/shared": ["../shared/src/index"],

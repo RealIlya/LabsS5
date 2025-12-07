@@ -18,6 +18,8 @@ export interface MapUnit {
   health: number;
   isVeteran: boolean;
   movementPoints?: number;
+  attack?: number;
+  maxHealth?: number;
 }
 
 export interface MapTile {

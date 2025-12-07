@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   STRUCTURE_RULES,
   UNIT_RULES,
@@ -15,6 +15,7 @@ import type { PlayerAction } from "@hex/shared";
 import { useLobbyStore } from "../../../entities/lobby/model/useLobbyStore";
 import { useConnectionStatus } from "../../../shared/hooks/useConnectionStatus";
 import { useGameMutations } from "../../../entities/game/model/useGameMutations";
+import { useGameSocket } from "../../../entities/game/model/useGameSocket";
 import { TopBar } from "./components/TopBar";
 import { InfoPanel } from "./components/InfoPanel";
 import { ActionsPanel } from "./components/ActionsPanel";
@@ -35,9 +36,12 @@ import "./GameMapPage.css";
 import { useProfileStore } from "../../../entities/profile/model/useProfileStore";
 import { Button } from "../../../shared/ui/button";
 
-type PlayerCityTile = MapTile & { structure: CityData };
+type PlayerCityTile = MapTile & {
+  structure: CityData & { isCapital: boolean };
+};
 
 export function GameMapPage() {
+  const navigate = useNavigate();
   const t = useMemo(() => translations.ru.game, []);
   const [searchParams] = useSearchParams();
 
@@ -45,6 +49,7 @@ export function GameMapPage() {
   const storedGameId = useLobbyStore((state) => state.currentGameId);
   const lobby = useLobbyStore((state) => state.lobby);
   const setGameId = useLobbyStore((state) => state.setGameId);
+  const resetLobby = useLobbyStore((state) => state.reset);
   const selfId = useLobbyStore((state) => state.selfId);
   const setSelfId = useLobbyStore((state) => state.setSelfId);
   const connectionStatus = useConnectionStatus();
@@ -66,6 +71,7 @@ export function GameMapPage() {
   }, [selfId, profile?.id, setSelfId]);
 
   const { data: gameState, isLoading, isError } = useGameState(effectiveGameId);
+  useGameSocket({ gameId: effectiveGameId });
   const { placeCapitalMutation, submitActionMutation } = useGameMutations(
     effectiveGameId,
     effectivePlayerId
@@ -78,9 +84,9 @@ export function GameMapPage() {
     return map;
   }, [gameState?.players]);
 
-  const mapTiles = useMemo(() => {
+  const mapTiles = useMemo<MapTile[]>(() => {
     if (!gameState?.tiles) return [];
-    return gameState.tiles.map((tile) => ({
+    return gameState.tiles.map<MapTile>((tile) => ({
       id: tile.id,
       x: Number(tile.x),
       y: Number(tile.y),
@@ -150,18 +156,25 @@ export function GameMapPage() {
     : null;
   const playerDefeated = playerState?.status === "defeated";
   const isPlacementPhase = gameState?.phase === "capital-placement";
+  const isFinished = gameState?.phase === "finished";
   const needsCapital =
     Boolean(playerState) && isPlacementPhase && !playerState?.capitalCityId;
   const waitingForOpponents = isPlacementPhase && !needsCapital;
-  const controlsDisabled = isPlacementPhase || playerDefeated; // В будущем можно разблокировать для других фаз
+  const controlsDisabled = playerDefeated || isFinished;
   const isMyTurn =
     Boolean(effectivePlayerId) &&
     Boolean(gameState) &&
-    !isPlacementPhase &&
     !playerDefeated &&
+    !isFinished &&
     gameState?.currentPlayerId === effectivePlayerId;
   const connectionDown = connectionStatus.status === "offline";
   const connectionMessage = connectionStatus.message ?? t.connectionLost;
+
+  const lastEvent = gameState?.events?.[gameState.events.length - 1];
+  const isWinner =
+    isFinished &&
+    lastEvent?.type === "GAME_FINISHED" &&
+    lastEvent.payload.winnerId === effectivePlayerId;
 
   // --- Map & Drag Logic ---
   const [selectedTile, setSelectedTile] = useState<MapTile | null>(null);
@@ -201,6 +214,7 @@ export function GameMapPage() {
     viewportRef,
     offset,
     zoom,
+    centerOn,
     handlePointerDown,
     handlePointerMove,
     endDrag,
@@ -219,6 +233,23 @@ export function GameMapPage() {
     autoSelectEnabled,
     (tile) => setSelectedTile(tile)
   );
+
+  useEffect(() => {
+    if (!needsCapital || !effectivePlayerId) return;
+    const settlerTile = mapTiles.find(
+      (tile) =>
+        tile.unit?.type === "Settler" &&
+        tile.unit.ownerId === effectivePlayerId
+    );
+    if (!settlerTile) return;
+    const tileCenterX =
+      settlerTile.x * HEX_CONFIG.WIDTH +
+      (settlerTile.y % 2 ? HEX_CONFIG.WIDTH / 2 : 0) +
+      HEX_CONFIG.WIDTH / 2;
+    const tileCenterY =
+      settlerTile.y * HEX_CONFIG.ROW_SPACING_V + HEX_CONFIG.HEIGHT / 2;
+    centerOn(tileCenterX, tileCenterY);
+  }, [needsCapital, effectivePlayerId, mapTiles, centerOn]);
 
   const handleEndTurn = () => {
     if (!isMyTurn || submitActionMutation.isPending) {
@@ -250,7 +281,9 @@ export function GameMapPage() {
     tile.terrain !== "Mountains" &&
     tile.terrain !== "Water" &&
     !tile.structure &&
-    !hasEnemyAdjacentCity(tile);
+    !hasEnemyAdjacentCity(tile) &&
+    tile.unit?.type === "Settler" &&
+    tile.unit.ownerId === effectivePlayerId;
 
   // --- Render Vars ---
   const selectedTileUnit = selectedTile?.unit ?? null;
@@ -264,7 +297,7 @@ export function GameMapPage() {
       ? selectedTileUnit.movementPoints ?? selectedUnitStats.baseStats.movement
       : 0;
 
-  const { moveTargets, attackTargets } = useActionTargets({
+  const { moveTargets, movePaths, attackTargets } = useActionTargets({
     activeAction,
     selectedTile,
     selectedTileUnit,
@@ -277,24 +310,17 @@ export function GameMapPage() {
     if (spacePressed || isDragging) return;
     setAutoSelectEnabled(true);
 
-    if (needsCapital) {
-      setSelectedTile(tile);
-      if (isTileEligibleForCapital(tile) && !placeCapitalMutation.isPending) {
-        placeCapitalMutation.mutate(tile.id);
-      }
-      return;
-    }
-
     if (
       activeAction === "move" &&
       moveTargets.has(tile.id) &&
       selectedTile?.unit
     ) {
+      const path = movePaths.get(tile.id) ?? [{ x: tile.x, y: tile.y }];
       const action: PlayerAction = {
         type: "MOVE_UNIT",
         payload: {
           unitId: selectedTile.unit.id,
-          path: [{ x: tile.x, y: tile.y }],
+          path,
         },
       };
       submitActionMutation.mutate(action, {
@@ -493,14 +519,14 @@ export function GameMapPage() {
 
   const canFoundCity = !!(
     !controlsDisabled &&
-    isMyTurn &&
     selectedTile &&
     !selectedTile.structure &&
     selectedTile.terrain !== "Water" &&
     selectedTile.terrain !== "Mountains" &&
     !hasEnemyAdjacentCity(selectedTile) &&
     selectedTileUnit?.ownerId === effectivePlayerId &&
-    selectedTileUnit.type === "Settler"
+    selectedTileUnit.type === "Settler" &&
+    (needsCapital || isMyTurn)
   );
 
   const enemyCityBuffer = useMemo(() => {
@@ -546,7 +572,7 @@ export function GameMapPage() {
     setMenuType("worker-build");
   };
 
-  const farmDonorCity = useMemo(() => {
+  const farmDonorCity = useMemo<PlayerCityTile | null>(() => {
     if (
       !selectedTile ||
       !effectivePlayerId ||
@@ -559,7 +585,7 @@ export function GameMapPage() {
     playerCityTiles.forEach((cityTile) => {
       const distance = hexDistance(selectedTile, cityTile);
       if (distance <= 1 && distance < closestDistance) {
-        closest = cityTile as PlayerCityTile;
+        closest = cityTile;
         closestDistance = distance;
       }
     });
@@ -567,7 +593,14 @@ export function GameMapPage() {
   }, [effectivePlayerId, hexDistance, playerCityTiles, selectedTile]);
 
   const handleFoundCity = () => {
-    if (!canFoundCity || !selectedTileUnit) return;
+    if (!canFoundCity || !selectedTileUnit || !selectedTile) return;
+
+    if (needsCapital) {
+      // Первую столицу ставим через специальный эндпоинт
+      placeCapitalMutation.mutate(selectedTile.id);
+      return;
+    }
+
     const action: PlayerAction = {
       type: "FOUND_CITY",
       payload: { settlerId: selectedTileUnit.id },
@@ -794,6 +827,38 @@ export function GameMapPage() {
           waitingForOpponents={waitingForOpponents}
         />
       </div>
+      {playerDefeated ? (
+        <div className="game__status-overlay">
+          <div className="game__status-card">
+            <h3>{translations.ru.defeatModal.title}</h3>
+            <p>{translations.ru.defeatModal.description}</p>
+            <Button
+              onClick={() => {
+                resetLobby();
+                navigate("/");
+              }}
+            >
+              {translations.ru.defeatModal.exitButton}
+            </Button>
+          </div>
+        </div>
+      ) : null}
+      {isWinner ? (
+        <div className="game__status-overlay">
+          <div className="game__status-card">
+            <h3>{translations.ru.victory.title}</h3>
+            <p>{translations.ru.victory.description}</p>
+            <Button
+              onClick={() => {
+                resetLobby();
+                navigate("/");
+              }}
+            >
+              {translations.ru.victory.exitButton}
+            </Button>
+          </div>
+        </div>
+      ) : null}
       {connectionDown ? (
         <div className="connection-modal" role="alert">
           <div className="connection-modal__content">

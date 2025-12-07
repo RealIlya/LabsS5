@@ -14,6 +14,8 @@ export interface UnitData {
   ownerName: string;
   type: UnitType;
   health: number;
+  maxHealth: number;
+  attack: number;
   movementPoints: number;
   isVeteran: boolean;
 }
@@ -43,36 +45,36 @@ export type UnitRules = Record<UnitType, UnitRule>;
 
 export const UNIT_RULES: UnitRules = {
   Warrior: {
-    cost: 10,
-    productionTurns: 2,
+    cost: 8,
+    productionTurns: 1,
     baseStats: { attack: 10, health: 20, movement: 2 },
     abilities: {},
   },
   Spearman: {
-    cost: 15,
-    productionTurns: 8,
+    cost: 12,
+    productionTurns: 2,
     baseStats: { attack: 8, health: 25, movement: 2 },
     abilities: {
       bonusVs: [{ type: "Horseman", multiplier: 2 }],
     },
   },
   Archer: {
-    cost: 15,
-    productionTurns: 5,
+    cost: 14,
+    productionTurns: 2,
     baseStats: { attack: 7, health: 15, movement: 2 },
     abilities: {
       range: 2,
     },
   },
   Horseman: {
-    cost: 25,
-    productionTurns: 9,
+    cost: 20,
+    productionTurns: 3,
     baseStats: { attack: 9, health: 20, movement: 4 },
     abilities: {},
   },
   Worker: {
-    cost: 20,
-    productionTurns: 5,
+    cost: 12,
+    productionTurns: 2,
     baseStats: { attack: 0, health: 10, movement: 2 },
     abilities: {
       canAttack: false,
@@ -80,8 +82,8 @@ export const UNIT_RULES: UnitRules = {
     },
   },
   Settler: {
-    cost: 50,
-    productionTurns: 20,
+    cost: 38,
+    productionTurns: 7,
     baseStats: { attack: 0, health: 10, movement: 2 },
     abilities: {
       canAttack: false,

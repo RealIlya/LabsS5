@@ -24,6 +24,8 @@ export function MainMenuPage() {
   const [profilePassword, setProfilePassword] = useState("");
   const [profileError, setProfileError] = useState<string | null>(null);
   const t = useMemo(() => translations.ru.mainMenu, []);
+  const tutorialT = useMemo(() => translations.ru.tutorialCards, []);
+  const tutorialGameT = useMemo(() => translations.ru.game, []);
   const createLobbyMutation = useCreateLobbyMutation();
   const joinLobbyMutation = useJoinLobbyMutation();
   const isJoining = joinLobbyMutation.isPending;
@@ -156,6 +158,41 @@ export function MainMenuPage() {
     if (!gameId) return;
     navigate(`/game?gameId=${gameId}`);
   };
+
+  type TutorialTab = "units" | "structures" | "rules";
+  const [activeTutorialTab, setActiveTutorialTab] =
+    useState<TutorialTab>("rules");
+
+  const unitCards = useMemo(
+    () =>
+      Object.entries(tutorialGameT.units).map(([key, label]) => ({
+        key,
+        title: label,
+        description:
+          tutorialGameT.hints.units[
+            key as keyof typeof tutorialGameT.hints.units
+          ] ?? "",
+      })),
+    [tutorialGameT]
+  );
+
+  const structureCards = useMemo(() => {
+    const anyGame = tutorialGameT as any;
+    const hints = anyGame.hints.structures as Record<string, string>;
+    const structureMeta =
+      (anyGame.structureCards as Record<
+        string,
+        { name: string; description?: string }
+      >) ?? {};
+    return Object.entries(hints).map(([key, description]) => {
+      const meta = structureMeta[key];
+      return {
+        key,
+        title: meta?.name ?? key,
+        description: meta?.description ?? description,
+      };
+    });
+  }, [tutorialGameT]);
 
   return (
     <div className="main-menu">
@@ -319,13 +356,83 @@ export function MainMenuPage() {
       {isTutorialOpen ? (
         <div className="main-menu__modal" role="dialog" aria-modal="true">
           <div className="main-menu__modal-content">
-            <h2>{t.tutorialModal.title}</h2>
-            <p>{t.tutorialModal.description}</p>
-            <ol>
-              {t.tutorialModal.steps.map((step) => (
-                <li key={step}>{step}</li>
-              ))}
-            </ol>
+            <h2>{tutorialT.title}</h2>
+            <p>{tutorialT.subtitle}</p>
+            <div className="main-menu__tutorial-tabs">
+              <button
+                type="button"
+                className={cn(
+                  "main-menu__tutorial-tab",
+                  activeTutorialTab === "units" &&
+                    "main-menu__tutorial-tab--active"
+                )}
+                onClick={() => setActiveTutorialTab("units")}
+              >
+                {tutorialT.tabs.units}
+              </button>
+              <button
+                type="button"
+                className={cn(
+                  "main-menu__tutorial-tab",
+                  activeTutorialTab === "structures" &&
+                    "main-menu__tutorial-tab--active"
+                )}
+                onClick={() => setActiveTutorialTab("structures")}
+              >
+                {tutorialT.tabs.structures}
+              </button>
+              <button
+                type="button"
+                className={cn(
+                  "main-menu__tutorial-tab",
+                  activeTutorialTab === "rules" &&
+                    "main-menu__tutorial-tab--active"
+                )}
+                onClick={() => setActiveTutorialTab("rules")}
+              >
+                {tutorialT.tabs.rules}
+              </button>
+            </div>
+            {activeTutorialTab === "rules" ? (
+              <div className="main-menu__tutorial-grid">
+                {t.tutorialModal.steps.map((step, index) => (
+                  <div key={step} className="main-menu__tutorial-card">
+                    <div className="main-menu__tutorial-card-title">
+                      {index + 1}.
+                    </div>
+                    <p className="main-menu__tutorial-card-text">{step}</p>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+            {activeTutorialTab === "units" ? (
+              <div className="main-menu__tutorial-grid">
+                {unitCards.map((card) => (
+                  <div key={card.key} className="main-menu__tutorial-card">
+                    <div className="main-menu__tutorial-card-title">
+                      {card.title}
+                    </div>
+                    <p className="main-menu__tutorial-card-text">
+                      {card.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+            {activeTutorialTab === "structures" ? (
+              <div className="main-menu__tutorial-grid">
+                {structureCards.map((card) => (
+                  <div key={card.key} className="main-menu__tutorial-card">
+                    <div className="main-menu__tutorial-card-title">
+                      {card.title}
+                    </div>
+                    <p className="main-menu__tutorial-card-text">
+                      {card.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : null}
             <Button variant="secondary" onClick={() => setTutorialOpen(false)}>
               {t.tutorialModal.close}
             </Button>

@@ -1,15 +1,11 @@
-export type TerrainType =
-  | "Plains"
-  | "Forest"
-  | "Hills"
-  | "Mountains"
-  | "Water";
+export type TerrainType = "Plains" | "Forest" | "Hills" | "Mountains" | "Water";
 
 export interface TerrainRule {
   movementCost: number;
   defenseBonus: number;
 }
 
+// TODO: Использовать movementCost в логике
 export const TERRAIN_RULES: Record<TerrainType, TerrainRule> = {
   Plains: {
     movementCost: 1,

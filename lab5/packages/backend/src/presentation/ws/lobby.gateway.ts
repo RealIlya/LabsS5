@@ -26,7 +26,7 @@ interface LobbyStartPayload {
 }
 
 @WebSocketGateway({
-  namespace: "lobby",
+  namespace: "ws/lobby",
   cors: { origin: true, credentials: true },
 })
 export class LobbyGateway implements OnGatewayConnection, OnGatewayDisconnect {

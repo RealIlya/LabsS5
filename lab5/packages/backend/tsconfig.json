@@ -5,11 +5,10 @@
     "moduleResolution": "Node",
     "baseUrl": ".",
     "paths": {
-      "@hex/shared": ["../shared/src/index.ts"],
-      "@hex/shared/*": ["../shared/src/*"]
+      "@hex/shared": ["../shared/dist/index.d.ts"],
+      "@hex/shared/*": ["../shared/dist/*"]
     },
     "rootDir": "src",
-    "rootDirs": ["src", "../shared/src"],
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,

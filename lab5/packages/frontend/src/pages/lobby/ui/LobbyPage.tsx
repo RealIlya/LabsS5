@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type {
   LobbyPlayerState,
@@ -13,8 +13,8 @@ import {
 } from "../../../entities/lobby/model/useLobbyMutations";
 import { API_CONFIG } from "../../../shared/config/api.config";
 import { lobbyApi } from "../../../entities/lobby/api/lobbyApi";
-import { io, type Socket } from "socket.io-client";
 import { useConnectionStatus } from "../../../shared/hooks/useConnectionStatus";
+import { useLobbySocket } from "../../../entities/lobby/model/useLobbySocket";
 import {
   LobbyHeader,
   LobbyPlayersList,
@@ -55,7 +55,6 @@ export function LobbyPage() {
   const toggleReadyMutation = useToggleReadyMutation();
   const startLobbyMutation = useStartLobbyMutation();
   const leaveLobbyMutation = useLeaveLobbyMutation();
-  const socketRef = useRef<Socket | null>(null);
   const connectionStatus = useConnectionStatus();
   const [socketError, setSocketError] = useState<string | null>(null);
   const [copyStatus, setCopyStatus] = useState<"idle" | "done" | "error">(
@@ -72,75 +71,51 @@ export function LobbyPage() {
     ? lobby.hostId === currentPlayer?.id
     : currentPlayer?.id === fallbackPlayers[0]?.id;
 
-  useEffect(() => {
-    if (
-      !lobbyId ||
-      !selfId ||
-      API_CONFIG.useMock ||
-      !API_CONFIG.socketBaseUrl
-    ) {
-      return undefined;
-    }
-
-    const socket = io(`${API_CONFIG.socketBaseUrl}/lobby`, {
-      withCredentials: true,
-    });
-    socketRef.current = socket;
-
-    const handleUpdate = (state: LobbyState) => {
+  const handleSocketStateUpdate = useCallback(
+    (state: LobbyState) => {
       const hasSelf = state.players.some((p) => p.id === selfId);
       if (!hasSelf) {
         resetLobby();
         navigate("/");
         return;
       }
-      setLobby(state, selfId);
-      setSocketError(null);
-    };
+      setLobby(state, selfId!);
+    },
+    [navigate, resetLobby, selfId, setLobby]
+  );
 
-    const handleGameStarted = (payload: { gameId: string }) => {
+  const handleSocketGameStarted = useCallback(
+    (payload: { gameId: string }) => {
       setGameId(payload.gameId);
       navigate(`/game?gameId=${payload.gameId}`);
-    };
+    },
+    [navigate, setGameId]
+  );
 
-    socket.on("connect", () => {
-      socket.emit("lobby:join", { lobbyId });
-      setSocketError(null);
-    });
-    socket.on("disconnect", () => {
-      setSocketError(t.connectionLost);
-    });
-    socket.on("connect_error", (error: Error) => {
-      setSocketError(error.message ?? t.connectionLost);
-    });
-    socket.on("lobby:update", handleUpdate);
-    socket.on("lobby:game_started", handleGameStarted);
-    socket.on("lobby:error", (payload: { message: string }) => {
-      setSocketError(payload?.message ?? t.connectionLost);
-    });
-    socket.on("lobby:removed", () => {
-      resetLobby();
-      navigate("/");
-    });
+  const handleSocketRemoved = useCallback(() => {
+    resetLobby();
+    navigate("/");
+  }, [navigate, resetLobby]);
 
-    return () => {
-      socket.off("lobby:update", handleUpdate);
-      socket.off("lobby:game_started", handleGameStarted);
-      socket.off("disconnect");
-      socket.off("connect_error");
-      socket.off("lobby:removed");
-      socket.disconnect();
-      socketRef.current = null;
-    };
-  }, [
+  const handleSocketError = useCallback(
+    (message: string | null) => {
+      if (!message) {
+        setSocketError(null);
+      } else {
+        setSocketError(t.connectionLost);
+      }
+    },
+    [t.connectionLost]
+  );
+
+  useLobbySocket({
     lobbyId,
     selfId,
-    navigate,
-    resetLobby,
-    setGameId,
-    setLobby,
-    t.connectionLost,
-  ]);
+    onStateUpdate: handleSocketStateUpdate,
+    onGameStarted: handleSocketGameStarted,
+    onRemoved: handleSocketRemoved,
+    onError: handleSocketError,
+  });
 
   useEffect(() => {
     if (

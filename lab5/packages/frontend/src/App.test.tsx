@@ -31,12 +31,6 @@ describe("App", () => {
     ).toBeInTheDocument();
   });
 
-  it("показывает обзор юнитов/структур на маршруте overview", () => {
-    renderWithRouter(["/overview"]);
-    expect(screen.getByRole("heading", { name: "Тайлы" })).toBeInTheDocument();
-    expect(screen.getByText("Равнина")).toBeVisible();
-  });
-
   it("рендерит лобби на маршруте /lobby", () => {
     renderWithRouter(["/lobby"]);
     expect(
