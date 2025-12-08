@@ -1,6 +1,7 @@
 export const MAP_COLUMNS = 24;
 export const MAP_ROWS = 24;
 export const PLAYER_COLORS = ["#0EA5E9", "#FFB347", "#6C63FF", "#FF6F91"];
+export const TURN_DURATION_SECONDS = 60;
 
 export const CITY_MAX_FORTIFICATION = 100;
 export const CITY_FORT_REGEN = 10;

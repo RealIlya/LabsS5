@@ -13,10 +13,22 @@ interface LobbyStoreState {
 }
 
 const GAME_STORAGE_KEY = "hex-current-game";
+const LOBBY_STORAGE_KEY = "hex-current-lobby";
+const SELF_STORAGE_KEY = "hex-self-id";
 
 const readStoredGameId = () => {
   if (typeof window === "undefined") return null;
   return window.localStorage.getItem(GAME_STORAGE_KEY);
+};
+
+const readStoredLobbyId = () => {
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem(LOBBY_STORAGE_KEY);
+};
+
+const readStoredSelfId = () => {
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem(SELF_STORAGE_KEY);
 };
 
 const writeStoredGameId = (value: string | null) => {
@@ -28,16 +40,39 @@ const writeStoredGameId = (value: string | null) => {
   }
 };
 
+const writeStoredLobbyId = (value: string | null) => {
+  if (typeof window === "undefined") return;
+  if (value) {
+    window.localStorage.setItem(LOBBY_STORAGE_KEY, value);
+  } else {
+    window.localStorage.removeItem(LOBBY_STORAGE_KEY);
+  }
+};
+
+const writeStoredSelfId = (value: string | null) => {
+  if (typeof window === "undefined") return;
+  if (value) {
+    window.localStorage.setItem(SELF_STORAGE_KEY, value);
+  } else {
+    window.localStorage.removeItem(SELF_STORAGE_KEY);
+  }
+};
+
 export const useLobbyStore = create<LobbyStoreState>((set) => ({
   lobby: null,
-  selfId: null,
+  selfId: readStoredSelfId(),
   currentGameId: readStoredGameId(),
   setLobby: (data, selfId) => {
     const gameId = data.gameId ?? null;
     writeStoredGameId(gameId);
+    writeStoredLobbyId(data.id);
+    writeStoredSelfId(selfId);
     set({ lobby: data, selfId, currentGameId: gameId });
   },
-  setSelfId: (id) => set({ selfId: id }),
+  setSelfId: (id) => {
+    writeStoredSelfId(id);
+    set({ selfId: id });
+  },
   updatePlayerReady: (playerId, isReady) =>
     set((state) => {
       if (!state.lobby) {
@@ -58,6 +93,8 @@ export const useLobbyStore = create<LobbyStoreState>((set) => ({
   },
   reset: () => {
     writeStoredGameId(null);
+    writeStoredLobbyId(null);
+    writeStoredSelfId(null);
     set({ lobby: null, selfId: null, currentGameId: null });
   },
 }));

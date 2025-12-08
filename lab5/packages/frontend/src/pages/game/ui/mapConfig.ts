@@ -62,9 +62,15 @@ export const unitEmoji: Record<UnitType, string> = {
   Worker: "🔨",
 };
 
-export const isTilePassable = (tile: MapTile, playerId: string | null) => {
-  // Нельзя ходить по воде и горам
-  if (tile.terrain === "Water" || tile.terrain === "Mountains") return false;
+export const isTilePassable = (
+  tile: MapTile,
+  playerId: string | null,
+  unitType?: UnitType
+) => {
+  const canCrossWater = unitType === "Horseman" && tile.terrain === "Water";
+  // Нельзя ходить по горам; воду может пересечь только Всадник
+  if (tile.terrain === "Mountains") return false;
+  if (tile.terrain === "Water" && !canCrossWater) return false;
 
   // Нельзя вставать на клетку, где уже есть юнит (свой или чужой)
   // (Предполагаем отсутствие стеков)

@@ -1,4 +1,4 @@
-export const API_PREFIX = "/api";
+export const API_PREFIX = "api";
 
 export const API_ENDPOINTS = {
   listLobbies: "/lobbies",
@@ -10,5 +10,5 @@ export const API_ENDPOINTS = {
   leaveLobby: (lobbyId: string) => `/lobbies/${lobbyId}/players`,
   gameState: (gameId: string) => `/games/${gameId}`,
   placeCapital: (gameId: string) => `/games/${gameId}/place-capital`,
+  authProfile: "/profiles/auth",
 } as const;
-

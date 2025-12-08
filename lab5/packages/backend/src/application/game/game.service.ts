@@ -28,6 +28,7 @@ import {
   MAP_COLUMNS,
   MAP_ROWS,
   PLAYER_COLORS,
+  TURN_DURATION_SECONDS,
 } from "./game.constants";
 import { getNeighbors, getTile, isTilePlaceable } from "./game.utils";
 import type { StorePort } from "../../infrastructure/store/store.port";
@@ -44,6 +45,10 @@ export class GameService {
     const game = this.memoryStore.getGame(gameId);
     if (!game) {
       throw new NotFoundException("Game not found");
+    }
+    const updated = this.ensureTurnDeadline(game);
+    if (updated) {
+      this.memoryStore.saveGame(game);
     }
     return game;
   }
@@ -75,7 +80,9 @@ export class GameService {
       action.type !== "FOUND_CITY" &&
       action.type !== "END_TURN"
     ) {
-      throw new BadRequestException("Action not allowed during capital placement");
+      throw new BadRequestException(
+        "Action not allowed during capital placement"
+      );
     }
 
     if (game.phase !== "running" && game.phase !== "capital-placement") {
@@ -148,7 +155,11 @@ export class GameService {
     if (tile.structure) {
       throw new BadRequestException("Tile already occupied");
     }
-    if (!tile.unit || tile.unit.type !== "Settler" || tile.unit.ownerId !== player.id) {
+    if (
+      !tile.unit ||
+      tile.unit.type !== "Settler" ||
+      tile.unit.ownerId !== player.id
+    ) {
       throw new BadRequestException("Capital must be founded by your settler");
     }
     if (this.isAdjacentToEnemyCity(game, tile.x, tile.y, player.id)) {
@@ -223,6 +234,8 @@ export class GameService {
       turn: 1,
       currentPlayerId: lobby.players[0]?.id ?? "",
       currentPlayerName: lobby.players[0]?.nickname ?? "Commander",
+      turnEndsAt: null,
+      turnDurationSeconds: TURN_DURATION_SECONDS,
       population: { current: 0, cap: 0 },
       phase: "capital-placement",
       map: {
@@ -237,8 +250,7 @@ export class GameService {
     // Spawn initial settlers for each player with boosted movement
     game.players.forEach((player) => {
       const candidates = game.tiles.filter(
-        (tile) =>
-          isTilePlaceable(tile) && !tile.structure && !tile.unit
+        (tile) => isTilePlaceable(tile) && !tile.structure && !tile.unit
       );
       if (candidates.length === 0) {
         return;
@@ -306,7 +318,14 @@ export class GameService {
       if (!this.areTilesAdjacent(currentTile, toTile)) {
         throw new BadRequestException("Destination not adjacent");
       }
-      if (!isTilePlaceable(toTile) && toTile.structure?.ownerId !== playerId) {
+      const unitType = unitSnapshot.type;
+      const canEnterWater =
+        unitType === "Horseman" && toTile.terrain === "Water";
+      if (
+        !canEnterWater &&
+        !isTilePlaceable(toTile) &&
+        toTile.structure?.ownerId !== playerId
+      ) {
         throw new BadRequestException("Destination blocked");
       }
       if (toTile.unit) {
@@ -324,6 +343,10 @@ export class GameService {
       toTile.unit = { ...unitSnapshot, movementPoints: remaining };
       currentTile = toTile;
     });
+
+    if (currentTile.terrain === "Water" && unitSnapshot.type === "Horseman") {
+      throw new BadRequestException("Horseman cannot stop on water");
+    }
 
     this.pushEvent(game, {
       type: "UNIT_MOVED",
@@ -720,6 +743,59 @@ export class GameService {
     });
   }
 
+  private scheduleTurnDeadline(game: GameState) {
+    if (game.phase !== "running") {
+      game.turnEndsAt = null;
+      return;
+    }
+    const deadline = Date.now() + TURN_DURATION_SECONDS * 1000;
+    game.turnEndsAt = new Date(deadline).toISOString();
+  }
+
+  refreshTurnDeadline(game: GameState): boolean {
+    const updated = this.ensureTurnDeadline(game);
+    if (updated) {
+      this.memoryStore.saveGame(game);
+    }
+    return updated;
+  }
+
+  private ensureTurnDeadline(game: GameState): boolean {
+    if (game.phase === "finished") {
+      if (game.turnEndsAt !== null) {
+        game.turnEndsAt = null;
+        return true;
+      }
+      return false;
+    }
+
+    if (game.phase !== "running") {
+      if (game.turnEndsAt !== null) {
+        game.turnEndsAt = null;
+        return true;
+      }
+      return false;
+    }
+
+    if (!game.turnEndsAt) {
+      this.scheduleTurnDeadline(game);
+      return true;
+    }
+
+    const deadline = Date.parse(game.turnEndsAt);
+    if (Number.isNaN(deadline)) {
+      this.scheduleTurnDeadline(game);
+      return true;
+    }
+
+    if (Date.now() <= deadline) {
+      return false;
+    }
+
+    this.advanceTurn(game);
+    return true;
+  }
+
   private defeatPlayer(game: GameState, playerId: string) {
     const player = this.getPlayer(game, playerId);
     player.status = "defeated";
@@ -747,6 +823,7 @@ export class GameService {
           },
         });
       }
+      game.turnEndsAt = null;
     }
   }
 
@@ -758,6 +835,7 @@ export class GameService {
     this.resetMovementForPlayer(game, player.id);
     this.regenerateFortifications(game, player.id);
     this.recalculatePopulation(game);
+    this.scheduleTurnDeadline(game);
   }
 
   private applyPopulationGrowth(
@@ -773,10 +851,14 @@ export class GameService {
       return;
     }
     const cities = this.getPlayerCities(game, player.id);
+    const baseGrowth = STRUCTURE_RULES.City.effects.basePopulationGrowth ?? 1;
     cities.forEach((city) => {
-      const baseGrowth = 1;
-      const granaryBonus = city.improvement === "Granary" ? 0.5 : 0;
-      city.population += baseGrowth + granaryBonus;
+      const improvementRule = city.improvement
+        ? STRUCTURE_RULES[city.improvement]
+        : null;
+      const improvementBonus =
+        improvementRule?.effects.populationGrowthBonus ?? 0;
+      city.population += baseGrowth + improvementBonus;
     });
     this.recalculatePopulation(game);
   }

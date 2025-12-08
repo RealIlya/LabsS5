@@ -7,10 +7,12 @@ import {
   useJoinLobbyMutation,
 } from "../../../entities/lobby/model/useLobbyMutations";
 import { useProfileStore } from "../../../entities/profile/model/useProfileStore";
+import { useProfileAuthMutation } from "../../../entities/profile/model/useProfileAuth";
 import { useConnectionStatus } from "../../../shared/hooks/useConnectionStatus";
 import { useLobbyStore } from "../../../entities/lobby/model/useLobbyStore";
 import "./MainMenuPage.css";
 import cn from "classnames";
+import { TrainingModal } from "../../../shared/ui/training-modal";
 
 export function MainMenuPage() {
   const navigate = useNavigate();
@@ -22,10 +24,9 @@ export function MainMenuPage() {
   const [joinError, setJoinError] = useState<string | null>(null);
   const [profileNickname, setProfileNickname] = useState("");
   const [profilePassword, setProfilePassword] = useState("");
+  const [isRegisterMode, setRegisterMode] = useState(true);
   const [profileError, setProfileError] = useState<string | null>(null);
   const t = useMemo(() => translations.ru.mainMenu, []);
-  const tutorialT = useMemo(() => translations.ru.tutorialCards, []);
-  const tutorialGameT = useMemo(() => translations.ru.game, []);
   const createLobbyMutation = useCreateLobbyMutation();
   const joinLobbyMutation = useJoinLobbyMutation();
   const isJoining = joinLobbyMutation.isPending;
@@ -35,26 +36,20 @@ export function MainMenuPage() {
   const profile = useProfileStore((state) => state.profile);
   const setProfile = useProfileStore((state) => state.setProfile);
   const clearProfile = useProfileStore((state) => state.clearProfile);
+  const authProfileMutation = useProfileAuthMutation();
   const profileLabel = profile?.nickname ?? t.profileModal.placeholderName;
   const { isOnline } = useConnectionStatus();
 
   useEffect(() => {
     if (!profile) {
       setProfileModalOpen(true);
+      setRegisterMode(true);
       return;
     }
     setProfileNickname(profile.nickname);
+    setProfilePassword(profile.password ?? "");
+    setRegisterMode(false);
   }, [profile]);
-
-  const generatePlayerId = () => {
-    if (profile?.id) {
-      return profile.id;
-    }
-    if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-      return crypto.randomUUID();
-    }
-    return `player-${Date.now()}`;
-  };
 
   const ensureProfile = () => {
     if (profile) {
@@ -127,14 +122,33 @@ export function MainMenuPage() {
       setProfileError(t.profileModal.passwordError);
       return;
     }
-    setProfile({
-      id: generatePlayerId(),
-      nickname: profileNickname.trim(),
-      password: profilePassword,
-    });
-    setProfileError(null);
-    setProfilePassword("");
-    setProfileModalOpen(false);
+    authProfileMutation.mutate(
+      {
+        nickname: profileNickname.trim(),
+        password: profilePassword,
+        register: isRegisterMode,
+      },
+      {
+        onSuccess: (data) => {
+          setProfile({
+            id: data.id,
+            nickname: data.nickname,
+            password: profilePassword,
+          });
+          setProfileError(null);
+          setProfilePassword("");
+          setProfileModalOpen(false);
+          setRegisterMode(false);
+        },
+        onError: (error) => {
+          setProfileError(
+            error instanceof Error
+              ? error.message
+              : t.profileModal.authUnknownError
+          );
+        },
+      }
+    );
   };
 
   const handleLogout = () => {
@@ -150,6 +164,7 @@ export function MainMenuPage() {
     setProfileModalOpen(true);
     setProfileNickname(profile?.nickname ?? "");
     setProfilePassword(profile?.password ?? "");
+    setRegisterMode(!profile);
     setProfileError(null);
   };
 
@@ -158,41 +173,6 @@ export function MainMenuPage() {
     if (!gameId) return;
     navigate(`/game?gameId=${gameId}`);
   };
-
-  type TutorialTab = "units" | "structures" | "rules";
-  const [activeTutorialTab, setActiveTutorialTab] =
-    useState<TutorialTab>("rules");
-
-  const unitCards = useMemo(
-    () =>
-      Object.entries(tutorialGameT.units).map(([key, label]) => ({
-        key,
-        title: label,
-        description:
-          tutorialGameT.hints.units[
-            key as keyof typeof tutorialGameT.hints.units
-          ] ?? "",
-      })),
-    [tutorialGameT]
-  );
-
-  const structureCards = useMemo(() => {
-    const anyGame = tutorialGameT as any;
-    const hints = anyGame.hints.structures as Record<string, string>;
-    const structureMeta =
-      (anyGame.structureCards as Record<
-        string,
-        { name: string; description?: string }
-      >) ?? {};
-    return Object.entries(hints).map(([key, description]) => {
-      const meta = structureMeta[key];
-      return {
-        key,
-        title: meta?.name ?? key,
-        description: meta?.description ?? description,
-      };
-    });
-  }, [tutorialGameT]);
 
   return (
     <div className="main-menu">
@@ -244,7 +224,7 @@ export function MainMenuPage() {
           <span>{isOnline ? t.connectionStable : t.connectionLost}</span>
         </div>
         <div className="main-menu__footer-info">
-          <p className="main-menu__version">{t.versionLabel}: v0.1.0</p>
+          {/* <p className="main-menu__version">{t.versionLabel}: v0.1.0</p> */}
           <p className="main-menu__credits">{t.credits}</p>
         </div>
       </footer>
@@ -267,11 +247,25 @@ export function MainMenuPage() {
                 onChange={(event) => setProfilePassword(event.target.value)}
                 placeholder={t.profileModal.passwordPlaceholder}
               />
+              <label className="main-menu__form-checkbox">
+                <input
+                  type="checkbox"
+                  checked={isRegisterMode}
+                  onChange={(event) => setRegisterMode(event.target.checked)}
+                />
+                <span>{t.profileModal.registerLabel}</span>
+              </label>
               {profileError ? (
                 <span className="main-menu__form-error">{profileError}</span>
               ) : null}
               <div className="main-menu__form-actions">
-                <Button type="submit">{t.profileModal.submit}</Button>
+                <Button type="submit" disabled={authProfileMutation.isPending}>
+                  {authProfileMutation.isPending
+                    ? t.profileModal.loading
+                    : isRegisterMode
+                    ? t.profileModal.submitRegister
+                    : t.profileModal.submitLogin}
+                </Button>
                 <Button
                   type="button"
                   variant="secondary"
@@ -279,6 +273,7 @@ export function MainMenuPage() {
                     setProfileModalOpen(false);
                     setProfileError(null);
                     setProfilePassword("");
+                    setRegisterMode(!profile);
                     if (!profile) {
                       setProfileNickname("");
                     }
@@ -354,90 +349,10 @@ export function MainMenuPage() {
       ) : null}
 
       {isTutorialOpen ? (
-        <div className="main-menu__modal" role="dialog" aria-modal="true">
-          <div className="main-menu__modal-content">
-            <h2>{tutorialT.title}</h2>
-            <p>{tutorialT.subtitle}</p>
-            <div className="main-menu__tutorial-tabs">
-              <button
-                type="button"
-                className={cn(
-                  "main-menu__tutorial-tab",
-                  activeTutorialTab === "units" &&
-                    "main-menu__tutorial-tab--active"
-                )}
-                onClick={() => setActiveTutorialTab("units")}
-              >
-                {tutorialT.tabs.units}
-              </button>
-              <button
-                type="button"
-                className={cn(
-                  "main-menu__tutorial-tab",
-                  activeTutorialTab === "structures" &&
-                    "main-menu__tutorial-tab--active"
-                )}
-                onClick={() => setActiveTutorialTab("structures")}
-              >
-                {tutorialT.tabs.structures}
-              </button>
-              <button
-                type="button"
-                className={cn(
-                  "main-menu__tutorial-tab",
-                  activeTutorialTab === "rules" &&
-                    "main-menu__tutorial-tab--active"
-                )}
-                onClick={() => setActiveTutorialTab("rules")}
-              >
-                {tutorialT.tabs.rules}
-              </button>
-            </div>
-            {activeTutorialTab === "rules" ? (
-              <div className="main-menu__tutorial-grid">
-                {t.tutorialModal.steps.map((step, index) => (
-                  <div key={step} className="main-menu__tutorial-card">
-                    <div className="main-menu__tutorial-card-title">
-                      {index + 1}.
-                    </div>
-                    <p className="main-menu__tutorial-card-text">{step}</p>
-                  </div>
-                ))}
-              </div>
-            ) : null}
-            {activeTutorialTab === "units" ? (
-              <div className="main-menu__tutorial-grid">
-                {unitCards.map((card) => (
-                  <div key={card.key} className="main-menu__tutorial-card">
-                    <div className="main-menu__tutorial-card-title">
-                      {card.title}
-                    </div>
-                    <p className="main-menu__tutorial-card-text">
-                      {card.description}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            ) : null}
-            {activeTutorialTab === "structures" ? (
-              <div className="main-menu__tutorial-grid">
-                {structureCards.map((card) => (
-                  <div key={card.key} className="main-menu__tutorial-card">
-                    <div className="main-menu__tutorial-card-title">
-                      {card.title}
-                    </div>
-                    <p className="main-menu__tutorial-card-text">
-                      {card.description}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            ) : null}
-            <Button variant="secondary" onClick={() => setTutorialOpen(false)}>
-              {t.tutorialModal.close}
-            </Button>
-          </div>
-        </div>
+        <TrainingModal
+          open={isTutorialOpen}
+          onClose={() => setTutorialOpen(false)}
+        />
       ) : null}
     </div>
   );

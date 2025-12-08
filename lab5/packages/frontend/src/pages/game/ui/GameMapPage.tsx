@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useLayoutEffect,
+  useRef,
+} from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   STRUCTURE_RULES,
@@ -35,6 +42,7 @@ import type { MapTile } from "./types";
 import "./GameMapPage.css";
 import { useProfileStore } from "../../../entities/profile/model/useProfileStore";
 import { Button } from "../../../shared/ui/button";
+import { TrainingModal } from "../../../shared/ui/training-modal/TrainingModal";
 
 type PlayerCityTile = MapTile & {
   structure: CityData & { isCapital: boolean };
@@ -77,10 +85,53 @@ export function GameMapPage() {
     effectivePlayerId
   );
 
+  useLayoutEffect(() => {
+    const updateTopBarHeight = () => {
+      const height = topBarRef.current?.offsetHeight ?? 48;
+      document.documentElement.style.setProperty(
+        "--topbar-height",
+        `${height}px`
+      );
+    };
+    updateTopBarHeight();
+    window.addEventListener("resize", updateTopBarHeight);
+    return () => window.removeEventListener("resize", updateTopBarHeight);
+  }, []);
+
+  useEffect(() => {
+    const duration = gameState?.turnDurationSeconds ?? 60;
+    const fallbackDeadline = Date.now() + duration * 1000;
+    let targetDeadline = fallbackDeadline;
+
+    if (gameState?.turnEndsAt) {
+      const parsed = Date.parse(gameState.turnEndsAt);
+      targetDeadline = Number.isNaN(parsed) ? fallbackDeadline : parsed;
+    }
+
+    const updateTimer = () => {
+      const diffMs = targetDeadline - Date.now();
+      setTurnRemaining(Math.max(0, Math.ceil(diffMs / 1000)));
+    };
+
+    updateTimer();
+    const interval = window.setInterval(updateTimer, 1000);
+    return () => window.clearInterval(interval);
+  }, [
+    gameState?.turnEndsAt,
+    gameState?.turnDurationSeconds,
+    gameState?.currentPlayerId,
+  ]);
+
   // --- Data Processing ---
   const playerNameMap = useMemo(() => {
     const map = new Map<string, string>();
     gameState?.players.forEach((p) => map.set(p.id, p.name));
+    return map;
+  }, [gameState?.players]);
+
+  const playerColorMap = useMemo(() => {
+    const map = new Map<string, string>();
+    gameState?.players.forEach((p) => map.set(p.id, p.color));
     return map;
   }, [gameState?.players]);
 
@@ -95,6 +146,7 @@ export function GameMapPage() {
       ownerName: tile.ownerId
         ? playerNameMap.get(tile.ownerId) ?? (tile as any).ownerName ?? null
         : null,
+      ownerColor: tile.ownerId ? playerColorMap.get(tile.ownerId) : undefined,
       structure: tile.structure
         ? tile.structure.type === "City"
           ? ({
@@ -121,19 +173,14 @@ export function GameMapPage() {
             type: tile.unit.type as UnitType,
             ownerId: tile.unit.ownerId,
             ownerName: tile.unit.ownerName,
+            ownerColor: playerColorMap.get(tile.unit.ownerId),
             health: tile.unit.health,
             isVeteran: tile.unit.isVeteran,
             movementPoints: tile.unit.movementPoints,
           }
         : undefined,
     }));
-  }, [gameState?.tiles, playerNameMap]);
-
-  const playerColorMap = useMemo(() => {
-    const map = new Map<string, string>();
-    gameState?.players.forEach((p) => map.set(p.id, p.color));
-    return map;
-  }, [gameState?.players]);
+  }, [gameState?.tiles, playerColorMap, playerNameMap]);
 
   const tileByCoord = useMemo(() => {
     const coordMap = new Map<string, MapTile>();
@@ -186,6 +233,14 @@ export function GameMapPage() {
   );
   const [showPlayers, setShowPlayers] = useState(false);
   const [autoSelectEnabled, setAutoSelectEnabled] = useState(true);
+  const [isInfoCollapsed, setIsInfoCollapsed] = useState(false);
+  const topBarRef = useRef<HTMLDivElement | null>(null);
+  const [showGuide, setShowGuide] = useState(false);
+  const [turnRemaining, setTurnRemaining] = useState(60);
+  const [attackChoice, setAttackChoice] = useState<{
+    tile: MapTile;
+    options: { id: string; label: string }[];
+  } | null>(null);
 
   const clearSelection = useCallback(() => {
     setAutoSelectEnabled(false);
@@ -238,8 +293,7 @@ export function GameMapPage() {
     if (!needsCapital || !effectivePlayerId) return;
     const settlerTile = mapTiles.find(
       (tile) =>
-        tile.unit?.type === "Settler" &&
-        tile.unit.ownerId === effectivePlayerId
+        tile.unit?.type === "Settler" && tile.unit.ownerId === effectivePlayerId
     );
     if (!settlerTile) return;
     const tileCenterX =
@@ -297,14 +351,15 @@ export function GameMapPage() {
       ? selectedTileUnit.movementPoints ?? selectedUnitStats.baseStats.movement
       : 0;
 
-  const { moveTargets, movePaths, attackTargets } = useActionTargets({
-    activeAction,
-    selectedTile,
-    selectedTileUnit,
-    mapTiles,
-    selfId: effectivePlayerId,
-    canUseActions: remainingMovement > 0,
-  });
+  const { moveTargets, movePaths, attackTargets, attackOptions } =
+    useActionTargets({
+      activeAction,
+      selectedTile,
+      selectedTileUnit,
+      mapTiles,
+      selfId: effectivePlayerId,
+      canUseActions: remainingMovement > 0,
+    });
 
   const handleSelect = (tile: MapTile) => {
     if (spacePressed || isDragging) return;
@@ -333,20 +388,27 @@ export function GameMapPage() {
     }
 
     if (activeAction === "attack" && attackTargets.has(tile.id)) {
-      if (selectedTile?.unit && (tile.unit || tile.structure)) {
-        const action: PlayerAction = {
-          type: "ATTACK_UNIT",
-          payload: {
-            attackerId: selectedTile.unit.id,
-            defenderId: tile.unit?.id ?? tile.structure?.id ?? "",
-          },
-        };
-        submitActionMutation.mutate(action, {
-          onSuccess: () => {
-            setActiveAction(null);
-            setSelectedTile(tile);
-          },
+      if (!selectedTile?.unit) {
+        setActiveAction(null);
+        return;
+      }
+      const defenders: { id: string; label: string }[] = [];
+      if (tile.unit && tile.unit.ownerId !== effectivePlayerId) {
+        defenders.push({
+          id: tile.unit.id,
+          label: tile.unit.ownerName ?? tile.unit.ownerId,
         });
+      }
+      if (tile.structure && tile.structure.ownerId !== effectivePlayerId) {
+        defenders.push({
+          id: tile.structure.id,
+          label: tile.structure.ownerName ?? tile.structure.ownerId,
+        });
+      }
+      if (defenders.length === 1) {
+        performAttack(defenders[0].id, tile);
+      } else if (defenders.length > 1) {
+        setAttackChoice({ tile, options: defenders });
       } else {
         setActiveAction(null);
       }
@@ -526,7 +588,7 @@ export function GameMapPage() {
     !hasEnemyAdjacentCity(selectedTile) &&
     selectedTileUnit?.ownerId === effectivePlayerId &&
     selectedTileUnit.type === "Settler" &&
-    (needsCapital || isMyTurn)
+    isMyTurn
   );
 
   const enemyCityBuffer = useMemo(() => {
@@ -570,6 +632,46 @@ export function GameMapPage() {
   const handleBuild = () => {
     if (!canBuild) return;
     setMenuType("worker-build");
+  };
+
+  const toggleInfoPanel = () => {
+    // На десктопе не сворачиваем, это только мобильный UX
+    setIsInfoCollapsed((prev) => !prev);
+  };
+
+  const performAttack = (targetId: string, targetTile: MapTile) => {
+    if (!selectedTile?.unit) return;
+    const attackerId = selectedTile.unit.id;
+    const option = attackOptions.get(targetTile.id);
+    const attackAction: PlayerAction = {
+      type: "ATTACK_UNIT",
+      payload: {
+        attackerId,
+        defenderId: targetId,
+      },
+    };
+    const doAttack = () =>
+      submitActionMutation.mutate(attackAction, {
+        onSuccess: () => {
+          setActiveAction(null);
+          setAttackChoice(null);
+          setSelectedTile(targetTile);
+        },
+      });
+    if (option?.movePath && option.movePath.length > 0) {
+      const moveAction: PlayerAction = {
+        type: "MOVE_UNIT",
+        payload: {
+          unitId: attackerId,
+          path: option.movePath,
+        },
+      };
+      submitActionMutation.mutate(moveAction, {
+        onSuccess: () => doAttack(),
+      });
+    } else {
+      doAttack();
+    }
   };
 
   const farmDonorCity = useMemo<PlayerCityTile | null>(() => {
@@ -718,6 +820,7 @@ export function GameMapPage() {
         selfPlayer={playerState}
         playerDefeated={playerDefeated}
         onShowPlayers={() => setShowPlayers(true)}
+        headerRef={topBarRef}
       />
 
       {isLoading ? (
@@ -785,6 +888,15 @@ export function GameMapPage() {
       </section>
 
       <div className="game__hud-layer">
+        <Button
+          type="button"
+          className="game__info-toggle"
+          onClick={toggleInfoPanel}
+          aria-label="Toggle info"
+          variant="ghost"
+        >
+          {isInfoCollapsed ? "⧉" : "⊟"}
+        </Button>
         <InfoPanel
           t={t}
           selectedTile={selectedTile}
@@ -801,6 +913,7 @@ export function GameMapPage() {
           activeProductionProgress={activeProductionProgress}
           activeProductionName={activeProductionName}
           onClose={clearSelection}
+          className={isInfoCollapsed ? "info-panel--collapsed" : ""}
         />
 
         <ActionsPanel
@@ -825,6 +938,9 @@ export function GameMapPage() {
             controlsDisabled || !isMyTurn || submitActionMutation.isPending
           }
           waitingForOpponents={waitingForOpponents}
+          onOpenGuide={() => setShowGuide(true)}
+          turnRemaining={turnRemaining}
+          turnDurationSeconds={gameState?.turnDurationSeconds ?? 60}
         />
       </div>
       {playerDefeated ? (
@@ -837,6 +953,7 @@ export function GameMapPage() {
                 resetLobby();
                 navigate("/");
               }}
+              block
             >
               {translations.ru.defeatModal.exitButton}
             </Button>
@@ -853,6 +970,7 @@ export function GameMapPage() {
                 resetLobby();
                 navigate("/");
               }}
+              block
             >
               {translations.ru.victory.exitButton}
             </Button>
@@ -867,6 +985,36 @@ export function GameMapPage() {
           </div>
         </div>
       ) : null}
+      {attackChoice ? (
+        <div className="game__menu" role="dialog">
+          <div className="game__menu-content">
+            <div className="game__menu-header">
+              <h4>Выберите цель атаки</h4>
+              <Button
+                variant="secondary"
+                size="icon"
+                onClick={() => setAttackChoice(null)}
+              >
+                ✖
+              </Button>
+            </div>
+            <div className="game__menu-list">
+              {attackChoice.options.map((opt) => (
+                <Button
+                  key={opt.id}
+                  className="game__production-card"
+                  onClick={() => performAttack(opt.id, attackChoice.tile)}
+                >
+                  <div className="game__prod-info">
+                    <span className="game__prod-name">{opt.label}</span>
+                  </div>
+                </Button>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : null}
+      <TrainingModal open={showGuide} onClose={() => setShowGuide(false)} />
       <ActionMenus
         t={t}
         menuType={menuType}

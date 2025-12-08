@@ -22,6 +22,7 @@ import {
   ConnectionStatusModal,
 } from "./components";
 import "./LobbyPage.css";
+import { lobbyApi } from "../../../entities/lobby/api/lobbyApi";
 
 const fallbackPlayers: LobbyPlayerState[] = [
   {
@@ -83,6 +84,28 @@ export function LobbyPage() {
     },
     [navigate, resetLobby, selfId, setLobby]
   );
+
+  useEffect(() => {
+    // Хайдратация после перезагрузки: если лобби не в сторе, но в localStorage есть id/selfId — подтягиваем состояние
+    if (lobby || typeof window === "undefined") return;
+    const storedLobbyId = window.localStorage.getItem("hex-current-lobby");
+    const storedSelfId = window.localStorage.getItem("hex-self-id");
+    if (!storedLobbyId || !storedSelfId) return;
+    lobbyApi
+      .getState(storedLobbyId)
+      .then((state) => {
+        const hasSelf = state.players.some((p) => p.id === storedSelfId);
+        if (!hasSelf) {
+          resetLobby();
+          navigate("/");
+          return;
+        }
+        setLobby(state, storedSelfId);
+      })
+      .catch(() => {
+        resetLobby();
+      });
+  }, [lobby, navigate, resetLobby, setLobby]);
 
   const handleSocketGameStarted = useCallback(
     (payload: { gameId: string }) => {

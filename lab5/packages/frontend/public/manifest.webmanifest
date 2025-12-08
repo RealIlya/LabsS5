@@ -1,0 +1,10 @@
+{
+  "name": "The Settler's Hope",
+  "short_name": "Settlers",
+  "start_url": ".",
+  "display": "fullscreen",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "orientation": "any",
+  "icons": []
+}

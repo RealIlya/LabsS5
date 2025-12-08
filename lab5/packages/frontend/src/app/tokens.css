@@ -18,7 +18,7 @@
   --layout-max-width: 1200px;
   --layout-hero-max-width: 720px;
   --layout-hero-subtitle-width: 520px;
-  --layout-actions-max-width: 400px;
+  --layout-actions-max-width: 500px;
   --layout-secondary-action-min: 160px;
   --card-min-width: 220px;
 
@@ -33,7 +33,7 @@
   --space-xxl: 3rem;
   --space-profile-padding-y: 0.85rem;
   --space-button-padding-y: 0.9rem;
-  --space-button-padding-x: 1.6rem;
+  --space-button-padding-x: 0.9rem;
   --space-button-gap: 0.5rem;
   --space-hero-title-margin-top: 0.25rem;
   --space-hero-title-margin-bottom: 0.4rem;

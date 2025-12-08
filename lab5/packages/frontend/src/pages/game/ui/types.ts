@@ -15,6 +15,7 @@ export interface MapUnit {
   type: UnitType;
   ownerId: string;
   ownerName: string;
+  ownerColor?: string;
   health: number;
   isVeteran: boolean;
   movementPoints?: number;
@@ -29,6 +30,7 @@ export interface MapTile {
   terrain: TerrainType;
   ownerId: string | null;
   ownerName: string | null;
+  ownerColor?: string;
   structure?: MapStructure;
   unit?: MapUnit;
 }

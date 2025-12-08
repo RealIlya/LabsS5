@@ -39,16 +39,15 @@ export const useActionTargets = ({
     );
   };
 
-  const { moveTargets, movePaths } = useMemo(() => {
-    if (
-      activeAction !== "move" ||
-      !selectedTile ||
-      !selectedTileUnit ||
-      !canUseActions
-    ) {
+  const { moveTargets, movePaths, attackOptions } = useMemo(() => {
+    if (!selectedTile || !selectedTileUnit || !canUseActions) {
       return {
         moveTargets: new Set<string>(),
         movePaths: new Map<string, { x: number; y: number }[]>(),
+        attackOptions: new Map<
+          string,
+          { movePath: { x: number; y: number }[] | null; inRange: boolean }
+        >(),
       };
     }
 
@@ -57,6 +56,7 @@ export const useActionTargets = ({
       return {
         moveTargets: new Set<string>(),
         movePaths: new Map<string, { x: number; y: number }[]>(),
+        attackOptions: new Map(),
       };
     }
 
@@ -86,7 +86,7 @@ export const useActionTargets = ({
         if (distances.has(neighborKey)) return;
         const neighbor = tileByCoord.get(neighborKey);
         if (!neighbor) return;
-        if (!isTilePassable(neighbor, selfId)) return;
+        if (!isTilePassable(neighbor, selfId, selectedTileUnit.type)) return;
         const nextDist = currentDist + 1;
         if (nextDist > maxSteps) return;
         distances.set(neighborKey, nextDist);
@@ -102,6 +102,10 @@ export const useActionTargets = ({
       if (key === startKey) return;
       const tile = tileByCoord.get(key);
       if (!tile) return;
+      // Всадник может проходить через воду, но не останавливаться
+      if (selectedTileUnit.type === "Horseman" && tile.terrain === "Water") {
+        return;
+      }
       moveTargets.add(tile.id);
       const path: { x: number; y: number }[] = [];
       let currentKey: string | null = key;
@@ -115,48 +119,49 @@ export const useActionTargets = ({
       movePaths.set(tile.id, path);
     });
 
-    return { moveTargets, movePaths };
-  }, [
-    activeAction,
-    mapTiles,
-    selectedTile,
-    selectedTileUnit,
-    selfId,
-    canUseActions,
-  ]);
-
-  const attackTargets = useMemo(() => {
-    if (
-      activeAction !== "attack" ||
-      !selectedTile ||
-      !selectedTileUnit ||
-      !canUseActions
-    )
-      return new Set<string>();
-
-    const targets = new Set<string>();
+    const attackOptions = new Map<
+      string,
+      { movePath: { x: number; y: number }[] | null; inRange: boolean }
+    >();
     const baseRange = selectedTileUnit.type === "Archer" ? 2 : 1;
     const range =
       selectedTileUnit.type === "Archer" && selectedTile.terrain === "Hills"
         ? baseRange + 1
         : baseRange;
 
+    const tileById = new Map(mapTiles.map((t) => [t.id, t] as const));
+
     mapTiles.forEach((candidate) => {
-      if (hexDistance(selectedTile, candidate) <= range) {
-        if (isTileAttackTarget(candidate, selfId)) {
-          targets.add(candidate.id);
+      if (!isTileAttackTarget(candidate, selfId)) return;
+      const directDist = hexDistance(selectedTile, candidate);
+      if (directDist <= range) {
+        attackOptions.set(candidate.id, { movePath: null, inRange: true });
+        return;
+      }
+      const parity = candidate.y % 2 === 0 ? "even" : "odd";
+      const neighbors = HEX_NEIGHBORS[parity]
+        .map(({ dx, dy }) => tileByCoord.get(`${candidate.x + dx},${candidate.y + dy}`))
+        .filter(Boolean) as MapTile[];
+      let bestPath: { x: number; y: number }[] | null = null;
+      neighbors.forEach((neighbor) => {
+        const path = movePaths.get(neighbor.id);
+        if (!path) return;
+        // нужно оставить 1 ОД на атаку
+        if (path.length <= Math.max(0, maxSteps - 1)) {
+          if (!bestPath || path.length < bestPath.length) {
+            bestPath = path;
+          }
         }
+      });
+      if (bestPath) {
+        attackOptions.set(candidate.id, { movePath: bestPath, inRange: false });
       }
     });
-    return targets;
-  }, [
-    activeAction,
-    mapTiles,
-    selectedTile,
-    selectedTileUnit,
-    selfId,
-    canUseActions,
-  ]);
 
-  return { moveTargets, movePaths, attackTargets };
+    return { moveTargets, movePaths, attackOptions };
+  }, [mapTiles, selectedTile, selectedTileUnit, selfId, canUseActions]);
+
+  const attackTargets = useMemo(() => new Set(attackOptions.keys()), [attackOptions]);
+
+  return { moveTargets, movePaths, attackTargets, attackOptions };
 };

@@ -53,12 +53,23 @@ const findSecondTile = (
 ) => {
   const game = store.getGame(gameId);
   if (!game) throw new Error("Game not found");
+  const excludeTile = game.tiles.find((t) => t.id === excludeId);
+  const isAdjacent = (
+    tile: (typeof game.tiles)[number],
+    target: (typeof game.tiles)[number]
+  ) => {
+    const parity = target.y % 2 === 0 ? "even" : "odd";
+    return offsets[parity].some(
+      ({ dx, dy }) => tile.x === target.x + dx && tile.y === target.y + dy
+    );
+  };
   return game.tiles.find(
     (tile) =>
       tile.id !== excludeId &&
       tile.terrain !== "Water" &&
       tile.terrain !== "Mountains" &&
-      !tile.structure
+      !tile.structure &&
+      (!excludeTile || !isAdjacent(tile, excludeTile))
   );
 };
 
@@ -270,14 +281,16 @@ const ensureFarmSpot = (
   const parity = cityTile.y % 2 === 0 ? "even" : "odd";
   for (const { dx, dy } of offsets[parity]) {
     const neighbor = game.tiles.find(
-      (tile) => tile.x === cityTile.x + dx && tile.y === cityTile.y + dy
+      (tile) =>
+        tile.x === cityTile.x + dx &&
+        tile.y === cityTile.y + dy &&
+        tile.ownerId === ownerId &&
+        !tile.structure &&
+        isTilePassable(tile)
     );
-    if (!neighbor) continue;
-    neighbor.ownerId = ownerId;
-    neighbor.structure = undefined;
-    neighbor.unit = undefined;
-    neighbor.terrain = "Plains";
-    return neighbor;
+    if (neighbor) {
+      return neighbor;
+    }
   }
   throw new Error("No neighboring tile for farm");
 };
@@ -358,6 +371,34 @@ describe("GameService actions", () => {
 
     const after = service.getGame(lobby.gameId);
     expect(after.currentPlayerId).toBe("player-2");
+  });
+
+  it("automatically advances the turn when timer expires", () => {
+    const lobby = makeLobby();
+    service.createGameForLobby(lobby);
+    const p1SettlerTile = getSettlerTileForPlayer(
+      lobby.gameId,
+      "player-1",
+      testStore
+    );
+    const p2SettlerTile = getSettlerTileForPlayer(
+      lobby.gameId,
+      "player-2",
+      testStore
+    );
+
+    service.placeCapital(lobby.gameId, "player-1", p1SettlerTile.id);
+    service.placeCapital(lobby.gameId, "player-2", p2SettlerTile.id);
+
+    const storedGame = testStore.getGame(lobby.gameId);
+    if (!storedGame) {
+      throw new Error("Game not found");
+    }
+    storedGame.turnEndsAt = new Date(Date.now() - 5_000).toISOString();
+    testStore.saveGame(storedGame);
+
+    const updated = service.getGame(lobby.gameId);
+    expect(updated.currentPlayerId).toBe("player-2");
   });
 
   it("completes warrior production after required turns", () => {
@@ -469,9 +510,7 @@ describe("GameService actions", () => {
     });
 
     const updated = service.getGame(lobby.gameId);
-    const originTile = updated.tiles.find(
-      (tile) => tile.id === cityTile.id
-    );
+    const originTile = updated.tiles.find((tile) => tile.id === cityTile.id);
     expect(originTile?.unit?.id).toBe("garrison");
     const producedTile = updated.tiles.find(
       (tile) =>
@@ -552,6 +591,9 @@ describe("GameService actions", () => {
     service.placeCapital(lobby.gameId, "player-2", p2SettlerTile.id);
 
     const farmSpot = ensureFarmSpot(lobby.gameId, "player-1", testStore);
+    farmSpot.ownerId = "player-1";
+    farmSpot.structure = undefined;
+    farmSpot.terrain = "Plains";
     const worker = addWorkerToTile(
       lobby.gameId,
       "player-1",
@@ -637,10 +679,12 @@ describe("GameService actions", () => {
       cityTile.id,
       testStore
     );
-    const attacker = addWarriorToTile(
+    const attacker = addUnitToTile(
       lobby.gameId,
-      "player-1",
       neighborId,
+      "player-1",
+      "Archer",
+      {},
       testStore
     );
     const enemyCity = cityTile.structure as CityData;
@@ -686,10 +730,12 @@ describe("GameService actions", () => {
       cityTile.id,
       testStore
     );
-    const attacker = addWarriorToTile(
+    const attacker = addUnitToTile(
       lobby.gameId,
-      "player-1",
       neighborId,
+      "player-1",
+      "Archer",
+      {},
       testStore
     );
     const enemyCapital = cityTile.structure as CityData;

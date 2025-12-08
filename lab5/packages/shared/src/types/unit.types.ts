@@ -52,7 +52,7 @@ export const UNIT_RULES: UnitRules = {
   },
   Spearman: {
     cost: 12,
-    productionTurns: 2,
+    productionTurns: 1,
     baseStats: { attack: 8, health: 25, movement: 2 },
     abilities: {
       bonusVs: [{ type: "Horseman", multiplier: 2 }],
@@ -60,20 +60,20 @@ export const UNIT_RULES: UnitRules = {
   },
   Archer: {
     cost: 14,
-    productionTurns: 2,
+    productionTurns: 1,
     baseStats: { attack: 7, health: 15, movement: 2 },
     abilities: {
       range: 2,
     },
   },
   Horseman: {
-    cost: 20,
-    productionTurns: 3,
+    cost: 18,
+    productionTurns: 2,
     baseStats: { attack: 9, health: 20, movement: 4 },
     abilities: {},
   },
   Worker: {
-    cost: 12,
+    cost: 10,
     productionTurns: 2,
     baseStats: { attack: 0, health: 10, movement: 2 },
     abilities: {
@@ -82,8 +82,8 @@ export const UNIT_RULES: UnitRules = {
     },
   },
   Settler: {
-    cost: 38,
-    productionTurns: 7,
+    cost: 30,
+    productionTurns: 3,
     baseStats: { attack: 0, health: 10, movement: 2 },
     abilities: {
       canAttack: false,

@@ -30,6 +30,8 @@ export interface GameState {
   turn: number;
   currentPlayerId: string;
   currentPlayerName: string;
+  turnEndsAt: string | null;
+  turnDurationSeconds: number;
   phase: GamePhase;
   population: {
     current: number;

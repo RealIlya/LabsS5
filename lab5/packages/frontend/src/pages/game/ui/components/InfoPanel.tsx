@@ -1,6 +1,7 @@
 import { type StandaloneStructureType, type CityData } from "@hex/shared";
 import type { MapTile, MapUnit } from "../types";
 import type { UNIT_RULES, UnitType } from "@hex/shared";
+import { Button } from "../../../../shared/ui/button";
 
 interface InfoPanelProps {
   t: typeof import("../../../../shared/i18n").translations.ru.game;
@@ -18,6 +19,7 @@ interface InfoPanelProps {
   activeProductionProgress: number;
   activeProductionName: string | null;
   onClose: () => void;
+  className?: string;
 }
 
 export function InfoPanel({
@@ -36,6 +38,7 @@ export function InfoPanel({
   activeProductionProgress,
   activeProductionName,
   onClose,
+  className,
 }: InfoPanelProps) {
   if (!selectedTile) {
     return null;
@@ -94,15 +97,17 @@ export function InfoPanel({
   }
 
   return (
-    <div className="game__hud-left">
-      <button
+    <div className={`game__hud-left ${className ?? ""}`}>
+      <Button
         type="button"
+        variant="ghost"
+        size="icon"
         className="game__info-close"
         onClick={onClose}
         aria-label={t.infoPanel.close}
       >
         ✕
-      </button>
+      </Button>
       <div className="game__info-header">
         <h3 className="game__info-title">{infoLabels.title}</h3>
         <span className="game__info-coords">
@@ -119,7 +124,16 @@ export function InfoPanel({
                 {t.units?.[selectedTileUnit.type] ?? selectedTileUnit.type}
               </span>
               <span className="game__section-subtitle">
-                {t.ownerLabel}: {selectedTileUnit.ownerName}
+                {t.ownerLabel}:{" "}
+                <span
+                  style={{
+                    color:
+                      selectedTileUnit.ownerColor ??
+                      "var(--color-text-primary)",
+                  }}
+                >
+                  {selectedTileUnit.ownerName}
+                </span>
               </span>
             </div>
             <div className="game__section-content">
@@ -203,7 +217,15 @@ export function InfoPanel({
                   : ""}
               </span>
               <span className="game__section-subtitle">
-                {t.ownerLabel}: {selectedCity.ownerName}
+                {t.ownerLabel}:{" "}
+                <span
+                  style={{
+                    color:
+                      selectedTile.ownerColor ?? "var(--color-text-primary)",
+                  }}
+                >
+                  {selectedCity.ownerName}
+                </span>
               </span>
             </div>
             <div className="game__section-content">

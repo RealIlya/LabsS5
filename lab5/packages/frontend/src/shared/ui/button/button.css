@@ -27,12 +27,24 @@
   cursor: not-allowed;
 }
 
+.ui-button--block {
+  width: 100%;
+  justify-content: center;
+}
+
 .ui-button--icon {
   width: 2.75rem;
   height: 2.75rem;
   padding: 0;
   border-radius: 50%;
   min-width: auto;
+}
+
+.ui-button--compact {
+  min-height: 2.25rem;
+  padding: calc(var(--space-button-padding-y) * 0.5)
+    calc(var(--space-button-padding-x) * 0.75);
+  font-size: 0.9rem;
 }
 
 .ui-button__icon {
@@ -63,4 +75,33 @@
   background-color: var(--color-secondary-disabled);
   border-color: var(--color-border-primary-faded);
   color: var(--color-text-secondary);
+}
+
+.ui-button--ghost {
+  background: transparent;
+  border: 1px solid var(--color-border-primary);
+  background-color: var(--color-secondary);
+  color: var(--color-text-secondary);
+}
+
+.ui-button--ghost:hover:not(:disabled) {
+  background-color: var(--color-secondary-hover);
+}
+
+.ui-button--ghost:disabled {
+  opacity: 0.4;
+}
+
+.ui-button--unstyled {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.ui-button--unstyled:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

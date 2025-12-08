@@ -1,16 +1,23 @@
 import { Global, Module } from "@nestjs/common";
 import { MemoryStore } from "./memory-store";
-import type { StorePort } from "./store.port";
+import { FileStore } from "./file-store";
 
 @Global()
 @Module({
   providers: [
     MemoryStore,
+    FileStore,
     {
       provide: "StorePort",
-      useExisting: MemoryStore,
+      useFactory: (memoryStore: MemoryStore, fileStore: FileStore) => {
+        const useMemory =
+          process.env.USE_MEMORY_STORE === "true" ||
+          process.env.NODE_ENV === "test";
+        return useMemory ? memoryStore : fileStore;
+      },
+      inject: [MemoryStore, FileStore],
     },
   ],
-  exports: [MemoryStore, "StorePort"],
+  exports: ["StorePort"],
 })
 export class StoreModule {}

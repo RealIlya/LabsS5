@@ -214,60 +214,6 @@
   text-transform: uppercase;
 }
 
-.main-menu__tutorial-tabs {
-  display: flex;
-  gap: var(--space-xs);
-  margin-bottom: var(--space-md);
-}
-
-.main-menu__tutorial-tab {
-  flex: 1;
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--color-border-soft);
-  background: var(--color-hud-bg);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-label);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s, transform 0.1s;
-}
-
-.main-menu__tutorial-tab--active {
-  background: var(--color-primary);
-  color: var(--color-text-contrast);
-  border-color: var(--color-primary);
-  transform: translateY(-1px);
-}
-
-.main-menu__tutorial-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: var(--space-sm);
-  margin-bottom: var(--space-md);
-}
-
-.main-menu__tutorial-card {
-  background: var(--color-hud-bg);
-  border-radius: var(--radius-soft);
-  border: 1px solid var(--color-border-soft);
-  padding: var(--space-sm);
-  box-shadow: var(--shadow-soft);
-  font-size: var(--font-size-body);
-}
-
-.main-menu__tutorial-card-title {
-  font-weight: 700;
-  margin-bottom: var(--space-xxs);
-  color: var(--color-text-primary);
-}
-
-.main-menu__tutorial-card-text {
-  margin: 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-label);
-}
-
 .main-menu__form {
   display: flex;
   flex-direction: column;
@@ -285,6 +231,24 @@
 .main-menu__form input:focus {
   border-color: var(--color-hud-accent);
   outline: none;
+}
+
+.main-menu__form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--font-size-label);
+  color: var(--color-text-secondary);
+}
+
+.main-menu__form-checkbox input {
+  width: var(--size-checkbox, 18px);
+  height: var(--size-checkbox, 18px);
+}
+
+.main-menu__form-error {
+  color: var(--color-error);
+  font-size: var(--font-size-label);
 }
 
 .main-menu__form-actions {

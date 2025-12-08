@@ -10,9 +10,26 @@ export async function request<T>(
     ...options,
   });
 
-  if (!response.ok) {
-    throw new Error(`Request failed with status ${response.status}`);
+  const raw = await response.text();
+  let parsed: unknown = null;
+  if (raw) {
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      parsed = raw;
+    }
   }
 
-  return response.json() as Promise<T>;
+  if (!response.ok) {
+    const message =
+      (parsed as any)?.message ||
+      (Array.isArray((parsed as any)?.message)
+        ? (parsed as any).message.join(", ")
+        : null) ||
+      (typeof parsed === "string" ? parsed : null) ||
+      `Request failed with status ${response.status}`;
+    throw new Error(message);
+  }
+
+  return parsed as T;
 }

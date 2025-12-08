@@ -164,7 +164,9 @@ export function ActionMenus({
                       <span className="game__prod-desc">{description}</span>
                     </div>
                     <div className="game__prod-cost">
-                      <div>-{option.cost} Pop</div>
+                      <div>
+                        -{option.cost} {t.population}
+                      </div>
                       <div>
                         {turns} {t.turn}
                       </div>
@@ -257,7 +259,9 @@ export function ActionMenus({
                       )}
                     </div>
                     <div className="game__prod-cost">
-                      <div>-{option.cost} Pop</div>
+                      <div>
+                        -{option.cost} {t.population}
+                      </div>
                       <div>
                         {option.turns} {t.turn}
                       </div>

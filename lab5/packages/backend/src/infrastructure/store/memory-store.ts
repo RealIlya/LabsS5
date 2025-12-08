@@ -46,6 +46,10 @@ export class MemoryStore implements StorePort {
     return this.games.get(id) ?? null;
   }
 
+  getAllGames(): GameState[] {
+    return Array.from(this.games.values());
+  }
+
   saveProfile(profile: Profile) {
     this.profiles.set(profile.id, profile);
     return profile;

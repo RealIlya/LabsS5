@@ -23,6 +23,18 @@ export function useMapCamera({
   const [zoom, setZoom] = useState(1);
   const [spacePressed, setSpacePressed] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const touchPoints = useRef(new Map<number, { x: number; y: number }>());
+  const pinchState = useRef<{
+    active: boolean;
+    startDistance: number;
+    startZoom: number;
+    center: { x: number; y: number };
+  }>({
+    active: false,
+    startDistance: 0,
+    startZoom: 1,
+    center: { x: 0, y: 0 },
+  });
   const dragState = useRef({
     active: false,
     pointerId: 0,
@@ -108,9 +120,36 @@ export function useMapCamera({
   ]);
 
   const handlePointerDown: React.PointerEventHandler<HTMLDivElement> = (e) => {
+    const isTouch = e.pointerType === "touch";
     const isMiddleButton = e.button === 1;
     const isSpacePan = e.button === 0 && spacePressed;
-    if (!isMiddleButton && !isSpacePan) return;
+    // На тач-устройствах разрешаем панорамирование одним пальцем,
+    // на десктопе — средней кнопкой или удержанием пробела + ЛКМ.
+    if (!isTouch && !isMiddleButton && !isSpacePan) return;
+
+    // Регистрируем палец для pinch-zoom
+    if (isTouch) {
+      touchPoints.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (touchPoints.current.size === 2) {
+        const points = Array.from(touchPoints.current.values());
+        const dx = points[0].x - points[1].x;
+        const dy = points[0].y - points[1].y;
+        const distance = Math.hypot(dx, dy);
+        const center = {
+          x: (points[0].x + points[1].x) / 2,
+          y: (points[0].y + points[1].y) / 2,
+        };
+        pinchState.current = {
+          active: true,
+          startDistance: distance,
+          startZoom: zoom,
+          center,
+        };
+        dragState.current.active = false;
+        setIsDragging(false);
+      }
+    }
+
     setIsDragging(true);
     dragState.current = {
       active: true,
@@ -122,6 +161,43 @@ export function useMapCamera({
   };
 
   const handlePointerMove: React.PointerEventHandler<HTMLDivElement> = (e) => {
+    if (e.pointerType === "touch") {
+      touchPoints.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      // Pinch-zoom, когда два пальца
+      if (pinchState.current.active && touchPoints.current.size >= 2) {
+        e.preventDefault();
+        const points = Array.from(touchPoints.current.values()).slice(0, 2);
+        const dx = points[0].x - points[1].x;
+        const dy = points[0].y - points[1].y;
+        const distance = Math.hypot(dx, dy);
+        if (pinchState.current.startDistance > 0) {
+          const prevZoom = zoom;
+          const nextZoom = clamp(
+            (pinchState.current.startZoom * distance) /
+              pinchState.current.startDistance,
+            minZoom,
+            maxZoom
+          );
+          const centerX = (points[0].x + points[1].x) / 2;
+          const centerY = (points[0].y + points[1].y) / 2;
+          const ratio = nextZoom / prevZoom;
+          setOffset((prevOffset) => {
+            const nextWidth = mapPixelWidth * nextZoom;
+            const nextHeight = mapPixelHeight * nextZoom;
+            const { minX, maxX, minY, maxY } = getBounds(nextWidth, nextHeight);
+            const newOffsetX = (prevOffset.x + centerX) * ratio - centerX;
+            const newOffsetY = (prevOffset.y + centerY) * ratio - centerY;
+            return {
+              x: clamp(newOffsetX, minX, maxX),
+              y: clamp(newOffsetY, minY, maxY),
+            };
+          });
+          setZoom(nextZoom);
+        }
+        return;
+      }
+    }
+
     if (!dragState.current.active) return;
     e.preventDefault();
     const dx = e.clientX - dragState.current.start.x;
@@ -142,6 +218,12 @@ export function useMapCamera({
       dragState.current.active = false;
       setIsDragging(false);
       e.currentTarget.releasePointerCapture?.(dragState.current.pointerId);
+    }
+    if (e.pointerType === "touch") {
+      touchPoints.current.delete(e.pointerId);
+      if (touchPoints.current.size < 2) {
+        pinchState.current.active = false;
+      }
     }
   };
 

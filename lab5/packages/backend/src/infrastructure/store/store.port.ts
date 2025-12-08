@@ -11,6 +11,7 @@ export interface StorePort {
 
   saveGame(game: GameState): GameState;
   getGame(id: string): GameState | null;
+  getAllGames(): GameState[];
 
   saveProfile(profile: Profile): Profile;
   getProfile(id: string): Profile | null;

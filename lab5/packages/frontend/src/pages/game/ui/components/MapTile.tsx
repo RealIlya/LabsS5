@@ -109,12 +109,18 @@ export function MapTile({
         </span>
       )}
       {tile.unit && (
-        <img
+        <span
           className="game__tile-unit"
-          src={unitEmoji[tile.unit.type]}
-          alt={tile.unit.type}
-          loading="lazy"
-        />
+          style={{
+            ["--tile-unit-color" as string]: tile.unit.ownerColor,
+          }}
+        >
+          <img
+            src={unitEmoji[tile.unit.type]}
+            alt={tile.unit.type}
+            loading="lazy"
+          />
+        </span>
       )}
     </div>
   );
