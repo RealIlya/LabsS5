@@ -1,4 +1,3 @@
-// ====== ВНЕСЕНО ИЗМЕНЕНИЕ: Добавлены макросы и заголовки для кроссплатформенности
 #ifdef _WIN32
     #define _WINSOCK_DEPRECATED_NO_WARNINGS
     #include <winsock2.h>
@@ -25,11 +24,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <cctype> // для isupper, islower
+#include <cctype>
 
 const int BUFFER_SIZE = 1024;
 
-// ====== ВНЕСЕНО ИЗМЕНЕНИЕ: Функция инициализации сети (нужна только для Windows)
 bool init_net() {
 #ifdef _WIN32
     WSADATA wsaData;
@@ -41,14 +39,13 @@ bool init_net() {
     return true;
 }
 
-// ====== ВНЕСЕНО ИЗМЕНЕНИЕ: Функция очистки сети (нужна только для Windows)
 void cleanup_net() {
 #ifdef _WIN32
     WSACleanup();
 #endif
 }
 
-// ====== ВНЕСЕНО ИЗМЕНЕНИЕ: Функция для вывода IP-адресов компьютера (Требование Лаб 6)
+// Функция для вывода IP-адресов сервера (добавлено по требованию 6-й ЛР)
 void print_server_ips() {
     char hostname[256];
     if (gethostname(hostname, sizeof(hostname)) == -1) {
@@ -77,11 +74,9 @@ void print_server_ips() {
 int main(int argc, char* argv[]) {
     if (!init_net()) return 1;
 
-    // ====== ВНЕСЕНО ИЗМЕНЕНИЕ: Вывод IP-адресов сервера при запуске
     print_server_ips();
 
     int port;
-    // ====== ВНЕСЕНО ИЗМЕНЕНИЕ: Ввод номера порта с клавиатуры
     std::cout << "Enter server port to listen on: ";
     std::cin >> port;
 
@@ -104,7 +99,7 @@ int main(int argc, char* argv[]) {
     sockaddr_in serverAddr;
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(port);
-    // ====== ВНЕСЕНО ИЗМЕНЕНИЕ: Привязка к INADDR_ANY (любые типы сетей: локальная, глобальная, петля)
+    // Привязка к INADDR_ANY (любые типы сетей: локальная, глобальная, петля)
     serverAddr.sin_addr.s_addr = INADDR_ANY; 
 
     if (bind(listenSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
@@ -139,7 +134,6 @@ int main(int argc, char* argv[]) {
             continue;
         }
 
-        // ====== ВНЕСЕНО ИЗМЕНЕНИЕ: Вывод IP-адреса и порта подключившегося клиента
         std::cout << "New connection from IP: " << inet_ntoa(clientAddr.sin_addr)
                   << ", Port: " << ntohs(clientAddr.sin_port) << std::endl;
 
