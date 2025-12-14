@@ -1,3 +1,4 @@
+import cn from "classnames";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "../../../shared/ui/button";
@@ -10,9 +11,9 @@ import { useProfileStore } from "../../../entities/profile/model/useProfileStore
 import { useProfileAuthMutation } from "../../../entities/profile/model/useProfileAuth";
 import { useConnectionStatus } from "../../../shared/hooks/useConnectionStatus";
 import { useLobbyStore } from "../../../entities/lobby/model/useLobbyStore";
-import "./MainMenuPage.css";
-import cn from "classnames";
 import { TrainingModal } from "../../../shared/ui/training-modal";
+
+import "./MainMenuPage.css";
 
 export function MainMenuPage() {
   const navigate = useNavigate();
@@ -63,6 +64,8 @@ export function MainMenuPage() {
   const handleCreate = () => {
     const currentProfile = ensureProfile();
     if (!currentProfile) {
+      console.error("Profile ensure failed");
+
       return;
     }
     createLobbyMutation.mutate(

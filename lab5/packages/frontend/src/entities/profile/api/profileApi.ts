@@ -1,8 +1,8 @@
-import { API_CONFIG } from "../../../shared/config/api.config";
+import { apiConfig } from "../../../shared/config/api.config";
 import { request } from "../../../shared/api/request";
 import type { ProfileData } from "../model/useProfileStore";
 
-const { restBaseUrl, endpoints } = API_CONFIG;
+const { restBaseUrl, endpoints } = apiConfig;
 
 export interface AuthProfilePayload {
   nickname: string;

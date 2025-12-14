@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { API_CONFIG } from "../../shared/config/api.config";
+import { apiConfig } from "../../shared/config/api.config";
 
 type ConnectionState = "checking" | "online" | "offline";
 
@@ -13,19 +13,19 @@ const HEALTH_CHECK_INTERVAL = 5000;
 
 export function useConnectionStatus(): ConnectionStatus {
   const [status, setStatus] = useState<ConnectionStatus>(() => {
-    if (API_CONFIG.useMock || !API_CONFIG.restBaseUrl) {
+    if (apiConfig.useMock || !apiConfig.restBaseUrl) {
       return { isOnline: true, status: "online" };
     }
     return { isOnline: true, status: "checking" };
   });
 
   useEffect(() => {
-    if (API_CONFIG.useMock || !API_CONFIG.restBaseUrl) {
+    if (apiConfig.useMock || !apiConfig.restBaseUrl) {
       setStatus({ isOnline: true, status: "online" });
       return undefined;
     }
 
-    const url = `${API_CONFIG.restBaseUrl}/status`;
+    const url = `${apiConfig.restBaseUrl}/status`;
     let cancelled = false;
 
     const checkHealth = async () => {

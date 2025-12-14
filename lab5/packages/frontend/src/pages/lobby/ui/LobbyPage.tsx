@@ -11,7 +11,7 @@ import {
   useToggleReadyMutation,
   useLeaveLobbyMutation,
 } from "../../../entities/lobby/model/useLobbyMutations";
-import { API_CONFIG } from "../../../shared/config/api.config";
+import { apiConfig } from "../../../shared/config/api.config";
 import { lobbyApi } from "../../../entities/lobby/api/lobbyApi";
 import { useConnectionStatus } from "../../../shared/hooks/useConnectionStatus";
 import { useLobbySocket } from "../../../entities/lobby/model/useLobbySocket";
@@ -22,7 +22,6 @@ import {
   ConnectionStatusModal,
 } from "./components";
 import "./LobbyPage.css";
-import { lobbyApi } from "../../../entities/lobby/api/lobbyApi";
 
 const fallbackPlayers: LobbyPlayerState[] = [
   {
@@ -144,7 +143,7 @@ export function LobbyPage() {
     if (
       !lobbyId ||
       !selfId ||
-      (!API_CONFIG.useMock && API_CONFIG.socketBaseUrl)
+      (!apiConfig.useMock && apiConfig.socketBaseUrl)
     ) {
       return undefined;
     }
@@ -202,7 +201,7 @@ export function LobbyPage() {
       { lobbyId: lobby.id },
       {
         onSuccess: (data) => {
-          if (API_CONFIG.useMock || !API_CONFIG.socketBaseUrl) {
+          if (apiConfig.useMock || !apiConfig.socketBaseUrl) {
             navigate(`/game?gameId=${data.gameId}`);
           }
         },

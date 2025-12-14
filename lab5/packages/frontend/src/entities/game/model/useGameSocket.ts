@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { io, type Socket } from "socket.io-client";
-import { API_CONFIG } from "../../../shared/config/api.config";
+import { apiConfig } from "../../../shared/config/api.config";
 import type { GameStateDto } from "../api/gameApi";
 
 interface UseGameSocketParams {
@@ -13,11 +13,11 @@ export function useGameSocket({ gameId }: UseGameSocketParams) {
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    if (!gameId || API_CONFIG.useMock || !API_CONFIG.socketBaseUrl) {
+    if (!gameId || apiConfig.useMock || !apiConfig.socketBaseUrl) {
       return undefined;
     }
 
-    const socket = io(`${API_CONFIG.socketBaseUrl}/ws/game`, {
+    const socket = io(`${apiConfig.socketBaseUrl}/ws/game`, {
       withCredentials: true,
     });
     socketRef.current = socket;
@@ -43,4 +43,3 @@ export function useGameSocket({ gameId }: UseGameSocketParams) {
     };
   }, [gameId, queryClient]);
 }
-

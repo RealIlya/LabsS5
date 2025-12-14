@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { io, type Socket } from "socket.io-client";
-import { API_CONFIG } from "../../../shared/config/api.config";
+import { apiConfig } from "../../../shared/config/api.config";
 import type { LobbyState } from "../types";
 
 interface UseLobbySocketParams {
@@ -23,16 +23,11 @@ export function useLobbySocket({
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    if (
-      !lobbyId ||
-      !selfId ||
-      API_CONFIG.useMock ||
-      !API_CONFIG.socketBaseUrl
-    ) {
+    if (!lobbyId || !selfId || apiConfig.useMock || !apiConfig.socketBaseUrl) {
       return undefined;
     }
 
-    const socket = io(`${API_CONFIG.socketBaseUrl}/ws/lobby`, {
+    const socket = io(`${apiConfig.socketBaseUrl}/ws/lobby`, {
       withCredentials: true,
     });
     socketRef.current = socket;
@@ -83,4 +78,3 @@ export function useLobbySocket({
     };
   }, [lobbyId, selfId, onStateUpdate, onGameStarted, onRemoved, onError]);
 }
-

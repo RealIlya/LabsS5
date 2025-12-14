@@ -4549,11 +4549,11 @@
     },
     "57bd8a20-1cc7-4604-95bc-c60425e1b5f8": {
       "id": "57bd8a20-1cc7-4604-95bc-c60425e1b5f8",
-      "turn": 24,
+      "turn": 125,
       "currentPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
       "currentPlayerName": "nickname",
       "population": {
-        "current": 37,
+        "current": 51,
         "cap": 50
       },
       "phase": "running",
@@ -4567,7 +4567,7 @@
           "name": "nickname",
           "color": "#0EA5E9",
           "populationCap": 50,
-          "currentPopulation": 37,
+          "currentPopulation": 51,
           "status": "playing",
           "capitalCityId": "city-7-4"
         }
@@ -5327,7 +5327,7 @@
             "type": "City",
             "ownerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
             "ownerName": "nickname",
-            "population": 37,
+            "population": 51,
             "improvement": null,
             "fortification": 100,
             "isCapital": true,
@@ -8641,255 +8641,361 @@
       ],
       "events": [
         {
-          "type": "UNIT_MOVED",
+          "type": "TURN_CHANGED",
           "payload": {
-            "unitId": "aa752350-cea8-48ad-9086-2f85e5b07861-Settler-x0iwfhxy",
-            "path": [
-              {
-                "x": 1,
-                "y": 3
-              },
-              {
-                "x": 2,
-                "y": 4
-              },
-              {
-                "x": 3,
-                "y": 4
-              },
-              {
-                "x": 3,
-                "y": 3
-              },
-              {
-                "x": 4,
-                "y": 3
-              },
-              {
-                "x": 5,
-                "y": 3
-              },
-              {
-                "x": 6,
-                "y": 3
-              },
-              {
-                "x": 7,
-                "y": 4
-              }
-            ],
-            "newMovementPoints": 0
-          }
-        },
-        {
-          "type": "CITY_FOUNDED",
-          "payload": {
-            "newCity": {
-              "id": "city-7-4",
-              "type": "City",
-              "ownerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-              "ownerName": "nickname",
-              "population": 14,
-              "improvement": null,
-              "fortification": 100,
-              "isCapital": true,
-              "production": null
-            },
-            "acquiredTileIds": [
-              "7-4",
-              "6-3",
-              "7-3",
-              "6-4",
-              "8-4",
-              "6-5",
-              "7-5"
-            ]
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 76
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 2
+            "turnNumber": 77
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 3
-          }
-        },
-        {
-          "type": "PRODUCTION_COMPLETED",
-          "payload": {
-            "cityId": "city-7-4",
-            "createdUnit": {
-              "id": "aa752350-cea8-48ad-9086-2f85e5b07861-Horseman-0zv2tp0f",
-              "ownerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-              "ownerName": "nickname",
-              "type": "Horseman",
-              "health": 20,
-              "maxHealth": 20,
-              "attack": 9,
-              "movementPoints": 4,
-              "isVeteran": false
-            }
+            "turnNumber": 78
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 4
+            "turnNumber": 79
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 5
+            "turnNumber": 80
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 6
+            "turnNumber": 81
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 7
+            "turnNumber": 82
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 8
+            "turnNumber": 83
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 9
+            "turnNumber": 84
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 10
+            "turnNumber": 85
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 11
+            "turnNumber": 86
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 12
+            "turnNumber": 87
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 13
+            "turnNumber": 88
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 14
+            "turnNumber": 89
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 15
+            "turnNumber": 90
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 16
+            "turnNumber": 91
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 17
+            "turnNumber": 92
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 18
+            "turnNumber": 93
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 19
+            "turnNumber": 94
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 20
+            "turnNumber": 95
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 21
+            "turnNumber": 96
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 22
+            "turnNumber": 97
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 23
+            "turnNumber": 98
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 24
+            "turnNumber": 99
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 100
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 101
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 102
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 103
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 104
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 105
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 106
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 107
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 108
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 109
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 110
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 111
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 112
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 113
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 114
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 115
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 116
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 117
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 118
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 119
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 120
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 121
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 122
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 123
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 124
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 125
           }
         }
       ],
-      "turnEndsAt": "2025-12-08T22:38:32.892Z"
+      "turnEndsAt": "2025-12-14T18:32:29.631Z"
     },
     "cabaa3cd-f56f-44a2-b418-43590245b717": {
       "id": "cabaa3cd-f56f-44a2-b418-43590245b717",
-      "turn": 22,
+      "turn": 123,
       "currentPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
       "currentPlayerName": "nicknamea",
       "population": {
@@ -12970,221 +13076,357 @@
       ],
       "events": [
         {
-          "type": "UNIT_MOVED",
+          "type": "TURN_CHANGED",
           "payload": {
-            "unitId": "e240854d-9a32-45cf-b9d5-2a1ca4121165-Settler-p02nh059",
-            "path": [
-              {
-                "x": 12,
-                "y": 5
-              },
-              {
-                "x": 12,
-                "y": 6
-              },
-              {
-                "x": 11,
-                "y": 6
-              }
-            ],
-            "newMovementPoints": 5
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "e240854d-9a32-45cf-b9d5-2a1ca4121165-Settler-p02nh059",
-            "path": [
-              {
-                "x": 10,
-                "y": 7
-              },
-              {
-                "x": 10,
-                "y": 8
-              },
-              {
-                "x": 10,
-                "y": 9
-              }
-            ],
-            "newMovementPoints": 2
-          }
-        },
-        {
-          "type": "CITY_FOUNDED",
-          "payload": {
-            "newCity": {
-              "id": "city-10-9",
-              "type": "City",
-              "ownerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-              "ownerName": "nicknamea",
-              "population": 32,
-              "improvement": null,
-              "fortification": 100,
-              "isCapital": true,
-              "production": null
-            },
-            "acquiredTileIds": [
-              "10-9",
-              "10-8",
-              "11-8",
-              "9-9",
-              "11-9",
-              "10-10",
-              "11-10"
-            ]
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 74
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 2
+            "turnNumber": 75
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 3
+            "turnNumber": 76
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 4
+            "turnNumber": 77
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 5
+            "turnNumber": 78
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 6
+            "turnNumber": 79
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 7
+            "turnNumber": 80
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 8
+            "turnNumber": 81
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 9
+            "turnNumber": 82
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 10
+            "turnNumber": 83
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 11
+            "turnNumber": 84
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 12
+            "turnNumber": 85
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 13
+            "turnNumber": 86
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 14
+            "turnNumber": 87
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 15
+            "turnNumber": 88
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 16
+            "turnNumber": 89
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 17
+            "turnNumber": 90
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 18
+            "turnNumber": 91
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 19
+            "turnNumber": 92
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 20
+            "turnNumber": 93
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 21
+            "turnNumber": 94
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 22
+            "turnNumber": 95
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 96
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 97
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 98
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 99
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 100
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 101
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 102
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 103
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 104
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 105
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 106
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 107
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 108
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 109
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 110
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 111
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 112
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 113
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 114
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 115
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 116
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 117
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 118
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 119
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 120
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 121
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 122
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 123
           }
         }
       ],
-      "turnEndsAt": "2025-12-08T22:38:32.908Z"
+      "turnEndsAt": "2025-12-14T18:32:29.644Z"
     },
     "d0cb73c2-2c36-4162-b317-d8e7d6f42eb9": {
       "id": "d0cb73c2-2c36-4162-b317-d8e7d6f42eb9",
@@ -21503,11 +21745,11 @@
     },
     "ad1be80b-3bdb-4f15-a240-26cc2814978d": {
       "id": "ad1be80b-3bdb-4f15-a240-26cc2814978d",
-      "turn": 63,
-      "currentPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-      "currentPlayerName": "nicknamea",
+      "turn": 97,
+      "currentPlayerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
+      "currentPlayerName": "гтешедув_2",
       "population": {
-        "current": 95.5,
+        "current": 153.5,
         "cap": 150
       },
       "phase": "running",
@@ -21521,7 +21763,7 @@
           "name": "гтешедув_2",
           "color": "#0EA5E9",
           "populationCap": 50,
-          "currentPopulation": 12,
+          "currentPopulation": 50,
           "status": "playing",
           "capitalCityId": "city-16-15"
         },
@@ -21530,7 +21772,7 @@
           "name": "nicknamea",
           "color": "#FFB347",
           "populationCap": 50,
-          "currentPopulation": 38,
+          "currentPopulation": 50,
           "status": "playing",
           "capitalCityId": "city-1-10"
         },
@@ -21539,7 +21781,7 @@
           "name": "MCLOVIN",
           "color": "#6C63FF",
           "populationCap": 50,
-          "currentPopulation": 45.5,
+          "currentPopulation": 53.5,
           "status": "playing",
           "capitalCityId": "city-2-18"
         }
@@ -23254,7 +23496,7 @@
             "type": "City",
             "ownerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
             "ownerName": "nicknamea",
-            "population": 38,
+            "population": 50,
             "improvement": null,
             "fortification": 100,
             "isCapital": true,
@@ -24232,7 +24474,7 @@
             "type": "City",
             "ownerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
             "ownerName": "гтешедув_2",
-            "population": 12,
+            "population": 50,
             "improvement": "Barracks",
             "fortification": 100,
             "isCapital": true,
@@ -24671,7 +24913,7 @@
             "type": "City",
             "ownerId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc",
             "ownerName": "MCLOVIN",
-            "population": 45.5,
+            "population": 53.5,
             "improvement": "Granary",
             "fortification": 100,
             "isCapital": true,
@@ -25701,477 +25943,357 @@
       ],
       "events": [
         {
-          "type": "UNIT_MOVED",
+          "type": "TURN_CHANGED",
           "payload": {
-            "unitId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc-Archer-1t31gcnq",
-            "path": [
-              {
-                "x": 5,
-                "y": 18
-              }
-            ],
-            "newMovementPoints": 1
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc-Archer-k8k8ezg1",
-            "path": [
-              {
-                "x": 3,
-                "y": 20
-              }
-            ],
-            "newMovementPoints": 1
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc-Warrior-s0q2wjom",
-            "path": [
-              {
-                "x": 1,
-                "y": 20
-              },
-              {
-                "x": 0,
-                "y": 19
-              }
-            ],
-            "newMovementPoints": 0
+            "nextPlayerId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc",
+            "turnNumber": 80
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
-            "turnNumber": 51
+            "turnNumber": 81
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 51
+            "turnNumber": 81
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc",
-            "turnNumber": 51
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc-Warrior-s0q2wjom",
-            "path": [
-              {
-                "x": 1,
-                "y": 18
-              },
-              {
-                "x": 2,
-                "y": 18
-              }
-            ],
-            "newMovementPoints": 0
+            "turnNumber": 81
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
-            "turnNumber": 52
+            "turnNumber": 82
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 52
+            "turnNumber": 82
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc",
-            "turnNumber": 52
+            "turnNumber": 82
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
-            "turnNumber": 53
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "3feb4613-809c-4b5a-b204-c7a069840cbf-Warrior-80n04ls4",
-            "path": [
-              {
-                "x": 17,
-                "y": 16
-              }
-            ],
-            "newMovementPoints": 1
+            "turnNumber": 83
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 53
+            "turnNumber": 83
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc",
-            "turnNumber": 53
+            "turnNumber": 83
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
-            "turnNumber": 54
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "3feb4613-809c-4b5a-b204-c7a069840cbf-Warrior-80n04ls4",
-            "path": [
-              {
-                "x": 16,
-                "y": 16
-              },
-              {
-                "x": 15,
-                "y": 16
-              }
-            ],
-            "newMovementPoints": 0
-          }
-        },
-        {
-          "type": "PRODUCTION_COMPLETED",
-          "payload": {
-            "cityId": "city-16-15",
-            "createdUnit": {
-              "id": "3feb4613-809c-4b5a-b204-c7a069840cbf-Horseman-dnxgxmhx",
-              "ownerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
-              "ownerName": "гтешедув_2",
-              "type": "Horseman",
-              "health": 22,
-              "maxHealth": 22,
-              "attack": 10,
-              "movementPoints": 4,
-              "isVeteran": true
-            }
+            "turnNumber": 84
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 54
+            "turnNumber": 84
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc",
-            "turnNumber": 54
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc-Warrior-s0q2wjom",
-            "path": [
-              {
-                "x": 3,
-                "y": 18
-              }
-            ],
-            "newMovementPoints": 1
+            "turnNumber": 84
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
-            "turnNumber": 55
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "3feb4613-809c-4b5a-b204-c7a069840cbf-Horseman-dnxgxmhx",
-            "path": [
-              {
-                "x": 15,
-                "y": 15
-              },
-              {
-                "x": 14,
-                "y": 15
-              },
-              {
-                "x": 13,
-                "y": 15
-              },
-              {
-                "x": 12,
-                "y": 15
-              }
-            ],
-            "newMovementPoints": 0
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "3feb4613-809c-4b5a-b204-c7a069840cbf-Warrior-80n04ls4",
-            "path": [
-              {
-                "x": 16,
-                "y": 16
-              },
-              {
-                "x": 17,
-                "y": 16
-              }
-            ],
-            "newMovementPoints": 0
+            "turnNumber": 85
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 55
+            "turnNumber": 85
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc",
-            "turnNumber": 55
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc-Warrior-s0q2wjom",
-            "path": [
-              {
-                "x": 3,
-                "y": 17
-              },
-              {
-                "x": 4,
-                "y": 17
-              }
-            ],
-            "newMovementPoints": 0
+            "turnNumber": 85
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
-            "turnNumber": 56
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "3feb4613-809c-4b5a-b204-c7a069840cbf-Horseman-dnxgxmhx",
-            "path": [
-              {
-                "x": 11,
-                "y": 15
-              },
-              {
-                "x": 10,
-                "y": 15
-              },
-              {
-                "x": 9,
-                "y": 15
-              },
-              {
-                "x": 8,
-                "y": 15
-              }
-            ],
-            "newMovementPoints": 0
+            "turnNumber": 86
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 56
+            "turnNumber": 86
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc",
-            "turnNumber": 56
+            "turnNumber": 86
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
-            "turnNumber": 57
+            "turnNumber": 87
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 57
+            "turnNumber": 87
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc",
-            "turnNumber": 57
+            "turnNumber": 87
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
-            "turnNumber": 58
+            "turnNumber": 88
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 58
+            "turnNumber": 88
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc",
-            "turnNumber": 58
+            "turnNumber": 88
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
-            "turnNumber": 59
+            "turnNumber": 89
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 59
+            "turnNumber": 89
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc",
-            "turnNumber": 59
+            "turnNumber": 89
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
-            "turnNumber": 60
+            "turnNumber": 90
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 60
+            "turnNumber": 90
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc",
-            "turnNumber": 60
+            "turnNumber": 90
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
-            "turnNumber": 61
+            "turnNumber": 91
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 61
+            "turnNumber": 91
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc",
-            "turnNumber": 61
+            "turnNumber": 91
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
-            "turnNumber": 62
+            "turnNumber": 92
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 62
+            "turnNumber": 92
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc",
-            "turnNumber": 62
+            "turnNumber": 92
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
-            "turnNumber": 63
+            "turnNumber": 93
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 63
+            "turnNumber": 93
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc",
+            "turnNumber": 93
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
+            "turnNumber": 94
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 94
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc",
+            "turnNumber": 94
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
+            "turnNumber": 95
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 95
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc",
+            "turnNumber": 95
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
+            "turnNumber": 96
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 96
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc",
+            "turnNumber": 96
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
+            "turnNumber": 97
           }
         }
       ],
-      "turnEndsAt": "2025-12-08T22:38:32.925Z"
+      "turnEndsAt": "2025-12-14T18:32:29.657Z"
     },
     "d9ada75f-7bcf-4642-9cc8-d7e2503347b0": {
       "id": "d9ada75f-7bcf-4642-9cc8-d7e2503347b0",
@@ -38394,7 +38516,7 @@
     },
     "84b6681d-fa73-40fc-a456-b770423d98f2": {
       "id": "84b6681d-fa73-40fc-a456-b770423d98f2",
-      "turn": 21,
+      "turn": 122,
       "currentPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
       "currentPlayerName": "nicknamea",
       "population": {
@@ -42475,235 +42597,365 @@
       ],
       "events": [
         {
-          "type": "UNIT_MOVED",
+          "type": "TURN_CHANGED",
           "payload": {
-            "unitId": "e240854d-9a32-45cf-b9d5-2a1ca4121165-Settler-bc8ciwru",
-            "path": [
-              {
-                "x": 15,
-                "y": 6
-              },
-              {
-                "x": 14,
-                "y": 7
-              },
-              {
-                "x": 14,
-                "y": 8
-              },
-              {
-                "x": 14,
-                "y": 9
-              },
-              {
-                "x": 14,
-                "y": 10
-              }
-            ],
-            "newMovementPoints": 3
-          }
-        },
-        {
-          "type": "CITY_FOUNDED",
-          "payload": {
-            "newCity": {
-              "id": "city-14-10",
-              "type": "City",
-              "ownerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-              "ownerName": "nicknamea",
-              "population": 31,
-              "improvement": null,
-              "fortification": 90,
-              "isCapital": true,
-              "production": null
-            },
-            "acquiredTileIds": [
-              "14-10",
-              "13-9",
-              "14-9",
-              "13-10",
-              "15-10",
-              "13-11",
-              "14-11"
-            ]
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "e240854d-9a32-45cf-b9d5-2a1ca4121165-Warrior-5c7gt1cw",
-            "path": [
-              {
-                "x": 14,
-                "y": 10
-              }
-            ],
-            "newMovementPoints": 1
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "e240854d-9a32-45cf-b9d5-2a1ca4121165-Warrior-5c7gt1cw",
-            "path": [
-              {
-                "x": 15,
-                "y": 10
-              }
-            ],
-            "newMovementPoints": 0
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 73
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 2
+            "turnNumber": 74
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 3
+            "turnNumber": 75
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 4
+            "turnNumber": 76
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 5
+            "turnNumber": 77
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 6
+            "turnNumber": 78
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 7
+            "turnNumber": 79
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 8
+            "turnNumber": 80
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 9
+            "turnNumber": 81
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 10
+            "turnNumber": 82
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 11
+            "turnNumber": 83
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 12
+            "turnNumber": 84
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 13
+            "turnNumber": 85
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 14
+            "turnNumber": 86
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 15
+            "turnNumber": 87
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 16
+            "turnNumber": 88
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 17
+            "turnNumber": 89
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 18
+            "turnNumber": 90
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 19
+            "turnNumber": 91
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 20
+            "turnNumber": 92
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 21
+            "turnNumber": 93
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 94
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 95
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 96
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 97
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 98
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 99
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 100
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 101
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 102
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 103
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 104
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 105
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 106
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 107
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 108
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 109
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 110
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 111
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 112
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 113
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 114
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 115
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 116
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 117
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 118
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 119
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 120
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 121
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 122
           }
         }
       ],
-      "turnEndsAt": "2025-12-08T22:38:32.950Z"
+      "turnEndsAt": "2025-12-14T18:32:29.672Z"
     },
     "ea9d0c3f-1be2-4351-94fd-48bf0b59a5de": {
       "id": "ea9d0c3f-1be2-4351-94fd-48bf0b59a5de",
-      "turn": 26,
+      "turn": 127,
       "currentPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
       "currentPlayerName": "nicknamea",
       "population": {
-        "current": 74,
+        "current": 102,
         "cap": 100
       },
       "phase": "running",
@@ -42717,7 +42969,7 @@
           "name": "nicknamea",
           "color": "#0EA5E9",
           "populationCap": 100,
-          "currentPopulation": 74,
+          "currentPopulation": 102,
           "status": "playing",
           "capitalCityId": "city-14-15"
         }
@@ -45356,7 +45608,7 @@
             "type": "City",
             "ownerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
             "ownerName": "nicknamea",
-            "population": 45,
+            "population": 59,
             "improvement": null,
             "fortification": 100,
             "isCapital": false,
@@ -45374,7 +45626,7 @@
             "type": "City",
             "ownerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
             "ownerName": "nicknamea",
-            "population": 29,
+            "population": 43,
             "improvement": null,
             "fortification": 100,
             "isCapital": true,
@@ -46791,299 +47043,365 @@
       ],
       "events": [
         {
-          "type": "UNIT_MOVED",
+          "type": "TURN_CHANGED",
           "payload": {
-            "unitId": "e240854d-9a32-45cf-b9d5-2a1ca4121165-Settler-swbuqen2",
-            "path": [
-              {
-                "x": 17,
-                "y": 18
-              },
-              {
-                "x": 16,
-                "y": 17
-              },
-              {
-                "x": 16,
-                "y": 16
-              },
-              {
-                "x": 15,
-                "y": 15
-              },
-              {
-                "x": 14,
-                "y": 15
-              }
-            ],
-            "newMovementPoints": 3
-          }
-        },
-        {
-          "type": "CITY_FOUNDED",
-          "payload": {
-            "newCity": {
-              "id": "city-14-15",
-              "type": "City",
-              "ownerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-              "ownerName": "nicknamea",
-              "population": 6,
-              "improvement": null,
-              "fortification": 100,
-              "isCapital": true,
-              "production": null
-            },
-            "acquiredTileIds": [
-              "14-15",
-              "14-14",
-              "15-14",
-              "13-15",
-              "15-15",
-              "14-16",
-              "15-16"
-            ]
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 78
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 2
+            "turnNumber": 79
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 3
-          }
-        },
-        {
-          "type": "PRODUCTION_COMPLETED",
-          "payload": {
-            "cityId": "city-14-15",
-            "createdUnit": {
-              "id": "e240854d-9a32-45cf-b9d5-2a1ca4121165-Settler-adv0xiys",
-              "ownerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-              "ownerName": "nicknamea",
-              "type": "Settler",
-              "health": 10,
-              "maxHealth": 10,
-              "attack": 0,
-              "movementPoints": 2,
-              "isVeteran": false
-            }
+            "turnNumber": 80
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 4
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "e240854d-9a32-45cf-b9d5-2a1ca4121165-Settler-adv0xiys",
-            "path": [
-              {
-                "x": 13,
-                "y": 15
-              }
-            ],
-            "newMovementPoints": 1
-          }
-        },
-        {
-          "type": "CITY_FOUNDED",
-          "payload": {
-            "newCity": {
-              "id": "city-13-15",
-              "type": "City",
-              "ownerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-              "ownerName": "nicknamea",
-              "population": 22,
-              "improvement": null,
-              "fortification": 80,
-              "isCapital": false,
-              "production": null
-            },
-            "acquiredTileIds": [
-              "13-15",
-              "13-14",
-              "14-14",
-              "12-15",
-              "14-15",
-              "13-16",
-              "14-16"
-            ]
+            "turnNumber": 81
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 5
+            "turnNumber": 82
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 6
+            "turnNumber": 83
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 7
+            "turnNumber": 84
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 8
+            "turnNumber": 85
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 9
+            "turnNumber": 86
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 10
+            "turnNumber": 87
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 11
+            "turnNumber": 88
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 12
+            "turnNumber": 89
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 13
+            "turnNumber": 90
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 14
+            "turnNumber": 91
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 15
+            "turnNumber": 92
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 16
+            "turnNumber": 93
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 17
+            "turnNumber": 94
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 18
+            "turnNumber": 95
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 19
+            "turnNumber": 96
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 20
+            "turnNumber": 97
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 21
+            "turnNumber": 98
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 22
+            "turnNumber": 99
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 23
+            "turnNumber": 100
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 24
+            "turnNumber": 101
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 25
+            "turnNumber": 102
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 26
+            "turnNumber": 103
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 104
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 105
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 106
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 107
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 108
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 109
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 110
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 111
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 112
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 113
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 114
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 115
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 116
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 117
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 118
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 119
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 120
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 121
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 122
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 123
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 124
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 125
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 126
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 127
           }
         }
       ],
-      "turnEndsAt": "2025-12-08T22:38:32.966Z"
+      "turnEndsAt": "2025-12-14T18:32:29.687Z"
     },
     "0c52911f-5aa2-4f78-a175-f741ac29614d": {
       "id": "0c52911f-5aa2-4f78-a175-f741ac29614d",
-      "turn": 12,
-      "currentPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-      "currentPlayerName": "nicknamea2",
+      "turn": 63,
+      "currentPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
+      "currentPlayerName": "nicknameaф",
       "population": {
-        "current": 57,
+        "current": 101,
         "cap": 100
       },
       "phase": "running",
@@ -47097,7 +47415,7 @@
           "name": "nicknameaф",
           "color": "#0EA5E9",
           "populationCap": 50,
-          "currentPopulation": 43,
+          "currentPopulation": 51,
           "status": "playing",
           "capitalCityId": "city-12-16"
         },
@@ -47106,7 +47424,7 @@
           "name": "nicknamea2",
           "color": "#FFB347",
           "populationCap": 50,
-          "currentPopulation": 14,
+          "currentPopulation": 50,
           "status": "playing",
           "capitalCityId": "city-8-8"
         }
@@ -48534,7 +48852,7 @@
             "type": "City",
             "ownerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
             "ownerName": "nicknamea2",
-            "population": 14,
+            "population": 50,
             "improvement": null,
             "fortification": 100,
             "isCapital": true,
@@ -49939,7 +50257,7 @@
             "type": "City",
             "ownerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
             "ownerName": "nicknameaф",
-            "population": 43,
+            "population": 51,
             "improvement": null,
             "fortification": 100,
             "isCapital": true,
@@ -51202,281 +51520,361 @@
       ],
       "events": [
         {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "6caffc7f-d73b-454e-958a-de4d239eac13-Settler-nhsg760e",
-            "path": [
-              {
-                "x": 13,
-                "y": 12
-              },
-              {
-                "x": 12,
-                "y": 13
-              },
-              {
-                "x": 12,
-                "y": 14
-              },
-              {
-                "x": 11,
-                "y": 15
-              },
-              {
-                "x": 12,
-                "y": 16
-              }
-            ],
-            "newMovementPoints": 3
-          }
-        },
-        {
-          "type": "CITY_FOUNDED",
-          "payload": {
-            "newCity": {
-              "id": "city-12-16",
-              "type": "City",
-              "ownerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
-              "ownerName": "nicknameaф",
-              "population": 32,
-              "improvement": null,
-              "fortification": 100,
-              "isCapital": true,
-              "production": null
-            },
-            "acquiredTileIds": [
-              "12-16",
-              "11-15",
-              "12-15",
-              "11-16",
-              "13-16",
-              "11-17",
-              "12-17"
-            ]
-          }
-        },
-        {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 1
-          }
-        },
-        {
-          "type": "CITY_FOUNDED",
-          "payload": {
-            "newCity": {
-              "id": "city-8-8",
-              "type": "City",
-              "ownerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-              "ownerName": "nicknamea2",
-              "population": 2,
-              "improvement": null,
-              "fortification": 100,
-              "isCapital": true,
-              "production": {
-                "item": {
-                  "type": "unit",
-                  "unitType": "Settler"
-                },
-                "progressTurns": 1
-              }
-            },
-            "acquiredTileIds": [
-              "8-8",
-              "7-7",
-              "8-7",
-              "7-8",
-              "9-8",
-              "7-9",
-              "8-9"
-            ]
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
-            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 1
+            "turnNumber": 38
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
-            "turnNumber": 2
+            "turnNumber": 39
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 2
+            "turnNumber": 39
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
-            "turnNumber": 3
+            "turnNumber": 40
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 3
-          }
-        },
-        {
-          "type": "PRODUCTION_COMPLETED",
-          "payload": {
-            "cityId": "city-8-8",
-            "createdUnit": {
-              "id": "e7354cde-4f60-4913-a5e9-45ad84b4c513-Settler-we1cxqa8",
-              "ownerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-              "ownerName": "nicknamea2",
-              "type": "Settler",
-              "health": 10,
-              "maxHealth": 10,
-              "attack": 0,
-              "movementPoints": 2,
-              "isVeteran": false
-            }
+            "turnNumber": 40
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
-            "turnNumber": 4
+            "turnNumber": 41
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 4
+            "turnNumber": 41
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
-            "turnNumber": 5
+            "turnNumber": 42
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 5
+            "turnNumber": 42
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
-            "turnNumber": 6
+            "turnNumber": 43
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 6
+            "turnNumber": 43
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
-            "turnNumber": 7
+            "turnNumber": 44
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 7
+            "turnNumber": 44
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
-            "turnNumber": 8
+            "turnNumber": 45
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 8
+            "turnNumber": 45
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
-            "turnNumber": 9
+            "turnNumber": 46
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 9
+            "turnNumber": 46
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
-            "turnNumber": 10
+            "turnNumber": 47
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 10
+            "turnNumber": 47
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
-            "turnNumber": 11
+            "turnNumber": 48
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 11
+            "turnNumber": 48
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
-            "turnNumber": 12
+            "turnNumber": 49
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 12
+            "turnNumber": 49
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
+            "turnNumber": 50
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 50
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
+            "turnNumber": 51
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 51
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
+            "turnNumber": 52
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 52
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
+            "turnNumber": 53
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 53
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
+            "turnNumber": 54
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 54
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
+            "turnNumber": 55
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 55
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
+            "turnNumber": 56
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 56
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
+            "turnNumber": 57
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 57
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
+            "turnNumber": 58
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 58
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
+            "turnNumber": 59
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 59
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
+            "turnNumber": 60
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 60
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
+            "turnNumber": 61
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 61
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
+            "turnNumber": 62
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 62
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
+            "turnNumber": 63
           }
         }
       ],
-      "turnEndsAt": "2025-12-08T22:38:32.980Z"
+      "turnEndsAt": "2025-12-14T18:32:29.703Z"
     },
     "ca4c9458-8c65-4243-9238-4181e3a76990": {
       "id": "ca4c9458-8c65-4243-9238-4181e3a76990",
-      "turn": 28,
+      "turn": 129,
       "currentPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
       "currentPlayerName": "nicknamea2",
       "population": {
@@ -55557,267 +55955,365 @@
       ],
       "events": [
         {
-          "type": "UNIT_MOVED",
+          "type": "TURN_CHANGED",
           "payload": {
-            "unitId": "e7354cde-4f60-4913-a5e9-45ad84b4c513-Settler-b0rh7luc",
-            "path": [
-              {
-                "x": 15,
-                "y": 21
-              },
-              {
-                "x": 15,
-                "y": 20
-              },
-              {
-                "x": 14,
-                "y": 19
-              },
-              {
-                "x": 15,
-                "y": 18
-              }
-            ],
-            "newMovementPoints": 4
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 80
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 2
-          }
-        },
-        {
-          "type": "CITY_FOUNDED",
-          "payload": {
-            "newCity": {
-              "id": "city-15-18",
-              "type": "City",
-              "ownerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-              "ownerName": "nicknamea2",
-              "population": 37,
-              "improvement": null,
-              "fortification": 100,
-              "isCapital": true,
-              "production": null
-            },
-            "acquiredTileIds": [
-              "15-18",
-              "14-17",
-              "15-17",
-              "14-18",
-              "16-18",
-              "14-19",
-              "15-19"
-            ]
+            "turnNumber": 81
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 3
+            "turnNumber": 82
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 4
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "e7354cde-4f60-4913-a5e9-45ad84b4c513-Warrior-w3mk2xkj",
-            "path": [
-              {
-                "x": 15,
-                "y": 16
-              }
-            ],
-            "newMovementPoints": 1
+            "turnNumber": 83
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 5
+            "turnNumber": 84
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 6
+            "turnNumber": 85
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 7
+            "turnNumber": 86
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 8
+            "turnNumber": 87
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 9
+            "turnNumber": 88
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 10
+            "turnNumber": 89
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 11
+            "turnNumber": 90
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 12
+            "turnNumber": 91
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 13
+            "turnNumber": 92
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 14
+            "turnNumber": 93
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 15
+            "turnNumber": 94
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 16
+            "turnNumber": 95
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 17
+            "turnNumber": 96
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 18
+            "turnNumber": 97
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 19
+            "turnNumber": 98
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 20
+            "turnNumber": 99
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 21
+            "turnNumber": 100
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 22
+            "turnNumber": 101
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 23
+            "turnNumber": 102
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 24
+            "turnNumber": 103
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 25
+            "turnNumber": 104
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 26
+            "turnNumber": 105
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 27
+            "turnNumber": 106
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 28
+            "turnNumber": 107
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 108
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 109
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 110
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 111
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 112
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 113
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 114
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 115
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 116
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 117
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 118
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 119
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 120
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 121
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 122
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 123
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 124
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 125
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 126
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 127
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 128
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 129
           }
         }
       ],
-      "turnEndsAt": "2025-12-08T22:38:32.997Z"
+      "turnEndsAt": "2025-12-14T18:32:29.718Z"
     },
     "40cbedb8-8f5f-453b-a5d8-632e04ebc90f": {
       "id": "40cbedb8-8f5f-453b-a5d8-632e04ebc90f",
-      "turn": 11,
-      "currentPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-      "currentPlayerName": "nicknamea2",
+      "turn": 61,
+      "currentPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+      "currentPlayerName": "nickname",
       "population": {
-        "current": 84,
+        "current": 102,
         "cap": 100
       },
       "phase": "running",
@@ -55831,7 +56327,7 @@
           "name": "nicknamea2",
           "color": "#0EA5E9",
           "populationCap": 50,
-          "currentPopulation": 43,
+          "currentPopulation": 51,
           "status": "playing",
           "capitalCityId": "city-14-12"
         },
@@ -55840,7 +56336,7 @@
           "name": "nickname",
           "color": "#FFB347",
           "populationCap": 50,
-          "currentPopulation": 41,
+          "currentPopulation": 51,
           "status": "playing",
           "capitalCityId": "city-16-6"
         }
@@ -56988,7 +57484,7 @@
             "type": "City",
             "ownerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
             "ownerName": "nickname",
-            "population": 41,
+            "population": 51,
             "improvement": null,
             "fortification": 100,
             "isCapital": true,
@@ -58004,7 +58500,7 @@
             "type": "City",
             "ownerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
             "ownerName": "nicknamea2",
-            "population": 43,
+            "population": 51,
             "improvement": null,
             "fortification": 100,
             "isCapital": true,
@@ -59925,268 +60421,367 @@
       ],
       "events": [
         {
-          "type": "UNIT_MOVED",
+          "type": "TURN_CHANGED",
           "payload": {
-            "unitId": "e7354cde-4f60-4913-a5e9-45ad84b4c513-Settler-rjqu6x7u",
-            "path": [
-              {
-                "x": 9,
-                "y": 12
-              },
-              {
-                "x": 9,
-                "y": 13
-              },
-              {
-                "x": 10,
-                "y": 13
-              },
-              {
-                "x": 11,
-                "y": 12
-              },
-              {
-                "x": 12,
-                "y": 12
-              },
-              {
-                "x": 13,
-                "y": 12
-              },
-              {
-                "x": 14,
-                "y": 12
-              }
-            ],
-            "newMovementPoints": 1
-          }
-        },
-        {
-          "type": "CITY_FOUNDED",
-          "payload": {
-            "newCity": {
-              "id": "city-14-12",
-              "type": "City",
-              "ownerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-              "ownerName": "nicknamea2",
-              "population": 31,
-              "improvement": null,
-              "fortification": 90,
-              "isCapital": true,
-              "production": null
-            },
-            "acquiredTileIds": [
-              "14-12",
-              "13-11",
-              "14-11",
-              "13-12",
-              "15-12",
-              "13-13",
-              "14-13"
-            ]
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 37
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 1
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "aa752350-cea8-48ad-9086-2f85e5b07861-Settler-q2ay7o5y",
-            "path": [
-              {
-                "x": 16,
-                "y": 5
-              },
-              {
-                "x": 16,
-                "y": 6
-              }
-            ],
-            "newMovementPoints": 0
-          }
-        },
-        {
-          "type": "CITY_FOUNDED",
-          "payload": {
-            "newCity": {
-              "id": "city-16-6",
-              "type": "City",
-              "ownerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-              "ownerName": "nickname",
-              "population": 30,
-              "improvement": null,
-              "fortification": 80,
-              "isCapital": true,
-              "production": null
-            },
-            "acquiredTileIds": [
-              "16-6",
-              "15-5",
-              "16-5",
-              "15-6",
-              "17-6",
-              "15-7",
-              "16-7"
-            ]
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
-            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 1
+            "turnNumber": 37
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 2
+            "turnNumber": 38
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 2
+            "turnNumber": 38
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 3
+            "turnNumber": 39
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 3
+            "turnNumber": 39
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 4
+            "turnNumber": 40
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 4
+            "turnNumber": 40
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 5
+            "turnNumber": 41
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 5
+            "turnNumber": 41
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 6
+            "turnNumber": 42
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 6
+            "turnNumber": 42
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 7
+            "turnNumber": 43
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 7
+            "turnNumber": 43
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 8
+            "turnNumber": 44
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 8
+            "turnNumber": 44
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 9
+            "turnNumber": 45
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 9
+            "turnNumber": 45
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 10
+            "turnNumber": 46
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 10
+            "turnNumber": 46
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 11
+            "turnNumber": 47
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 47
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 48
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 48
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 49
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 49
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 50
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 50
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 51
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 51
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 52
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 52
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 53
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 53
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 54
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 54
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 55
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 55
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 56
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 56
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 57
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 57
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 58
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 58
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 59
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 59
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 60
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 60
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 61
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 61
           }
         }
       ],
-      "turnEndsAt": "2025-12-08T22:38:33.009Z"
+      "turnEndsAt": "2025-12-14T18:32:29.732Z"
     },
     "6311d506-662d-4954-ae79-ccc6821e40cc": {
       "id": "6311d506-662d-4954-ae79-ccc6821e40cc",
-      "turn": 31,
+      "turn": 132,
       "currentPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
       "currentPlayerName": "nicknamea",
-      "turnEndsAt": "2025-12-08T22:38:04.632Z",
+      "turnEndsAt": "2025-12-14T18:32:29.744Z",
       "turnDurationSeconds": 60,
       "population": {
-        "current": 25,
+        "current": 51,
         "cap": 50
       },
       "phase": "running",
@@ -60200,7 +60795,7 @@
           "name": "nicknamea",
           "color": "#0EA5E9",
           "populationCap": 50,
-          "currentPopulation": 25,
+          "currentPopulation": 51,
           "status": "playing",
           "capitalCityId": "city-7-18"
         }
@@ -63312,7 +63907,7 @@
             "type": "City",
             "ownerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
             "ownerName": "nicknamea",
-            "population": 25,
+            "population": 51,
             "improvement": "Barracks",
             "fortification": 100,
             "isCapital": true,
@@ -64277,382 +64872,363 @@
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 2
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "e240854d-9a32-45cf-b9d5-2a1ca4121165-Settler-w5si7g1q",
-            "path": [
-              {
-                "x": 6,
-                "y": 18
-              },
-              {
-                "x": 7,
-                "y": 18
-              }
-            ],
-            "newMovementPoints": 0
-          }
-        },
-        {
-          "type": "CITY_FOUNDED",
-          "payload": {
-            "newCity": {
-              "id": "city-7-18",
-              "type": "City",
-              "ownerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-              "ownerName": "nicknamea",
-              "population": 7,
-              "improvement": "Barracks",
-              "fortification": 100,
-              "isCapital": true,
-              "production": null
-            },
-            "acquiredTileIds": [
-              "7-18",
-              "6-17",
-              "7-17",
-              "6-18",
-              "8-18",
-              "6-19",
-              "7-19"
-            ]
+            "turnNumber": 83
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 3
+            "turnNumber": 84
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 4
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "e240854d-9a32-45cf-b9d5-2a1ca4121165-Warrior-o2kqly4v",
-            "path": [
-              {
-                "x": 7,
-                "y": 18
-              },
-              {
-                "x": 8,
-                "y": 18
-              }
-            ],
-            "newMovementPoints": 0
+            "turnNumber": 85
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 5
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "e240854d-9a32-45cf-b9d5-2a1ca4121165-Warrior-o2kqly4v",
-            "path": [
-              {
-                "x": 9,
-                "y": 18
-              },
-              {
-                "x": 10,
-                "y": 18
-              }
-            ],
-            "newMovementPoints": 0
-          }
-        },
-        {
-          "type": "PRODUCTION_COMPLETED",
-          "payload": {
-            "cityId": "city-7-18",
-            "createdImprovement": "Barracks"
+            "turnNumber": 86
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 6
+            "turnNumber": 87
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 7
+            "turnNumber": 88
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 8
+            "turnNumber": 89
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 9
+            "turnNumber": 90
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 10
+            "turnNumber": 91
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 11
-          }
-        },
-        {
-          "type": "PRODUCTION_COMPLETED",
-          "payload": {
-            "cityId": "city-7-18",
-            "createdUnit": {
-              "id": "e240854d-9a32-45cf-b9d5-2a1ca4121165-Horseman-rqq4z38b",
-              "ownerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-              "ownerName": "nicknamea",
-              "type": "Horseman",
-              "health": 22,
-              "maxHealth": 22,
-              "attack": 10,
-              "movementPoints": 4,
-              "isVeteran": true
-            }
+            "turnNumber": 92
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 12
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "e240854d-9a32-45cf-b9d5-2a1ca4121165-Horseman-rqq4z38b",
-            "path": [
-              {
-                "x": 6,
-                "y": 17
-              },
-              {
-                "x": 6,
-                "y": 16
-              },
-              {
-                "x": 5,
-                "y": 15
-              },
-              {
-                "x": 6,
-                "y": 14
-              }
-            ],
-            "newMovementPoints": 0
+            "turnNumber": 93
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 13
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "e240854d-9a32-45cf-b9d5-2a1ca4121165-Warrior-o2kqly4v",
-            "path": [
-              {
-                "x": 11,
-                "y": 18
-              },
-              {
-                "x": 11,
-                "y": 17
-              }
-            ],
-            "newMovementPoints": 0
+            "turnNumber": 94
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 14
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "e240854d-9a32-45cf-b9d5-2a1ca4121165-Warrior-o2kqly4v",
-            "path": [
-              {
-                "x": 11,
-                "y": 16
-              },
-              {
-                "x": 11,
-                "y": 15
-              }
-            ],
-            "newMovementPoints": 0
+            "turnNumber": 95
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 15
+            "turnNumber": 96
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 16
+            "turnNumber": 97
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 17
+            "turnNumber": 98
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 18
+            "turnNumber": 99
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 19
+            "turnNumber": 100
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 20
+            "turnNumber": 101
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 21
+            "turnNumber": 102
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 22
+            "turnNumber": 103
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 23
+            "turnNumber": 104
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 24
+            "turnNumber": 105
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 25
+            "turnNumber": 106
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 26
+            "turnNumber": 107
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 27
+            "turnNumber": 108
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 28
+            "turnNumber": 109
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 29
+            "turnNumber": 110
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 30
+            "turnNumber": 111
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 31
+            "turnNumber": 112
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 113
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 114
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 115
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 116
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 117
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 118
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 119
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 120
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 121
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 122
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 123
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 124
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 125
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 126
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 127
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 128
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 129
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 130
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 131
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 132
           }
         }
       ]
     },
     "31456447-48a6-4f0e-ae14-e27409622d22": {
       "id": "31456447-48a6-4f0e-ae14-e27409622d22",
-      "turn": 3,
+      "turn": 104,
       "currentPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
       "currentPlayerName": "nicknamea",
-      "turnEndsAt": "2025-12-08T22:37:54.158Z",
+      "turnEndsAt": "2025-12-14T18:32:29.757Z",
       "turnDurationSeconds": 60,
       "population": {
-        "current": 28,
+        "current": 50,
         "cap": 50
       },
       "phase": "running",
@@ -64666,7 +65242,7 @@
           "name": "nicknamea",
           "color": "#0EA5E9",
           "populationCap": 50,
-          "currentPopulation": 28,
+          "currentPopulation": 50,
           "status": "playing",
           "capitalCityId": "city-14-6"
         }
@@ -65800,7 +66376,7 @@
             "type": "City",
             "ownerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
             "ownerName": "nicknamea",
-            "population": 28,
+            "population": 50,
             "improvement": null,
             "fortification": 100,
             "isCapital": true,
@@ -68740,134 +69316,353 @@
       ],
       "events": [
         {
-          "type": "UNIT_MOVED",
+          "type": "TURN_CHANGED",
           "payload": {
-            "unitId": "e240854d-9a32-45cf-b9d5-2a1ca4121165-Settler-0x03drxe",
-            "path": [
-              {
-                "x": 14,
-                "y": 0
-              },
-              {
-                "x": 13,
-                "y": 0
-              },
-              {
-                "x": 12,
-                "y": 1
-              },
-              {
-                "x": 13,
-                "y": 2
-              },
-              {
-                "x": 13,
-                "y": 3
-              },
-              {
-                "x": 13,
-                "y": 4
-              },
-              {
-                "x": 13,
-                "y": 5
-              },
-              {
-                "x": 14,
-                "y": 6
-              }
-            ],
-            "newMovementPoints": 0
-          }
-        },
-        {
-          "type": "CITY_FOUNDED",
-          "payload": {
-            "newCity": {
-              "id": "city-14-6",
-              "type": "City",
-              "ownerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-              "ownerName": "nicknamea",
-              "population": 28,
-              "improvement": null,
-              "fortification": 100,
-              "isCapital": true,
-              "production": null
-            },
-            "acquiredTileIds": [
-              "14-6",
-              "13-5",
-              "14-5",
-              "13-6",
-              "15-6",
-              "13-7",
-              "14-7"
-            ]
-          }
-        },
-        {
-          "type": "PRODUCTION_COMPLETED",
-          "payload": {
-            "cityId": "city-14-6",
-            "createdUnit": {
-              "id": "e240854d-9a32-45cf-b9d5-2a1ca4121165-Warrior-odiqt5nh",
-              "ownerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-              "ownerName": "nicknamea",
-              "type": "Warrior",
-              "health": 20,
-              "maxHealth": 20,
-              "attack": 10,
-              "movementPoints": 2,
-              "isVeteran": false
-            }
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 55
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 2
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "e240854d-9a32-45cf-b9d5-2a1ca4121165-Warrior-odiqt5nh",
-            "path": [
-              {
-                "x": 13,
-                "y": 7
-              },
-              {
-                "x": 13,
-                "y": 8
-              }
-            ],
-            "newMovementPoints": 0
-          }
-        },
-        {
-          "type": "UNIT_MOVED",
-          "payload": {
-            "unitId": "e240854d-9a32-45cf-b9d5-2a1ca4121165-Warrior-8d0e1jd2",
-            "path": [
-              {
-                "x": 14,
-                "y": 4
-              },
-              {
-                "x": 14,
-                "y": 3
-              }
-            ],
-            "newMovementPoints": 0
+            "turnNumber": 56
           }
         },
         {
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 3
+            "turnNumber": 57
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 58
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 59
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 60
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 61
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 62
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 63
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 64
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 65
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 66
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 67
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 68
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 69
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 70
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 71
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 72
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 73
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 74
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 75
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 76
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 77
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 78
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 79
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 80
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 81
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 82
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 83
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 84
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 85
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 86
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 87
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 88
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 89
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 90
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 91
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 92
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 93
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 94
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 95
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 96
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 97
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 98
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 99
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 100
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 101
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 102
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 103
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 104
           }
         }
       ]

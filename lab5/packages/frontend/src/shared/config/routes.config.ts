@@ -1,6 +1,6 @@
-export const API_PREFIX = "api";
+export const apiPrefix = "/api";
 
-export const API_ENDPOINTS = {
+export const apiEndpoints = {
   listLobbies: "/lobbies",
   lobbyState: (lobbyId: string) => `/lobbies/${lobbyId}/state`,
   createLobby: "/lobbies",

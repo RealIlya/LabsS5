@@ -1,8 +1,8 @@
-import { API_CONFIG } from "../../../shared/config/api.config";
+import { apiConfig } from "../../../shared/config/api.config";
 import { request } from "../../../shared/api/request";
 import type { LobbyState, LobbySummary } from "@hex/shared";
 
-const { restBaseUrl, endpoints } = API_CONFIG;
+const { restBaseUrl, endpoints } = apiConfig;
 
 export interface CreateLobbyPayload {
   playerId: string;

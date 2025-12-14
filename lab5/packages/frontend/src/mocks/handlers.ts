@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw";
-import { API_CONFIG } from "../shared/config/api.config";
+import { apiConfig } from "../shared/config/api.config";
 import type { LobbyState, LobbyPlayerState } from "../entities/lobby/types";
 import type { GameStateDto } from "../entities/game/api/gameApi";
 import type {
@@ -7,7 +7,7 @@ import type {
   JoinLobbyPayload,
 } from "../entities/lobby/api/lobbyApi";
 
-const baseUrl = API_CONFIG.restBaseUrl;
+const baseUrl = apiConfig.restBaseUrl;
 const PLAYER_COLORS = ["#5FB49C", "#FFB347", "#6C63FF", "#FF6F91"];
 const MAP_COLUMNS = 12;
 const MAP_ROWS = 10;
@@ -53,7 +53,7 @@ function recalcPopulation(players: GameStateDto["players"]) {
 }
 
 export const handlers = [
-  http.get(`${baseUrl}${API_CONFIG.endpoints.listLobbies}`, () => {
+  http.get(`${baseUrl}${apiConfig.endpoints.listLobbies}`, () => {
     if (!lobbyState) {
       return HttpResponse.json([]);
     }
@@ -68,7 +68,7 @@ export const handlers = [
   }),
 
   http.post(
-    `${baseUrl}${API_CONFIG.endpoints.createLobby}`,
+    `${baseUrl}${apiConfig.endpoints.createLobby}`,
     async ({ request }) => {
       const body = (await request.json()) as CreateLobbyPayload;
 
@@ -125,7 +125,7 @@ export const handlers = [
   }),
 
   http.post(
-    `${baseUrl}${API_CONFIG.endpoints.joinLobby}`,
+    `${baseUrl}${apiConfig.endpoints.joinLobby}`,
     async ({ request }) => {
       const body = (await request.json()) as JoinLobbyPayload;
 
@@ -214,7 +214,7 @@ export const handlers = [
   }),
 
   http.post(
-    `${baseUrl}${API_CONFIG.endpoints.placeCapital(":gameId")}`,
+    `${baseUrl}${apiConfig.endpoints.placeCapital(":gameId")}`,
     async ({ params, request }) => {
       const body = (await request.json()) as {
         playerId: string;
@@ -285,7 +285,7 @@ export const handlers = [
   ),
 
   http.get(
-    `${baseUrl}${API_CONFIG.endpoints.gameState(":gameId")}`,
+    `${baseUrl}${apiConfig.endpoints.gameState(":gameId")}`,
     ({ params }) => {
       const state = params.gameId ? gameStates[params.gameId] : null;
       if (!state) {

@@ -1,7 +1,7 @@
 import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { API_PREFIX } from "./src/shared/config/routes.config";
+import { apiPrefix } from "./src/shared/config/routes.config";
 
 export default defineConfig({
   plugins: [react()],
@@ -12,7 +12,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      [API_PREFIX]: {
+      [apiPrefix]: {
         target: "http://localhost:9999",
         changeOrigin: true,
       },
