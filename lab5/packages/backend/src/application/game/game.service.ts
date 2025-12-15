@@ -259,6 +259,7 @@ export class GameService {
     };
 
     // Spawn initial settlers for each player with boosted movement
+    const spawnTiles: GameTileState[] = [];
     game.players.forEach((player) => {
       const candidates = game.tiles.filter(
         (tile) => isTilePlaceable(tile) && !tile.structure && !tile.unit
@@ -266,11 +267,16 @@ export class GameService {
       if (candidates.length === 0) {
         return;
       }
-      const index = Math.floor(Math.random() * candidates.length);
-      const spawnTile = candidates[index];
+      const spacedCandidates = candidates.filter((candidate) =>
+        spawnTiles.every((placed) => this.hexDistance(placed, candidate) > 4)
+      );
+      const pool = spacedCandidates.length > 0 ? spacedCandidates : candidates;
+      const index = Math.floor(Math.random() * pool.length);
+      const spawnTile = pool[index];
       const settler = this.createUnit(player.id, player.name, "Settler");
       settler.movementPoints = 8;
       spawnTile.unit = settler;
+      spawnTiles.push(spawnTile);
     });
 
     return game;
@@ -429,6 +435,14 @@ export class GameService {
     ) {
       throw new BadRequestException("Too close to another player's city");
     }
+    if (
+      this.isWithinDistanceOfStructureTypes(game, settlerTile, 2, [
+        "City",
+        "Fort",
+      ])
+    ) {
+      throw new BadRequestException("City too close to an existing city or fort");
+    }
 
     const player = this.getPlayer(game, playerId);
     player.populationCap += CITY_POPULATION_CAP_BONUS;
@@ -482,6 +496,21 @@ export class GameService {
   ) {
     return game.tiles.some((t) => {
       if (t.structure?.type !== "City") return false;
+      const dist = this.hexDistance(tile, t);
+      return dist <= maxDistance;
+    });
+  }
+
+  private isWithinDistanceOfStructureTypes(
+    game: GameState,
+    tile: GameTileState,
+    maxDistance: number,
+    structureTypes: Array<"City" | "Fort">
+  ) {
+    return game.tiles.some((t) => {
+      const type = t.structure?.type;
+      if (!type) return false;
+      if (!structureTypes.includes(type as "City" | "Fort")) return false;
       const dist = this.hexDistance(tile, t);
       return dist <= maxDistance;
     });
@@ -586,6 +615,15 @@ export class GameService {
       const tooCloseToCity = this.isWithinDistanceOfCity(game, targetTile, 2);
       if (tooCloseToCity) {
         throw new BadRequestException("Fort too close to a city");
+      }
+      const tooCloseToFort = this.isWithinDistanceOfStructureTypes(
+        game,
+        targetTile,
+        2,
+        ["Fort"]
+      );
+      if (tooCloseToFort) {
+        throw new BadRequestException("Fort too close to another fort");
       }
     }
 

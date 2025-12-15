@@ -216,6 +216,39 @@ export function GameMapPage() {
     return coordMap;
   }, [mapTiles]);
 
+  const hexDistance = useCallback((a: MapTile, b: MapTile) => {
+    const toCube = (x: number, y: number) => {
+      const xCube = x - (y - (y & 1)) / 2;
+      const zCube = y;
+      const yCube = -xCube - zCube;
+      return { x: xCube, y: yCube, z: zCube };
+    };
+    const ac = toCube(a.x, a.y);
+    const bc = toCube(b.x, b.y);
+    return Math.max(
+      Math.abs(ac.x - bc.x),
+      Math.abs(ac.y - bc.y),
+      Math.abs(ac.z - bc.z)
+    );
+  }, []);
+
+  const structureNoBuildZone = useMemo(() => {
+    const zone = new Set<string>();
+    const structureTiles = mapTiles.filter(
+      (tile) => tile.structure?.type === "City" || tile.structure?.type === "Fort"
+    );
+    if (structureTiles.length === 0) {
+      return zone;
+    }
+    mapTiles.forEach((tile) => {
+      const blocked = structureTiles.some(
+        (structureTile) => hexDistance(tile, structureTile) <= 2
+      );
+      if (blocked) zone.add(tile.id);
+    });
+    return zone;
+  }, [hexDistance, mapTiles]);
+
   const playerCityTiles = useMemo(
     () =>
       mapTiles.filter(
@@ -665,6 +698,7 @@ export function GameMapPage() {
     !selectedTile.structure &&
     selectedTile.terrain !== "Water" &&
     selectedTile.terrain !== "Mountains" &&
+    !structureNoBuildZone.has(selectedTile.id) &&
     !hasEnemyAdjacentCity(selectedTile) &&
     selectedTileUnit?.ownerId === effectivePlayerId &&
     selectedTileUnit.type === "Settler" &&
@@ -692,22 +726,6 @@ export function GameMapPage() {
     needsCapital ||
     (selectedTileUnit?.type === "Settler" &&
       selectedTileUnit.ownerId === effectivePlayerId);
-
-  const hexDistance = useCallback((a: MapTile, b: MapTile) => {
-    const toCube = (x: number, y: number) => {
-      const xCube = x - (y - (y & 1)) / 2;
-      const zCube = y;
-      const yCube = -xCube - zCube;
-      return { x: xCube, y: yCube, z: zCube };
-    };
-    const ac = toCube(a.x, a.y);
-    const bc = toCube(b.x, b.y);
-    return Math.max(
-      Math.abs(ac.x - bc.x),
-      Math.abs(ac.y - bc.y),
-      Math.abs(ac.z - bc.z)
-    );
-  }, []);
 
   const handleBuild = () => {
     if (!canBuild) return;
@@ -907,16 +925,16 @@ export function GameMapPage() {
             transformOrigin: "top left",
           }}
         >
-          <MapTilesLayer
-            mapTiles={mapTiles}
-            selectedTileId={selectedTile?.id ?? null}
-            needsCapital={needsCapital}
-            effectivePlayerId={effectivePlayerId}
-            tileByCoord={tileByCoord}
-            showCityBuffer={showCityBuffer}
-            enemyCityBuffer={enemyCityBuffer}
-            activeAction={activeAction}
-            moveTargets={moveTargets}
+	          <MapTilesLayer
+	            mapTiles={mapTiles}
+	            selectedTileId={selectedTile?.id ?? null}
+	            needsCapital={needsCapital}
+	            effectivePlayerId={effectivePlayerId}
+	            tileByCoord={tileByCoord}
+	            showCityBuffer={showCityBuffer}
+	            enemyCityBuffer={enemyCityBuffer}
+	            activeAction={activeAction}
+	            moveTargets={moveTargets}
             attackTargets={attackTargets}
             playerColorMap={playerColorMap}
             onSelect={handleSelect}
@@ -1088,18 +1106,14 @@ export function GameMapPage() {
           selectedTile?.terrain === "Plains" &&
           !selectedTile?.structure
         }
-        canBuildFort={
-          !!selectedTile &&
-          !selectedTile.structure &&
-          (selectedTile.ownerId === null ||
-            selectedTile.ownerId === effectivePlayerId) &&
-          ["Plains", "Hills"].includes(selectedTile.terrain) &&
-          mapTiles.every((t) =>
-            t.structure?.type === "City"
-              ? hexDistance(t, selectedTile) > 2
-              : true
-          )
-        }
+	        canBuildFort={
+	          !!selectedTile &&
+	          !selectedTile.structure &&
+	          (selectedTile.ownerId === null ||
+	            selectedTile.ownerId === effectivePlayerId) &&
+	          ["Plains", "Hills"].includes(selectedTile.terrain) &&
+	          !structureNoBuildZone.has(selectedTile.id)
+	        }
         submitPending={submitActionMutation.isPending}
         submitCityProduction={submitCityProduction}
         submitWorkerBuild={submitWorkerBuild}

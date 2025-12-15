@@ -102,12 +102,16 @@ const findSafeCityTile = (
 ) => {
   const game = store.getGame(gameId);
   if (!game) throw new Error("Game not found");
+  const structures = game.tiles.filter(
+    (t) => t.structure?.type === "City" || t.structure?.type === "Fort"
+  );
   return game.tiles.find(
     (t) =>
       t.terrain !== "Water" &&
       t.terrain !== "Mountains" &&
       !t.structure &&
-      !isAdjacentToCityOfOther(gameId, t.id, ownerId, store)
+      !isAdjacentToCityOfOther(gameId, t.id, ownerId, store) &&
+      structures.every((s) => hexDistance(s, t) > 2)
   );
 };
 
@@ -136,6 +140,8 @@ const getCityTile = (gameId: string, ownerId: string, store: MemoryStore) => {
   return game.tiles.find((tile) => tile.structure?.ownerId === ownerId);
 };
 
+let unitIdCounter = 0;
+
 const addUnitToTile = (
   gameId: string,
   tileId: string,
@@ -152,7 +158,7 @@ const addUnitToTile = (
   }
   const base = UNIT_RULES[unitType].baseStats;
   const unit: UnitData = {
-    id: `${ownerId}-${unitType}-${Date.now()}`,
+    id: `${ownerId}-${unitType}-${++unitIdCounter}`,
     ownerId,
     ownerName: ownerId,
     type: unitType,
@@ -233,10 +239,7 @@ const findAdjacentPair = (gameId: string, store: MemoryStore) => {
   return null;
 };
 
-const hexDistance = (
-  a: { x: number; y: number },
-  b: { x: number; y: number }
-) => {
+function hexDistance(a: { x: number; y: number }, b: { x: number; y: number }) {
   const toCube = (x: number, y: number) => {
     const xCube = x - (y - (y & 1)) / 2;
     const zCube = y;
@@ -250,7 +253,7 @@ const hexDistance = (
     Math.abs(ac.y - bc.y),
     Math.abs(ac.z - bc.z)
   );
-};
+}
 
 const findFortSpot = (gameId: string, store: MemoryStore) => {
   const game = store.getGame(gameId);
@@ -283,12 +286,13 @@ const ensureFarmSpot = (
     const neighbor = game.tiles.find(
       (tile) =>
         tile.x === cityTile.x + dx &&
-        tile.y === cityTile.y + dy &&
-        tile.ownerId === ownerId &&
-        !tile.structure &&
-        isTilePassable(tile)
+        tile.y === cityTile.y + dy
     );
     if (neighbor) {
+      neighbor.ownerId = ownerId;
+      neighbor.structure = undefined;
+      neighbor.unit = undefined;
+      neighbor.terrain = "Plains";
       return neighbor;
     }
   }
@@ -317,6 +321,7 @@ describe("GameService actions", () => {
 
   beforeEach(() => {
     testStore.clear();
+    unitIdCounter = 0;
   });
 
   it("switches to running phase once every player has placed a capital", () => {
@@ -622,6 +627,105 @@ describe("GameService actions", () => {
     expect(updatedCity?.population).toBeLessThan(previousPopulation);
   });
 
+  it("prevents building a fort too close to another fort", () => {
+    const lobby = makeLobby();
+    service.createGameForLobby(lobby);
+    const p1SettlerTile = getSettlerTileForPlayer(
+      lobby.gameId,
+      "player-1",
+      testStore
+    );
+    const p2SettlerTile = getSettlerTileForPlayer(
+      lobby.gameId,
+      "player-2",
+      testStore
+    );
+    service.placeCapital(lobby.gameId, "player-1", p1SettlerTile.id);
+    service.placeCapital(lobby.gameId, "player-2", p2SettlerTile.id);
+
+    const baseGame = service.getGame(lobby.gameId);
+    const baseCities = baseGame.tiles.filter((t) => t.structure?.type === "City");
+    const fortSpot =
+      baseGame.tiles.find((t) => {
+        if (!isTilePassable(t) || t.structure || t.terrain === "Forest")
+          return false;
+        // ensure even tiles within radius 2 stay > 2 away from any city
+        return baseCities.every((c) => hexDistance(c, t) > 4);
+      }) ?? findFortSpot(lobby.gameId, testStore);
+    if (!fortSpot) {
+      throw new Error("No valid fort spot");
+    }
+
+    const cityTile = getCityTile(lobby.gameId, "player-1", testStore);
+    if (!cityTile?.structure) {
+      throw new Error("City not found");
+    }
+    const city = cityTile.structure as CityData;
+    city.population = 100;
+
+    const firstWorker = addWorkerToTile(
+      lobby.gameId,
+      "player-1",
+      fortSpot.id,
+      testStore
+    );
+
+    service.applyAction(lobby.gameId, "player-1", {
+      type: "BUILD_STRUCTURE",
+      payload: {
+        workerId: firstWorker.id,
+        structureType: "Fort",
+        position: { x: fortSpot.x, y: fortSpot.y },
+        fromCityId: city.id,
+      },
+    });
+
+    const updated = service.getGame(lobby.gameId);
+    const cities = updated.tiles.filter((t) => t.structure?.type === "City");
+    const firstFortTile = updated.tiles.find(
+      (t) =>
+        t.structure?.type === "Fort" &&
+        t.x === fortSpot.x &&
+        t.y === fortSpot.y
+    );
+    if (!firstFortTile) {
+      throw new Error("First fort missing");
+    }
+
+    const nearbyTile = updated.tiles.find((t) => {
+      if (t.id === firstFortTile.id) return false;
+      if (t.structure?.type === "City") return false;
+      if (hexDistance(firstFortTile, t) > 2) return false;
+      return cities.every((c) => hexDistance(c, t) > 2);
+    });
+    if (!nearbyTile) {
+      throw new Error("No nearby tile for second fort");
+    }
+    nearbyTile.structure = undefined;
+    nearbyTile.unit = undefined;
+    nearbyTile.ownerId = "player-1";
+    nearbyTile.terrain = "Plains";
+
+    const secondWorker = addWorkerToTile(
+      lobby.gameId,
+      "player-1",
+      nearbyTile.id,
+      testStore
+    );
+
+    expect(() =>
+      service.applyAction(lobby.gameId, "player-1", {
+        type: "BUILD_STRUCTURE",
+        payload: {
+          workerId: secondWorker.id,
+          structureType: "Fort",
+          position: { x: nearbyTile.x, y: nearbyTile.y },
+          fromCityId: city.id,
+        },
+      })
+    ).toThrowError("Fort too close to another fort");
+  });
+
   it("builds a farm using the population of the owning city", () => {
     const lobby = makeLobby();
     service.createGameForLobby(lobby);
@@ -889,5 +993,54 @@ describe("GameService actions", () => {
       .getGame(lobby.gameId)
       .players.find((p) => p.id === "player-1");
     expect(afterPlayer?.populationCap).toBeGreaterThan(before ?? 0);
+  });
+
+  it("prevents founding a city too close to an existing city", () => {
+    const lobby = makeLobby();
+    service.createGameForLobby(lobby);
+    const p1SettlerTile = getSettlerTileForPlayer(
+      lobby.gameId,
+      "player-1",
+      testStore
+    );
+    const p2SettlerTile = getSettlerTileForPlayer(
+      lobby.gameId,
+      "player-2",
+      testStore
+    );
+    service.placeCapital(lobby.gameId, "player-1", p1SettlerTile.id);
+    service.placeCapital(lobby.gameId, "player-2", p2SettlerTile.id);
+
+    const game = service.getGame(lobby.gameId);
+    const player1CityTile = game.tiles.find(
+      (t) => t.structure?.type === "City" && t.structure.ownerId === "player-1"
+    );
+    if (!player1CityTile) throw new Error("Player 1 city not found");
+
+    const closeTile = game.tiles.find(
+      (t) =>
+        !t.structure &&
+        t.terrain !== "Water" &&
+        t.terrain !== "Mountains" &&
+        hexDistance(player1CityTile, t) <= 2 &&
+        !isAdjacentToCityOfOther(lobby.gameId, t.id, "player-1", testStore)
+    );
+    if (!closeTile) {
+      throw new Error("No close tile found for city founding test");
+    }
+
+    const settler = addSettlerToTile(
+      lobby.gameId,
+      "player-1",
+      closeTile.id,
+      testStore
+    );
+
+    expect(() =>
+      service.applyAction(lobby.gameId, "player-1", {
+        type: "FOUND_CITY",
+        payload: { settlerId: settler.id },
+      })
+    ).toThrowError("City too close to an existing city or fort");
   });
 });
