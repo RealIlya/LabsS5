@@ -284,9 +284,7 @@ const ensureFarmSpot = (
   const parity = cityTile.y % 2 === 0 ? "even" : "odd";
   for (const { dx, dy } of offsets[parity]) {
     const neighbor = game.tiles.find(
-      (tile) =>
-        tile.x === cityTile.x + dx &&
-        tile.y === cityTile.y + dy
+      (tile) => tile.x === cityTile.x + dx && tile.y === cityTile.y + dy
     );
     if (neighbor) {
       neighbor.ownerId = ownerId;
@@ -644,7 +642,9 @@ describe("GameService actions", () => {
     service.placeCapital(lobby.gameId, "player-2", p2SettlerTile.id);
 
     const baseGame = service.getGame(lobby.gameId);
-    const baseCities = baseGame.tiles.filter((t) => t.structure?.type === "City");
+    const baseCities = baseGame.tiles.filter(
+      (t) => t.structure?.type === "City"
+    );
     const fortSpot =
       baseGame.tiles.find((t) => {
         if (!isTilePassable(t) || t.structure || t.terrain === "Forest")
@@ -684,9 +684,7 @@ describe("GameService actions", () => {
     const cities = updated.tiles.filter((t) => t.structure?.type === "City");
     const firstFortTile = updated.tiles.find(
       (t) =>
-        t.structure?.type === "Fort" &&
-        t.x === fortSpot.x &&
-        t.y === fortSpot.y
+        t.structure?.type === "Fort" && t.x === fortSpot.x && t.y === fortSpot.y
     );
     if (!firstFortTile) {
       throw new Error("First fort missing");

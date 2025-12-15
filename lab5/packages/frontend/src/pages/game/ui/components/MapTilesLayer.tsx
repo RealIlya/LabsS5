@@ -22,17 +22,17 @@ interface MapTilesLayerProps {
 }
 
 export const MapTilesLayer = memo(
-	  function MapTilesLayer({
-	    mapTiles,
-	    selectedTileId,
-	    needsCapital,
-	    effectivePlayerId,
-	    structureNoBuildZone,
-	    tileByCoord,
-	    showCityBuffer,
-	    enemyCityBuffer,
-	    activeAction,
-	    moveTargets,
+  function MapTilesLayer({
+    mapTiles,
+    selectedTileId,
+    needsCapital,
+    effectivePlayerId,
+    structureNoBuildZone,
+    tileByCoord,
+    showCityBuffer,
+    enemyCityBuffer,
+    activeAction,
+    moveTargets,
     attackTargets,
     playerColorMap,
     onSelect,
@@ -101,15 +101,15 @@ export const MapTilesLayer = memo(
       </>
     );
   },
-	  (prev, next) =>
-	    prev.mapTiles === next.mapTiles &&
-	    prev.selectedTileId === next.selectedTileId &&
-	    prev.needsCapital === next.needsCapital &&
-	    prev.effectivePlayerId === next.effectivePlayerId &&
-	    prev.tileByCoord === next.tileByCoord &&
-	    prev.showCityBuffer === next.showCityBuffer &&
-	    prev.enemyCityBuffer === next.enemyCityBuffer &&
-	    prev.activeAction === next.activeAction &&
+  (prev, next) =>
+    prev.mapTiles === next.mapTiles &&
+    prev.selectedTileId === next.selectedTileId &&
+    prev.needsCapital === next.needsCapital &&
+    prev.effectivePlayerId === next.effectivePlayerId &&
+    prev.tileByCoord === next.tileByCoord &&
+    prev.showCityBuffer === next.showCityBuffer &&
+    prev.enemyCityBuffer === next.enemyCityBuffer &&
+    prev.activeAction === next.activeAction &&
     prev.moveTargets === next.moveTargets &&
     prev.attackTargets === next.attackTargets &&
     prev.playerColorMap === next.playerColorMap &&

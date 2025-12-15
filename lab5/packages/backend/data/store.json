@@ -4982,11 +4982,11 @@
           }
         }
       ],
-      "turnEndsAt": "2025-12-15T22:06:22.254Z"
+      "turnEndsAt": "2025-12-15T22:07:22.318Z"
     },
     "57bd8a20-1cc7-4604-95bc-c60425e1b5f8": {
       "id": "57bd8a20-1cc7-4604-95bc-c60425e1b5f8",
-      "turn": 706,
+      "turn": 707,
       "currentPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
       "currentPlayerName": "nickname",
       "population": {
@@ -9081,13 +9081,6 @@
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 657
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
-            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
             "turnNumber": 658
           }
         },
@@ -9426,13 +9419,20 @@
             "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
             "turnNumber": 706
           }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 707
+          }
         }
       ],
-      "turnEndsAt": "2025-12-15T22:06:23.256Z"
+      "turnEndsAt": "2025-12-15T22:07:23.321Z"
     },
     "cabaa3cd-f56f-44a2-b418-43590245b717": {
       "id": "cabaa3cd-f56f-44a2-b418-43590245b717",
-      "turn": 691,
+      "turn": 692,
       "currentPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
       "currentPlayerName": "nicknamea",
       "population": {
@@ -13516,13 +13516,6 @@
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 642
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
-            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
             "turnNumber": 643
           }
         },
@@ -13861,9 +13854,16 @@
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
             "turnNumber": 691
           }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 692
+          }
         }
       ],
-      "turnEndsAt": "2025-12-15T22:06:24.257Z"
+      "turnEndsAt": "2025-12-15T22:07:24.322Z"
     },
     "d0cb73c2-2c36-4162-b317-d8e7d6f42eb9": {
       "id": "d0cb73c2-2c36-4162-b317-d8e7d6f42eb9",
@@ -17936,7 +17936,7 @@
         }
       ],
       "events": [],
-      "turnEndsAt": "2025-12-15T22:06:25.257Z"
+      "turnEndsAt": "2025-12-15T22:07:25.322Z"
     },
     "0f31ee11-ab66-4137-9369-c0011b0e3b65": {
       "id": "0f31ee11-ab66-4137-9369-c0011b0e3b65",
@@ -22178,13 +22178,13 @@
           }
         }
       ],
-      "turnEndsAt": "2025-12-15T22:06:26.260Z"
+      "turnEndsAt": "2025-12-15T22:07:26.325Z"
     },
     "ad1be80b-3bdb-4f15-a240-26cc2814978d": {
       "id": "ad1be80b-3bdb-4f15-a240-26cc2814978d",
       "turn": 286,
-      "currentPlayerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
-      "currentPlayerName": "гтешедув_2",
+      "currentPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+      "currentPlayerName": "nicknamea",
       "population": {
         "current": 153.5,
         "cap": 150
@@ -26382,13 +26382,6 @@
         {
           "type": "TURN_CHANGED",
           "payload": {
-            "nextPlayerId": "5981fcc7-a330-41c8-b5b6-104b0ea837dc",
-            "turnNumber": 269
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
             "nextPlayerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
             "turnNumber": 270
           }
@@ -26728,9 +26721,16 @@
             "nextPlayerId": "3feb4613-809c-4b5a-b204-c7a069840cbf",
             "turnNumber": 286
           }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 286
+          }
         }
       ],
-      "turnEndsAt": "2025-12-15T22:06:26.287Z"
+      "turnEndsAt": "2025-12-15T22:07:26.362Z"
     },
     "d9ada75f-7bcf-4642-9cc8-d7e2503347b0": {
       "id": "d9ada75f-7bcf-4642-9cc8-d7e2503347b0",
@@ -30803,7 +30803,7 @@
         }
       ],
       "events": [],
-      "turnEndsAt": "2025-12-15T22:06:26.318Z"
+      "turnEndsAt": "2025-12-15T22:07:26.512Z"
     },
     "5d3433ab-a640-4920-be43-f02274166a68": {
       "id": "5d3433ab-a640-4920-be43-f02274166a68",
@@ -34876,7 +34876,7 @@
         }
       ],
       "events": [],
-      "turnEndsAt": "2025-12-15T22:06:27.260Z"
+      "turnEndsAt": "2025-12-15T22:07:27.325Z"
     },
     "1cfb873d-ac2c-40e4-830f-534cf1f2bcf0": {
       "id": "1cfb873d-ac2c-40e4-830f-534cf1f2bcf0",
@@ -38949,11 +38949,11 @@
         }
       ],
       "events": [],
-      "turnEndsAt": "2025-12-15T22:06:27.285Z"
+      "turnEndsAt": "2025-12-15T22:07:27.371Z"
     },
     "84b6681d-fa73-40fc-a456-b770423d98f2": {
       "id": "84b6681d-fa73-40fc-a456-b770423d98f2",
-      "turn": 689,
+      "turn": 690,
       "currentPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
       "currentPlayerName": "nicknamea",
       "population": {
@@ -43037,13 +43037,6 @@
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 640
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
-            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
             "turnNumber": 641
           }
         },
@@ -43382,13 +43375,20 @@
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
             "turnNumber": 689
           }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 690
+          }
         }
       ],
-      "turnEndsAt": "2025-12-15T22:06:28.261Z"
+      "turnEndsAt": "2025-12-15T22:07:28.326Z"
     },
     "ea9d0c3f-1be2-4351-94fd-48bf0b59a5de": {
       "id": "ea9d0c3f-1be2-4351-94fd-48bf0b59a5de",
-      "turn": 694,
+      "turn": 695,
       "currentPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
       "currentPlayerName": "nicknamea",
       "population": {
@@ -47483,13 +47483,6 @@
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 645
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
-            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
             "turnNumber": 646
           }
         },
@@ -47828,15 +47821,22 @@
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
             "turnNumber": 694
           }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 695
+          }
         }
       ],
-      "turnEndsAt": "2025-12-15T22:06:28.338Z"
+      "turnEndsAt": "2025-12-15T22:07:28.413Z"
     },
     "0c52911f-5aa2-4f78-a175-f741ac29614d": {
       "id": "0c52911f-5aa2-4f78-a175-f741ac29614d",
-      "turn": 346,
-      "currentPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-      "currentPlayerName": "nicknamea2",
+      "turn": 347,
+      "currentPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
+      "currentPlayerName": "nicknameaф",
       "population": {
         "current": 101,
         "cap": 100
@@ -51959,13 +51959,6 @@
         {
           "type": "TURN_CHANGED",
           "payload": {
-            "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
-            "turnNumber": 322
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
             "turnNumber": 322
           }
@@ -52304,14 +52297,21 @@
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
             "turnNumber": 346
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "6caffc7f-d73b-454e-958a-de4d239eac13",
+            "turnNumber": 347
           }
         }
       ],
-      "turnEndsAt": "2025-12-15T22:06:29.262Z"
+      "turnEndsAt": "2025-12-15T22:07:29.327Z"
     },
     "ca4c9458-8c65-4243-9238-4181e3a76990": {
       "id": "ca4c9458-8c65-4243-9238-4181e3a76990",
-      "turn": 696,
+      "turn": 697,
       "currentPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
       "currentPlayerName": "nicknamea2",
       "population": {
@@ -56395,13 +56395,6 @@
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-            "turnNumber": 647
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
-            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
             "turnNumber": 648
           }
         },
@@ -56740,15 +56733,22 @@
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
             "turnNumber": 696
           }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
+            "turnNumber": 697
+          }
         }
       ],
-      "turnEndsAt": "2025-12-15T22:06:30.263Z"
+      "turnEndsAt": "2025-12-15T22:07:30.328Z"
     },
     "40cbedb8-8f5f-453b-a5d8-632e04ebc90f": {
       "id": "40cbedb8-8f5f-453b-a5d8-632e04ebc90f",
       "turn": 345,
-      "currentPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
-      "currentPlayerName": "nicknamea2",
+      "currentPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+      "currentPlayerName": "nickname",
       "population": {
         "current": 102,
         "cap": 100
@@ -60860,13 +60860,6 @@
         {
           "type": "TURN_CHANGED",
           "payload": {
-            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
-            "turnNumber": 320
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
             "turnNumber": 321
           }
@@ -61206,16 +61199,23 @@
             "nextPlayerId": "e7354cde-4f60-4913-a5e9-45ad84b4c513",
             "turnNumber": 345
           }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "aa752350-cea8-48ad-9086-2f85e5b07861",
+            "turnNumber": 345
+          }
         }
       ],
-      "turnEndsAt": "2025-12-15T22:06:30.292Z"
+      "turnEndsAt": "2025-12-15T22:07:30.354Z"
     },
     "6311d506-662d-4954-ae79-ccc6821e40cc": {
       "id": "6311d506-662d-4954-ae79-ccc6821e40cc",
-      "turn": 699,
+      "turn": 700,
       "currentPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
       "currentPlayerName": "nicknamea",
-      "turnEndsAt": "2025-12-15T22:06:30.328Z",
+      "turnEndsAt": "2025-12-15T22:07:30.392Z",
       "turnDurationSeconds": 60,
       "population": {
         "current": 51,
@@ -65309,13 +65309,6 @@
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 650
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
-            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
             "turnNumber": 651
           }
         },
@@ -65654,15 +65647,22 @@
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
             "turnNumber": 699
           }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 700
+          }
         }
       ]
     },
     "31456447-48a6-4f0e-ae14-e27409622d22": {
       "id": "31456447-48a6-4f0e-ae14-e27409622d22",
-      "turn": 671,
+      "turn": 672,
       "currentPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
       "currentPlayerName": "nicknamea",
-      "turnEndsAt": "2025-12-15T22:06:30.374Z",
+      "turnEndsAt": "2025-12-15T22:07:30.443Z",
       "turnDurationSeconds": 60,
       "population": {
         "current": 50,
@@ -69756,13 +69756,6 @@
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-            "turnNumber": 622
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
-            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
             "turnNumber": 623
           }
         },
@@ -70101,15 +70094,22 @@
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
             "turnNumber": 671
           }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 672
+          }
         }
       ]
     },
     "7fcc5f1f-0295-4ece-a6cf-8be834c06576": {
       "id": "7fcc5f1f-0295-4ece-a6cf-8be834c06576",
-      "turn": 524,
+      "turn": 525,
       "currentPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
       "currentPlayerName": "Dosha",
-      "turnEndsAt": "2025-12-15T22:06:30.462Z",
+      "turnEndsAt": "2025-12-15T22:07:30.486Z",
       "turnDurationSeconds": 60,
       "population": {
         "current": 50,
@@ -74192,13 +74192,6 @@
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
-            "turnNumber": 475
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
-            "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
             "turnNumber": 476
           }
         },
@@ -74537,15 +74530,22 @@
             "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
             "turnNumber": 524
           }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
+            "turnNumber": 525
+          }
         }
       ]
     },
     "607ad59d-ad6f-4b7d-80c2-73402f74e1f9": {
       "id": "607ad59d-ad6f-4b7d-80c2-73402f74e1f9",
-      "turn": 489,
+      "turn": 490,
       "currentPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
       "currentPlayerName": "Dosha",
-      "turnEndsAt": "2025-12-15T22:06:30.530Z",
+      "turnEndsAt": "2025-12-15T22:07:31.328Z",
       "turnDurationSeconds": 60,
       "population": {
         "current": 50,
@@ -78628,13 +78628,6 @@
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
-            "turnNumber": 440
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
-            "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
             "turnNumber": 441
           }
         },
@@ -78973,6 +78966,13 @@
             "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
             "turnNumber": 489
           }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
+            "turnNumber": 490
+          }
         }
       ]
     },
@@ -78981,7 +78981,7 @@
       "turn": 7,
       "currentPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
       "currentPlayerName": "Dosha",
-      "turnEndsAt": "2025-12-15T22:06:30.581Z",
+      "turnEndsAt": "2025-12-15T22:07:31.359Z",
       "turnDurationSeconds": 60,
       "population": {
         "current": 0,
@@ -83095,10 +83095,10 @@
     },
     "8ffed7f0-1cca-434a-80b9-bdfedc8f84b9": {
       "id": "8ffed7f0-1cca-434a-80b9-bdfedc8f84b9",
-      "turn": 452,
+      "turn": 453,
       "currentPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
       "currentPlayerName": "Dosha",
-      "turnEndsAt": "2025-12-15T22:06:30.638Z",
+      "turnEndsAt": "2025-12-15T22:07:31.407Z",
       "turnDurationSeconds": 60,
       "population": {
         "current": 50,
@@ -87181,13 +87181,6 @@
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
-            "turnNumber": 403
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
-            "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
             "turnNumber": 404
           }
         },
@@ -87526,15 +87519,22 @@
             "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
             "turnNumber": 452
           }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
+            "turnNumber": 453
+          }
         }
       ]
     },
     "74e7b146-9c99-40b0-adc9-08d56e4466b1": {
       "id": "74e7b146-9c99-40b0-adc9-08d56e4466b1",
-      "turn": 448,
+      "turn": 449,
       "currentPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
       "currentPlayerName": "Dosha",
-      "turnEndsAt": "2025-12-15T22:06:31.263Z",
+      "turnEndsAt": "2025-12-15T22:07:31.556Z",
       "turnDurationSeconds": 60,
       "population": {
         "current": 50,
@@ -91628,13 +91628,6 @@
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
-            "turnNumber": 399
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
-            "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
             "turnNumber": 400
           }
         },
@@ -91973,15 +91966,22 @@
             "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
             "turnNumber": 448
           }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
+            "turnNumber": 449
+          }
         }
       ]
     },
     "e8929a86-7d0b-4ec7-84c1-353d85924701": {
       "id": "e8929a86-7d0b-4ec7-84c1-353d85924701",
-      "turn": 415,
+      "turn": 416,
       "currentPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
       "currentPlayerName": "Dosha",
-      "turnEndsAt": "2025-12-15T22:06:32.265Z",
+      "turnEndsAt": "2025-12-15T22:07:32.329Z",
       "turnDurationSeconds": 60,
       "population": {
         "current": 50,
@@ -96064,13 +96064,6 @@
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
-            "turnNumber": 366
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
-            "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
             "turnNumber": 367
           }
         },
@@ -96409,15 +96402,22 @@
             "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
             "turnNumber": 415
           }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
+            "turnNumber": 416
+          }
         }
       ]
     },
     "da8c315b-a57f-41ef-96d5-319d0e3f7409": {
       "id": "da8c315b-a57f-41ef-96d5-319d0e3f7409",
-      "turn": 405,
+      "turn": 406,
       "currentPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
       "currentPlayerName": "Dosha",
-      "turnEndsAt": "2025-12-15T22:06:32.305Z",
+      "turnEndsAt": "2025-12-15T22:07:32.359Z",
       "turnDurationSeconds": 60,
       "population": {
         "current": 50,
@@ -100500,13 +100500,6 @@
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
-            "turnNumber": 356
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
-            "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
             "turnNumber": 357
           }
         },
@@ -100845,6 +100838,13 @@
             "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
             "turnNumber": 405
           }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
+            "turnNumber": 406
+          }
         }
       ]
     },
@@ -100853,7 +100853,7 @@
       "turn": 1,
       "currentPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
       "currentPlayerName": "Dosha",
-      "turnEndsAt": "2025-12-15T22:06:33.265Z",
+      "turnEndsAt": "2025-12-15T22:07:33.330Z",
       "turnDurationSeconds": 60,
       "population": {
         "current": 0,
@@ -104924,10 +104924,10 @@
     },
     "4bfd3b8e-ae7c-4ceb-8e4f-be2777f62281": {
       "id": "4bfd3b8e-ae7c-4ceb-8e4f-be2777f62281",
-      "turn": 328,
+      "turn": 329,
       "currentPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
       "currentPlayerName": "Dosha",
-      "turnEndsAt": "2025-12-15T22:06:33.297Z",
+      "turnEndsAt": "2025-12-15T22:07:33.358Z",
       "turnDurationSeconds": 60,
       "population": {
         "current": 50,
@@ -109010,13 +109010,6 @@
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
-            "turnNumber": 279
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
-            "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
             "turnNumber": 280
           }
         },
@@ -109355,15 +109348,22 @@
             "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
             "turnNumber": 328
           }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
+            "turnNumber": 329
+          }
         }
       ]
     },
     "628f49c5-6ae7-48e0-a2c2-87c26dfa9613": {
       "id": "628f49c5-6ae7-48e0-a2c2-87c26dfa9613",
-      "turn": 177,
+      "turn": 178,
       "currentPlayerId": "70d62830-333f-46fa-aa78-083a19aa4306",
       "currentPlayerName": "Alyosha",
-      "turnEndsAt": "2025-12-15T22:06:33.325Z",
+      "turnEndsAt": "2025-12-15T22:07:33.393Z",
       "turnDurationSeconds": 60,
       "population": {
         "current": 50,
@@ -113446,13 +113446,6 @@
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "70d62830-333f-46fa-aa78-083a19aa4306",
-            "turnNumber": 128
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
-            "nextPlayerId": "70d62830-333f-46fa-aa78-083a19aa4306",
             "turnNumber": 129
           }
         },
@@ -113791,6 +113784,13 @@
             "nextPlayerId": "70d62830-333f-46fa-aa78-083a19aa4306",
             "turnNumber": 177
           }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "70d62830-333f-46fa-aa78-083a19aa4306",
+            "turnNumber": 178
+          }
         }
       ]
     },
@@ -113799,7 +113799,7 @@
       "turn": 1,
       "currentPlayerId": "70d62830-333f-46fa-aa78-083a19aa4306",
       "currentPlayerName": "Alyosha",
-      "turnEndsAt": "2025-12-15T22:06:33.359Z",
+      "turnEndsAt": "2025-12-15T22:07:33.467Z",
       "turnDurationSeconds": 60,
       "population": {
         "current": 0,
@@ -117915,7 +117915,7 @@
       "turn": 1,
       "currentPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
       "currentPlayerName": "Dosha",
-      "turnEndsAt": "2025-12-15T22:06:34.266Z",
+      "turnEndsAt": "2025-12-15T22:07:34.331Z",
       "turnDurationSeconds": 60,
       "population": {
         "current": 0,
@@ -121989,7 +121989,7 @@
       "turn": 1,
       "currentPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
       "currentPlayerName": "Dosha",
-      "turnEndsAt": "2025-12-15T22:06:34.323Z",
+      "turnEndsAt": "2025-12-15T22:07:34.366Z",
       "turnDurationSeconds": 60,
       "population": {
         "current": 0,
@@ -126063,7 +126063,7 @@
       "turn": 1,
       "currentPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
       "currentPlayerName": "Dosha",
-      "turnEndsAt": "2025-12-15T22:06:34.381Z",
+      "turnEndsAt": "2025-12-15T22:07:34.398Z",
       "turnDurationSeconds": 60,
       "population": {
         "current": 0,
@@ -130137,7 +130137,7 @@
       "turn": 1,
       "currentPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
       "currentPlayerName": "Dosha",
-      "turnEndsAt": "2025-12-15T22:06:34.447Z",
+      "turnEndsAt": "2025-12-15T22:07:34.450Z",
       "turnDurationSeconds": 60,
       "population": {
         "current": 0,
@@ -138814,10 +138814,10 @@
     },
     "2f101ed2-4bdf-4d70-a703-9dd40071a030": {
       "id": "2f101ed2-4bdf-4d70-a703-9dd40071a030",
-      "turn": 114,
+      "turn": 115,
       "currentPlayerId": "31d84df1-d9e1-4a05-a5aa-d3eda56b5d95",
       "currentPlayerName": "Test2",
-      "turnEndsAt": "2025-12-15T22:06:34.483Z",
+      "turnEndsAt": "2025-12-15T22:07:34.505Z",
       "turnDurationSeconds": 60,
       "population": {
         "current": 50,
@@ -142900,13 +142900,6 @@
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "31d84df1-d9e1-4a05-a5aa-d3eda56b5d95",
-            "turnNumber": 65
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
-            "nextPlayerId": "31d84df1-d9e1-4a05-a5aa-d3eda56b5d95",
             "turnNumber": 66
           }
         },
@@ -143245,15 +143238,22 @@
             "nextPlayerId": "31d84df1-d9e1-4a05-a5aa-d3eda56b5d95",
             "turnNumber": 114
           }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "31d84df1-d9e1-4a05-a5aa-d3eda56b5d95",
+            "turnNumber": 115
+          }
         }
       ]
     },
     "49115294-61fd-4821-983d-e9216738c52a": {
       "id": "49115294-61fd-4821-983d-e9216738c52a",
-      "turn": 103,
+      "turn": 104,
       "currentPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
       "currentPlayerName": "Dosha",
-      "turnEndsAt": "2025-12-15T22:06:35.267Z",
+      "turnEndsAt": "2025-12-15T22:07:35.335Z",
       "turnDurationSeconds": 60,
       "population": {
         "current": 50,
@@ -147336,13 +147336,6 @@
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
-            "turnNumber": 54
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
-            "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
             "turnNumber": 55
           }
         },
@@ -147681,15 +147674,22 @@
             "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
             "turnNumber": 103
           }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "4a9dedb5-ee72-4d22-9ff8-685457adb794",
+            "turnNumber": 104
+          }
         }
       ]
     },
     "bc20d3af-50d1-4a0d-b905-93cf38c52302": {
       "id": "bc20d3af-50d1-4a0d-b905-93cf38c52302",
-      "turn": 95,
+      "turn": 96,
       "currentPlayerId": "70d62830-333f-46fa-aa78-083a19aa4306",
       "currentPlayerName": "Alyosha",
-      "turnEndsAt": "2025-12-15T22:06:35.303Z",
+      "turnEndsAt": "2025-12-15T22:07:35.365Z",
       "turnDurationSeconds": 60,
       "population": {
         "current": 50,
@@ -151783,13 +151783,6 @@
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "70d62830-333f-46fa-aa78-083a19aa4306",
-            "turnNumber": 46
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
-            "nextPlayerId": "70d62830-333f-46fa-aa78-083a19aa4306",
             "turnNumber": 47
           }
         },
@@ -152128,15 +152121,22 @@
             "nextPlayerId": "70d62830-333f-46fa-aa78-083a19aa4306",
             "turnNumber": 95
           }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "70d62830-333f-46fa-aa78-083a19aa4306",
+            "turnNumber": 96
+          }
         }
       ]
     },
     "19be84c6-a457-4474-a1b9-fded6b3c1d65": {
       "id": "19be84c6-a457-4474-a1b9-fded6b3c1d65",
       "turn": 46,
-      "currentPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
-      "currentPlayerName": "nicknamea",
-      "turnEndsAt": "2025-12-15T22:06:36.268Z",
+      "currentPlayerId": "30d0354c-642b-43fd-8e3e-298c2f07491b",
+      "currentPlayerName": "wolferok",
+      "turnEndsAt": "2025-12-15T22:07:36.336Z",
       "turnDurationSeconds": 60,
       "population": {
         "current": 100,
@@ -156304,13 +156304,6 @@
         {
           "type": "TURN_CHANGED",
           "payload": {
-            "nextPlayerId": "30d0354c-642b-43fd-8e3e-298c2f07491b",
-            "turnNumber": 21
-          }
-        },
-        {
-          "type": "TURN_CHANGED",
-          "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
             "turnNumber": 22
           }
@@ -156648,6 +156641,13 @@
           "type": "TURN_CHANGED",
           "payload": {
             "nextPlayerId": "e240854d-9a32-45cf-b9d5-2a1ca4121165",
+            "turnNumber": 46
+          }
+        },
+        {
+          "type": "TURN_CHANGED",
+          "payload": {
+            "nextPlayerId": "30d0354c-642b-43fd-8e3e-298c2f07491b",
             "turnNumber": 46
           }
         }
