@@ -1,3 +1,4 @@
+import { Logger } from "@nestjs/common";
 import {
   ConnectedSocket,
   MessageBody,
@@ -9,7 +10,6 @@ import {
 } from "@nestjs/websockets";
 import type { Server, Socket } from "socket.io";
 import { LobbyService } from "../../application/lobby/lobby.service";
-import { Logger } from "@nestjs/common";
 
 interface LobbyJoinPayload {
   lobbyId: string;

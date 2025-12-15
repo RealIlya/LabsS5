@@ -1,4 +1,5 @@
 import type { TerrainType, UnitType } from "@hex/shared";
+import { EVEN_NEIGHBORS, ODD_NEIGHBORS } from "@hex/shared";
 import type { MapTile } from "./types";
 
 export const HEX_CONFIG = {
@@ -18,23 +19,9 @@ export const HEX_CONFIG = {
 // See https://www.redblobgames.com/grids/hex-grids/coordinates/#offset
 export const HEX_NEIGHBORS = {
   // even rows (row index % 2 === 0)
-  even: [
-    { dx: -1, dy: -1 }, // up-left
-    { dx: 0, dy: -1 }, // up-right
-    { dx: -1, dy: 0 }, // left
-    { dx: 1, dy: 0 }, // right
-    { dx: -1, dy: 1 }, // down-left
-    { dx: 0, dy: 1 }, // down-right
-  ],
+  even: EVEN_NEIGHBORS,
   // odd rows are shifted right
-  odd: [
-    { dx: 0, dy: -1 }, // up-left
-    { dx: 1, dy: -1 }, // up-right
-    { dx: -1, dy: 0 }, // left
-    { dx: 1, dy: 0 }, // right
-    { dx: 0, dy: 1 }, // down-left
-    { dx: 1, dy: 1 }, // down-right
-  ],
+  odd: ODD_NEIGHBORS,
 };
 
 export const terrainColor: Record<TerrainType, string> = {

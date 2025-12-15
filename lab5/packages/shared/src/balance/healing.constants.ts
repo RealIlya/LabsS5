@@ -1,0 +1,4 @@
+export const UNIT_HEAL_OWN_TERRITORY = 4;
+export const UNIT_HEAL_NEUTRAL_TERRITORY = 2;
+export const FORT_HEAL_MULTIPLIER = 1.5;
+

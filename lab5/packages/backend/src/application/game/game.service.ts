@@ -1,37 +1,39 @@
 import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
-import type { Lobby } from "../../domain/lobby/lobby.types";
-import type { GameState, GameTileState } from "../../domain/game/game-state";
-import {
-  PlayerData,
-  STRUCTURE_RULES,
-  TERRAIN_RULES,
-  UNIT_RULES,
-  type CityData,
-  type CityImprovementType,
-  type CityProductionItem,
-  type HexCoord,
-  type PlayerAction,
-  type UnitData,
-  type UnitType,
-} from "@hex/shared";
-import {
+  CAPITAL_PLACEMENT_TURN_SECONDS,
   CAPITAL_START_FORTIFICATION,
   CAPITAL_START_POPULATION,
   CITY_FORT_REGEN,
   CITY_MAX_FORTIFICATION,
   CITY_POPULATION_CAP_BONUS,
+  type CityData,
+  type CityImprovementType,
+  type CityProductionItem,
+  FORT_HEAL_MULTIPLIER,
+  type HexCoord,
   MAP_COLUMNS,
   MAP_ROWS,
   PLAYER_COLORS,
+  type PlayerAction,
+  PlayerData,
+  STRUCTURE_RULES,
+  TERRAIN_RULES,
   TURN_DURATION_SECONDS,
-} from "./game.constants";
-import { getNeighbors, getTile, isTilePlaceable } from "./game.utils";
+  UNIT_HEAL_NEUTRAL_TERRITORY,
+  UNIT_HEAL_OWN_TERRITORY,
+  UNIT_RULES,
+  type UnitData,
+  type UnitType,
+} from "@hex/shared";
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
+import type { GameState, GameTileState } from "../../domain/game/game-state";
+import type { Lobby } from "../../domain/lobby/lobby.types";
 import type { StorePort } from "../../infrastructure/store/store.port";
+import { getNeighbors, getTile, isTilePlaceable } from "./game.utils";
 import { MapService } from "./map.service";
 
 @Injectable()
@@ -121,7 +123,11 @@ export class GameService {
         );
         break;
       case "END_TURN":
-        this.advanceTurn(game);
+        if (game.phase === "capital-placement") {
+          this.advancePlacementTurn(game);
+        } else {
+          this.advanceTurn(game);
+        }
         break;
       default:
         throw new BadRequestException("Action not supported yet");
@@ -135,6 +141,9 @@ export class GameService {
     const game = this.getGame(gameId);
     if (game.phase !== "capital-placement") {
       throw new BadRequestException("Capital placement already finished");
+    }
+    if (game.currentPlayerId !== playerId) {
+      throw new BadRequestException("Not your turn");
     }
 
     const player = game.players.find((p) => p.id === playerId);
@@ -210,6 +219,8 @@ export class GameService {
       if (firstPlayer) {
         this.startPlayerTurn(game, firstPlayer);
       }
+    } else {
+      this.advancePlacementTurn(game);
     }
 
     this.memoryStore.saveGame(game);
@@ -744,11 +755,15 @@ export class GameService {
   }
 
   private scheduleTurnDeadline(game: GameState) {
-    if (game.phase !== "running") {
+    if (game.phase === "finished") {
       game.turnEndsAt = null;
       return;
     }
-    const deadline = Date.now() + TURN_DURATION_SECONDS * 1000;
+    const durationSeconds =
+      game.phase === "capital-placement"
+        ? CAPITAL_PLACEMENT_TURN_SECONDS
+        : game.turnDurationSeconds ?? TURN_DURATION_SECONDS;
+    const deadline = Date.now() + durationSeconds * 1000;
     game.turnEndsAt = new Date(deadline).toISOString();
   }
 
@@ -762,14 +777,6 @@ export class GameService {
 
   private ensureTurnDeadline(game: GameState): boolean {
     if (game.phase === "finished") {
-      if (game.turnEndsAt !== null) {
-        game.turnEndsAt = null;
-        return true;
-      }
-      return false;
-    }
-
-    if (game.phase !== "running") {
       if (game.turnEndsAt !== null) {
         game.turnEndsAt = null;
         return true;
@@ -792,7 +799,11 @@ export class GameService {
       return false;
     }
 
-    this.advanceTurn(game);
+    if (game.phase === "capital-placement") {
+      this.advancePlacementTurn(game);
+    } else {
+      this.advanceTurn(game);
+    }
     return true;
   }
 
@@ -833,9 +844,41 @@ export class GameService {
   ) {
     this.applyPopulationGrowth(game, player);
     this.resetMovementForPlayer(game, player.id);
+    this.healUnitsForPlayer(game, player.id);
     this.regenerateFortifications(game, player.id);
     this.recalculatePopulation(game);
     this.scheduleTurnDeadline(game);
+  }
+
+  private healUnitsForPlayer(game: GameState, playerId: string) {
+    game.tiles.forEach((tile) => {
+      const unit = tile.unit;
+      if (!unit || unit.ownerId !== playerId) {
+        return;
+      }
+      if (unit.health >= unit.maxHealth) {
+        return;
+      }
+
+      const territoryOwnerId = tile.ownerId;
+      if (territoryOwnerId && territoryOwnerId !== playerId) {
+        // No healing on enemy territory.
+        return;
+      }
+
+      const baseHeal =
+        territoryOwnerId === playerId
+          ? UNIT_HEAL_OWN_TERRITORY
+          : UNIT_HEAL_NEUTRAL_TERRITORY;
+
+      const isFortTile =
+        tile.structure?.type === "Fort" && tile.structure.ownerId === playerId;
+      const healAmount = isFortTile
+        ? Math.round(baseHeal * FORT_HEAL_MULTIPLIER)
+        : baseHeal;
+
+      unit.health = Math.min(unit.maxHealth, unit.health + healAmount);
+    });
   }
 
   private applyPopulationGrowth(
@@ -1146,6 +1189,86 @@ export class GameService {
         nextPlayerId: nextPlayer.id,
         turnNumber: game.turn,
       },
+    });
+  }
+
+  private advancePlacementTurn(game: GameState) {
+    const eligiblePlayers = game.players.filter(
+      (player) => player.status !== "defeated" && !player.capitalCityId
+    );
+
+    if (eligiblePlayers.length === 0) {
+      game.phase = "running";
+      const firstPlayer = game.players.find((p) => p.status !== "defeated");
+      if (firstPlayer) {
+        game.currentPlayerId = firstPlayer.id;
+        game.currentPlayerName = firstPlayer.name;
+        this.startPlayerTurn(game, firstPlayer);
+      }
+      return;
+    }
+
+    const currentIndex = game.players.findIndex(
+      (player) => player.id === game.currentPlayerId
+    );
+    const totalPlayers = game.players.length;
+    const baseIndex = currentIndex >= 0 ? currentIndex : totalPlayers - 1;
+
+    let nextPlayer: GameState["players"][number] | null = null;
+    let nextIndex = baseIndex;
+    for (let offset = 1; offset <= totalPlayers; offset += 1) {
+      const candidateIndex = (baseIndex + offset) % totalPlayers;
+      const candidate = game.players[candidateIndex];
+      if (
+        candidate &&
+        candidate.status !== "defeated" &&
+        !candidate.capitalCityId
+      ) {
+        nextPlayer = candidate;
+        nextIndex = candidateIndex;
+        break;
+      }
+    }
+
+    if (!nextPlayer) {
+      const candidate = game.players[baseIndex];
+      if (
+        candidate &&
+        candidate.status !== "defeated" &&
+        !candidate.capitalCityId
+      ) {
+        nextPlayer = candidate;
+        nextIndex = baseIndex;
+      }
+    }
+
+    if (!nextPlayer) {
+      throw new BadRequestException(
+        "No players available for capital placement"
+      );
+    }
+
+    game.currentPlayerId = nextPlayer.id;
+    game.currentPlayerName = nextPlayer.name;
+    this.resetPlacementMovementForPlayer(game, nextPlayer.id);
+    this.scheduleTurnDeadline(game);
+
+    if (currentIndex >= 0 && nextIndex !== currentIndex) {
+      this.pushEvent(game, {
+        type: "TURN_CHANGED",
+        payload: {
+          nextPlayerId: nextPlayer.id,
+          turnNumber: game.turn,
+        },
+      });
+    }
+  }
+
+  private resetPlacementMovementForPlayer(game: GameState, playerId: string) {
+    game.tiles.forEach((tile) => {
+      if (tile.unit?.ownerId === playerId && tile.unit.type === "Settler") {
+        tile.unit.movementPoints = 8;
+      }
     });
   }
 }

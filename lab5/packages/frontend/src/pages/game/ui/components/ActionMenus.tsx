@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { Button } from "../../../../shared/ui/button";
 import {
-  STRUCTURE_RULES,
-  UNIT_RULES,
   type CityData,
   type CityImprovementType,
+  STRUCTURE_RULES,
+  UNIT_RULES,
   type UnitType,
 } from "@hex/shared";
+import { Button } from "../../../../shared/ui/button";
 import type { MapTile } from "../types";
 
 type MenuType = null | "city-production" | "city-improvement" | "worker-build";
@@ -125,7 +125,7 @@ export function ActionMenus({
                 size="icon"
                 onClick={() => setMenuType(null)}
               >
-                ✖
+                ✕
               </Button>
             </div>
             <div className="game__menu-list">
@@ -188,7 +188,7 @@ export function ActionMenus({
                 size="icon"
                 onClick={() => setMenuType(null)}
               >
-                ✖
+                ✕
               </Button>
             </div>
             <div className="game__menu-list">

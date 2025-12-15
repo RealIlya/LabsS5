@@ -1,14 +1,18 @@
 import js from "@eslint/js";
-import eslintConfigPrettier from "eslint-config-prettier";
 import reactHooks from "eslint-plugin-react-hooks";
 import importPlugin from "eslint-plugin-import";
 import reactPlugin from "eslint-plugin-react";
 import tseslint from "typescript-eslint";
-import { defineConfig } from "vite";
 
 export default tseslint.config(
   {
-    ignores: ["dist/**", "public/**", "node_modules/**"],
+    ignores: [
+      "dist/**",
+      "public/**",
+      "node_modules/**",
+      "vite.config.ts",
+      "eslint.config.mjs",
+    ],
   },
   js.configs.recommended,
   {
@@ -30,7 +34,6 @@ export default tseslint.config(
         version: "detect",
       },
       "import/resolver": {
-        typescript: { project: "./tsconfig.json" },
         node: true,
       },
     },
@@ -78,6 +81,16 @@ export default tseslint.config(
           "alphabetize": { order: "asc", caseInsensitive: true },
         },
       ],
+      // Let `import/order` sort declarations; this sorts named specifiers inside imports.
+      "sort-imports": [
+        "error",
+        {
+          ignoreCase: true,
+          ignoreDeclarationSort: true,
+          ignoreMemberSort: false,
+          allowSeparatedGroups: true,
+        },
+      ],
 
       "import/no-default-export": "error",
 
@@ -95,6 +108,5 @@ export default tseslint.config(
         { blankLine: "always", prev: ["function"], next: "*" },
       ],
     },
-  },
-  eslintConfigPrettier
+  }
 );

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { translations, TranslationLocale } from "./translations";
+import { TranslationLocale, translations } from "./translations";
 
 export function useI18n(locale: TranslationLocale = "ru") {
   return useMemo(() => translations[locale], [locale]);

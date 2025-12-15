@@ -1,8 +1,8 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import "./styles.css";
-import { MainMenuPage } from "../pages/main-menu";
-import { LobbyPage } from "../pages/lobby";
 import { GameMapPage } from "../pages/game";
+import { LobbyPage } from "../pages/lobby";
+import { MainMenuPage } from "../pages/main-menu";
 
 export function App() {
   return (

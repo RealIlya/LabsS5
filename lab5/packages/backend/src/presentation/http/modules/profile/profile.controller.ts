@@ -8,9 +8,9 @@ import {
   ValidationPipe,
 } from "@nestjs/common";
 import { ProfileService } from "../../../../application/profile/profile.service";
-import { UpdateProfileDto } from "./dto/update-profile.dto";
-import { AuthProfileDto } from "./dto/auth-profile.dto";
 import type { Profile } from "../../../../domain/profile/profile.types";
+import { AuthProfileDto } from "./dto/auth-profile.dto";
+import { UpdateProfileDto } from "./dto/update-profile.dto";
 
 const toSafeProfile = (profile: Profile | null) =>
   profile ? { id: profile.id, nickname: profile.nickname } : null;

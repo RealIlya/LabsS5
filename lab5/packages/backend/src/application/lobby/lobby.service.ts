@@ -1,14 +1,14 @@
+import { randomUUID } from "crypto";
+import type { LobbyPlayerState, LobbyState, LobbySummary } from "@hex/shared";
 import {
   BadRequestException,
   Inject,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { randomUUID } from "crypto";
 import type { Lobby, LobbyPlayer } from "../../domain/lobby/lobby.types";
 import type { StorePort } from "../../infrastructure/store/store.port";
 import { GameService } from "../game/game.service";
-import type { LobbyState, LobbySummary, LobbyPlayerState } from "@hex/shared";
 
 const DEFAULT_MAX_PLAYERS = 4;
 

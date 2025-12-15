@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { LobbyService } from "./lobby.service";
+import { beforeEach, describe, expect, it } from "vitest";
 import { MemoryStore } from "../../infrastructure/store/memory-store";
 import { GameService } from "../game/game.service";
 import { MapService } from "../game/map.service";
+import { LobbyService } from "./lobby.service";
 
 const buildServices = () => {
   const store = new MemoryStore();

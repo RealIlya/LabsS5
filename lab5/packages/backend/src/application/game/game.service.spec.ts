@@ -1,14 +1,14 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { GameService } from "./game.service";
 import {
+  type CityData,
   STRUCTURE_RULES,
   UNIT_RULES,
-  type CityData,
   type UnitData,
 } from "@hex/shared";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { GameState } from "../../domain/game/game-state";
 import type { Lobby } from "../../domain/lobby/lobby.types";
 import { MemoryStore } from "../../infrastructure/store/memory-store";
+import { GameService } from "./game.service";
 import { MapService } from "./map.service";
 
 const makeLobby = (): Lobby => ({
@@ -399,6 +399,54 @@ describe("GameService actions", () => {
 
     const updated = service.getGame(lobby.gameId);
     expect(updated.currentPlayerId).toBe("player-2");
+  });
+
+  it("heals units on start of turn based on territory", () => {
+    const lobby = makeLobby();
+    service.createGameForLobby(lobby);
+
+    const p1SettlerTile = getSettlerTileForPlayer(
+      lobby.gameId,
+      "player-1",
+      testStore
+    );
+    const p2SettlerTile = getSettlerTileForPlayer(
+      lobby.gameId,
+      "player-2",
+      testStore
+    );
+
+    service.placeCapital(lobby.gameId, "player-1", p1SettlerTile.id);
+    service.placeCapital(lobby.gameId, "player-2", p2SettlerTile.id);
+
+    // Injure a player-1 unit and place it on neutral territory.
+    const stored = testStore.getGame(lobby.gameId);
+    if (!stored) throw new Error("Game not found");
+    const unitTile = stored.tiles.find((t) => t.unit?.ownerId === "player-1");
+    if (!unitTile?.unit) throw new Error("Unit not found");
+
+    unitTile.ownerId = null;
+    unitTile.unit.health = Math.max(1, unitTile.unit.maxHealth - 5);
+    const before = unitTile.unit.health;
+    testStore.saveGame(stored);
+
+    // Advance to player-2, then back to player-1 to trigger startPlayerTurn for player-1.
+    service.applyAction(lobby.gameId, "player-1", {
+      type: "END_TURN",
+      payload: {},
+    });
+    service.applyAction(lobby.gameId, "player-2", {
+      type: "END_TURN",
+      payload: {},
+    });
+
+    const afterGame = service.getGame(lobby.gameId);
+    const afterTile = afterGame.tiles.find((t) => t.id === unitTile.id);
+    if (!afterTile?.unit) throw new Error("Unit not found after turn");
+
+    // Neutral territory healing is non-zero.
+    expect(afterTile.unit.health).toBeGreaterThan(before);
+    expect(afterTile.unit.health).toBeLessThanOrEqual(afterTile.unit.maxHealth);
   });
 
   it("completes warrior production after required turns", () => {

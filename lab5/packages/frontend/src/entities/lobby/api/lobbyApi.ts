@@ -1,6 +1,6 @@
-import { apiConfig } from "../../../shared/config/api.config";
-import { request } from "../../../shared/api/request";
 import type { LobbyState, LobbySummary } from "@hex/shared";
+import { request } from "../../../shared/api/request";
+import { apiConfig } from "../../../shared/config/api.config";
 
 const { restBaseUrl, endpoints } = apiConfig;
 

@@ -1,7 +1,8 @@
-import { type StandaloneStructureType, type CityData } from "@hex/shared";
-import type { MapTile, MapUnit } from "../types";
+import { type CityData, type StandaloneStructureType } from "@hex/shared";
 import type { UNIT_RULES, UnitType } from "@hex/shared";
+import cn from "classnames";
 import { Button } from "../../../../shared/ui/button";
+import type { MapTile, MapUnit } from "../types";
 
 interface InfoPanelProps {
   t: typeof import("../../../../shared/i18n").translations.ru.game;
@@ -97,7 +98,7 @@ export function InfoPanel({
   }
 
   return (
-    <div className={`game__hud-left ${className ?? ""}`}>
+    <div className={cn("game__hud-left", className)}>
       <Button
         type="button"
         variant="ghost"

@@ -1,3 +1,4 @@
+import type { PlayerAction } from "@hex/shared";
 import {
   ConnectedSocket,
   MessageBody,
@@ -7,7 +8,6 @@ import {
 } from "@nestjs/websockets";
 import type { Server, Socket } from "socket.io";
 import { GameService } from "../../application/game/game.service";
-import type { PlayerAction } from "@hex/shared";
 
 interface GameJoinPayload {
   gameId: string;

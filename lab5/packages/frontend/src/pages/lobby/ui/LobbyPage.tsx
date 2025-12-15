@@ -1,25 +1,25 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { lobbyApi } from "../../../entities/lobby/api/lobbyApi";
+import {
+  useLeaveLobbyMutation,
+  useStartLobbyMutation,
+  useToggleReadyMutation,
+} from "../../../entities/lobby/model/useLobbyMutations";
+import { useLobbySocket } from "../../../entities/lobby/model/useLobbySocket";
+import { useLobbyStore } from "../../../entities/lobby/model/useLobbyStore";
 import type {
   LobbyPlayerState,
   LobbyState,
 } from "../../../entities/lobby/types";
-import { translations } from "../../../shared/i18n";
-import { useLobbyStore } from "../../../entities/lobby/model/useLobbyStore";
-import {
-  useStartLobbyMutation,
-  useToggleReadyMutation,
-  useLeaveLobbyMutation,
-} from "../../../entities/lobby/model/useLobbyMutations";
 import { apiConfig } from "../../../shared/config/api.config";
-import { lobbyApi } from "../../../entities/lobby/api/lobbyApi";
 import { useConnectionStatus } from "../../../shared/hooks/useConnectionStatus";
-import { useLobbySocket } from "../../../entities/lobby/model/useLobbySocket";
+import { translations } from "../../../shared/i18n";
 import {
+  ConnectionStatusModal,
+  LobbyFooter,
   LobbyHeader,
   LobbyPlayersList,
-  LobbyFooter,
-  ConnectionStatusModal,
 } from "./components";
 import "./LobbyPage.css";
 

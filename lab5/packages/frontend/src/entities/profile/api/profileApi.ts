@@ -1,5 +1,5 @@
-import { apiConfig } from "../../../shared/config/api.config";
 import { request } from "../../../shared/api/request";
+import { apiConfig } from "../../../shared/config/api.config";
 import type { ProfileData } from "../model/useProfileStore";
 
 const { restBaseUrl, endpoints } = apiConfig;

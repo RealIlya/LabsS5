@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format:imports": "eslint . --config eslint.imports.config.mjs --fix",
     "test": "vitest run",
     "msw": "msw init public --save"
   },

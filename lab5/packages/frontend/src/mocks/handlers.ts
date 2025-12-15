@@ -1,11 +1,11 @@
 import { http, HttpResponse } from "msw";
-import { apiConfig } from "../shared/config/api.config";
-import type { LobbyState, LobbyPlayerState } from "../entities/lobby/types";
 import type { GameStateDto } from "../entities/game/api/gameApi";
 import type {
   CreateLobbyPayload,
   JoinLobbyPayload,
 } from "../entities/lobby/api/lobbyApi";
+import type { LobbyPlayerState, LobbyState } from "../entities/lobby/types";
+import { apiConfig } from "../shared/config/api.config";
 
 const baseUrl = apiConfig.restBaseUrl;
 const PLAYER_COLORS = ["#5FB49C", "#FFB347", "#6C63FF", "#FF6F91"];

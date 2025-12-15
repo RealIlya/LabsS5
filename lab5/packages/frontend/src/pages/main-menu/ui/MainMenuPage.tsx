@@ -1,16 +1,16 @@
+import { useEffect, useMemo, useState } from "react";
 import cn from "classnames";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
-import { Button } from "../../../shared/ui/button";
-import { translations } from "../../../shared/i18n";
 import {
   useCreateLobbyMutation,
   useJoinLobbyMutation,
 } from "../../../entities/lobby/model/useLobbyMutations";
-import { useProfileStore } from "../../../entities/profile/model/useProfileStore";
-import { useProfileAuthMutation } from "../../../entities/profile/model/useProfileAuth";
-import { useConnectionStatus } from "../../../shared/hooks/useConnectionStatus";
 import { useLobbyStore } from "../../../entities/lobby/model/useLobbyStore";
+import { useProfileAuthMutation } from "../../../entities/profile/model/useProfileAuth";
+import { useProfileStore } from "../../../entities/profile/model/useProfileStore";
+import { useConnectionStatus } from "../../../shared/hooks/useConnectionStatus";
+import { translations } from "../../../shared/i18n";
+import { Button } from "../../../shared/ui/button";
 import { TrainingModal } from "../../../shared/ui/training-modal";
 
 import "./MainMenuPage.css";

@@ -1,4 +1,5 @@
-.main-menu__tutorial-overlay {
+/* TrainingModal carries its own "main menu modal" styling so it looks identical everywhere. */
+.main-menu__modal--tutorial {
   position: fixed;
   inset: 0;
   background: var(--color-overlay-strong);
@@ -7,84 +8,55 @@
   align-items: center;
   justify-content: center;
   z-index: 1300;
+  animation: fadeIn 0.2s;
   padding: var(--space-lg);
 }
 
-.main-menu__tutorial {
-  width: min(var(--layout-actions-max-width), 95vw);
-  background: var(--color-bg-surface);
-  border: 1px solid var(--color-border-soft);
-  border-radius: var(--radius-card);
-  padding: var(--space-lg);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+.main-menu__modal-content--tutorial {
+  background: var(--gradient-panel);
+  border: 1px solid var(--color-hud-border);
+  box-shadow: var(--shadow-card), 0 0 20px rgba(251, 191, 36, 0.1);
+  padding: var(--space-xl);
+  width: 100%;
+  max-width: 760px;
+  border-radius: var(--radius-soft);
+  color: var(--color-text-primary);
+  max-height: min(85vh, 860px);
+  overflow: auto;
 }
 
-.main-menu__tutorial-header {
+.main-menu__tutorial-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--space-md);
+  padding-bottom: var(--space-sm);
   margin-bottom: var(--space-md);
 }
 
-.main-menu__tutorial-label {
+.main-menu__tutorial-heading h2 {
+  width: 100%;
+  margin: 0;
+  color: var(--color-hud-accent);
+  font-size: var(--font-size-section-title);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--color-text-muted);
-  margin: 0;
 }
 
-.main-menu__tutorial-title {
-  margin: 0;
-  color: var(--color-text-primary);
-}
-
-.main-menu__tutorial-close {
-  border: 1px solid var(--color-border-soft);
-  background: var(--color-hud-bg);
-  color: var(--color-text-primary);
-  border-radius: var(--radius-pill);
-  width: 36px;
-  height: 36px;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.main-menu__tutorial-close-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-sm) var(--space-lg);
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--color-border-soft);
-  background: var(--color-hud-bg);
-  color: var(--color-text-primary);
-  cursor: pointer;
+.main-menu__tutorial-description {
+  margin: 0 0 var(--space-md);
+  color: var(--color-text-secondary);
+  line-height: 1.4;
 }
 
 .main-menu__tutorial-tabs {
   display: flex;
   gap: var(--space-xs);
   margin-bottom: var(--space-md);
+  align-items: stretch;
 }
 
 .main-menu__tutorial-tab {
   flex: 1;
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--color-border-soft);
-  background: var(--color-hud-bg);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-label);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s, transform 0.1s;
-}
-
-.main-menu__tutorial-tab--active {
-  background: var(--color-primary);
-  color: var(--color-text-contrast);
-  border-color: var(--color-primary);
-  transform: translateY(-1px);
 }
 
 .main-menu__tutorial-grid {

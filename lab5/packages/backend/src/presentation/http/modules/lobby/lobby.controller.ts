@@ -9,11 +9,11 @@ import {
   Post,
 } from "@nestjs/common";
 import { LobbyService } from "../../../../application/lobby/lobby.service";
+import { LobbyGateway } from "../../../ws/lobby.gateway";
 import { CreateLobbyDto } from "./dto/create-lobby.dto";
 import { JoinLobbyDto } from "./dto/join-lobby.dto";
-import { ToggleReadyDto } from "./dto/toggle-ready.dto";
 import { LeaveLobbyDto } from "./dto/leave-lobby.dto";
-import { LobbyGateway } from "../../../ws/lobby.gateway";
+import { ToggleReadyDto } from "./dto/toggle-ready.dto";
 
 @Controller("api/lobbies")
 export class LobbyController {

@@ -1,10 +1,10 @@
-import type { GameTileState } from "../../domain/game/game-state";
 import {
   EVEN_NEIGHBORS,
   MAP_COLUMNS,
   MAP_ROWS,
   ODD_NEIGHBORS,
-} from "./game.constants";
+} from "@hex/shared";
+import type { GameTileState } from "../../domain/game/game-state";
 
 export const isTilePlaceable = (tile: GameTileState) =>
   tile.terrain !== "Water" && tile.terrain !== "Mountains";

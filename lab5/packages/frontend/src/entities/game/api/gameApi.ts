@@ -1,6 +1,6 @@
 import type { GameState, PlayerAction } from "@hex/shared";
-import { apiConfig } from "../../../shared/config/api.config";
 import { request } from "../../../shared/api/request";
+import { apiConfig } from "../../../shared/config/api.config";
 export type GameStateDto = GameState;
 
 export function getGameState(gameId: string) {

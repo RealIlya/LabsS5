@@ -1,5 +1,5 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { PlayerAction } from "@hex/shared";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { placeCapital, submitAction } from "../api/gameApi";
 
 export function useGameMutations(

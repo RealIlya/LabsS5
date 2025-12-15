@@ -1,6 +1,6 @@
+import { MAP_COLUMNS, MAP_ROWS } from "@hex/shared";
 import { Injectable } from "@nestjs/common";
 import type { GameTileState } from "../../domain/game/game-state";
-import { MAP_COLUMNS, MAP_ROWS } from "./game.constants";
 import { pickTerrain, sampleHeight, stringToSeed } from "./game.utils";
 
 @Injectable()

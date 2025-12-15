@@ -2,6 +2,7 @@ export const MAP_COLUMNS = 24;
 export const MAP_ROWS = 24;
 export const PLAYER_COLORS = ["#0EA5E9", "#FFB347", "#6C63FF", "#FF6F91"];
 export const TURN_DURATION_SECONDS = 60;
+export const CAPITAL_PLACEMENT_TURN_SECONDS = 60;
 
 export const CITY_MAX_FORTIFICATION = 100;
 export const CITY_FORT_REGEN = 10;
@@ -16,7 +17,7 @@ export const EVEN_NEIGHBORS = [
   { dx: 1, dy: 0 }, // right
   { dx: -1, dy: 1 }, // down-left
   { dx: 0, dy: 1 }, // down-right
-];
+] as const;
 
 export const ODD_NEIGHBORS = [
   { dx: 0, dy: -1 }, // up-left
@@ -25,4 +26,4 @@ export const ODD_NEIGHBORS = [
   { dx: 1, dy: 0 }, // right
   { dx: 0, dy: 1 }, // down-left
   { dx: 1, dy: 1 }, // down-right
-];
+] as const;

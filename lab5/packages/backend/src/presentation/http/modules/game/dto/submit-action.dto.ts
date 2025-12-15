@@ -1,5 +1,5 @@
-import { IsObject, IsString } from "class-validator";
 import type { PlayerAction } from "@hex/shared";
+import { IsObject, IsString } from "class-validator";
 
 export class SubmitActionDto {
   @IsString()

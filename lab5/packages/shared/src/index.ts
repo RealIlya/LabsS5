@@ -6,3 +6,5 @@ export * from "./types/hex.types";
 export * from "./types/tile.types";
 export * from "./types/lobby.types";
 export * from "./api/game.contract";
+export * from "./balance/healing.constants";
+export * from "./balance/game.constants";

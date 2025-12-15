@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+import cn from "classnames";
 import "./button.css";
 
 type ButtonVariant = "primary" | "secondary" | "ghost";
@@ -22,26 +23,20 @@ export function Button({
   unstyled = false,
   ...rest
 }: ButtonProps) {
-  const classes: string[] = [];
-
-  if (unstyled) {
-    classes.push("ui-button--unstyled");
-  } else {
-    classes.push("ui-button", `ui-button--${variant}`);
-    if (size !== "default") {
-      classes.push(`ui-button--${size}`);
-    }
-    if (block) {
-      classes.push("ui-button--block");
-    }
-  }
-
-  if (className) {
-    classes.push(className);
-  }
+  const classes = cn(
+    className,
+    unstyled
+      ? "ui-button--unstyled"
+      : [
+          "ui-button",
+          `ui-button--${variant}`,
+          size !== "default" && `ui-button--${size}`,
+          block && "ui-button--block",
+        ]
+  );
 
   return (
-    <button className={classes.join(" ")} {...rest}>
+    <button className={classes} {...rest}>
       {icon ? <span className="ui-button__icon">{icon}</span> : null}
       {children}
     </button>

@@ -1,5 +1,5 @@
-import cn from "classnames";
 import type { CityImprovementType } from "@hex/shared";
+import cn from "classnames";
 import type { MapStructure, MapTile as MapTileType } from "../types";
 
 const unitEmoji: Record<string, string> = {
@@ -28,6 +28,7 @@ interface MapTileProps {
   blocked: boolean;
   cityBlocked?: boolean;
   highlighted?: boolean;
+  isSelfUnit?: boolean;
   territoryColor?: string;
   controlColor?: string;
   hexConfig: { WIDTH: number; HEIGHT: number; ROW_SPACING_V: number };
@@ -42,6 +43,7 @@ export function MapTile({
   blocked,
   cityBlocked = false,
   highlighted = false,
+  isSelfUnit = false,
   territoryColor,
   controlColor,
   hexConfig,
@@ -110,7 +112,9 @@ export function MapTile({
       )}
       {tile.unit && (
         <span
-          className="game__tile-unit"
+          className={cn("game__tile-unit", {
+            "game__tile-unit--self": isSelfUnit,
+          })}
           style={{
             ["--tile-unit-color" as string]: tile.unit.ownerColor,
           }}

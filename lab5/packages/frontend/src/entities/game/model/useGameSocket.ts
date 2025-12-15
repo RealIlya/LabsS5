@@ -31,7 +31,7 @@ export function useGameSocket({ gameId }: UseGameSocketParams) {
     });
     socket.on("game:update", handleUpdate);
     socket.on("game:error", (payload: { message?: string }) => {
-      // eslint-disable-next-line no-console
+       
       console.error("Game socket error:", payload?.message);
     });
 

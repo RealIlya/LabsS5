@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import {
   BadRequestException,
   Inject,
@@ -5,9 +6,8 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from "@nestjs/common";
-import { randomUUID } from "crypto";
-import type { StorePort } from "../../infrastructure/store/store.port";
 import type { Profile } from "../../domain/profile/profile.types";
+import type { StorePort } from "../../infrastructure/store/store.port";
 
 export interface UpsertProfilePayload {
   id?: string;

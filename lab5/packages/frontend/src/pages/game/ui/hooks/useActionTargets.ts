@@ -1,10 +1,10 @@
 import { useMemo } from "react";
-import type { MapTile, MapUnit } from "../types";
 import {
   HEX_NEIGHBORS,
   isTileAttackTarget,
   isTilePassable,
 } from "../mapConfig";
+import type { MapTile, MapUnit } from "../types";
 
 interface Params {
   activeAction: null | "move" | "attack";

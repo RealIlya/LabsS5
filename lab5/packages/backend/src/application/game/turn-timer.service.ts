@@ -1,13 +1,13 @@
 import {
-  Injectable,
   Inject,
+  Injectable,
   Logger,
   OnModuleDestroy,
   OnModuleInit,
 } from "@nestjs/common";
 import type { StorePort } from "../../infrastructure/store/store.port";
-import { GameService } from "./game.service";
 import { GameGateway } from "../../presentation/ws/game.gateway";
+import { GameService } from "./game.service";
 
 @Injectable()
 export class TurnTimerService implements OnModuleInit, OnModuleDestroy {

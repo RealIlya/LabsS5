@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import cn from "classnames";
 import { Button } from "../../../../shared/ui/button";
 
 interface ActionsPanelProps {
@@ -21,7 +22,7 @@ interface ActionsPanelProps {
   onEndTurn: () => void;
   endTurnDisabled: boolean;
   waitingForOpponents: boolean;
-  onOpenGuide?: () => void;
+  showTurnTimer: boolean;
   turnRemaining: number;
   turnDurationSeconds: number;
 }
@@ -46,17 +47,16 @@ export function ActionsPanel({
   onEndTurn,
   endTurnDisabled,
   waitingForOpponents,
-  onOpenGuide,
+  showTurnTimer,
   turnRemaining,
   turnDurationSeconds,
 }: ActionsPanelProps) {
   const anyUnitActions =
     canAttack || canMove || canFoundCity || canBuild || canOpenProductionMenu;
   const totalSeconds = Math.max(1, turnDurationSeconds);
-  const remainingRatio = Math.max(
-    0,
-    Math.min(1, turnRemaining / totalSeconds)
-  );
+  const remainingRatio = showTurnTimer
+    ? Math.max(0, Math.min(1, turnRemaining / totalSeconds))
+    : 1;
   const timerProgress = remainingRatio * 360;
   const turnTimerStyle = {
     "--timer-progress": `${timerProgress}deg`,
@@ -66,22 +66,10 @@ export function ActionsPanel({
     <div className="game__hud-right">
       {anyUnitActions && (
         <div className="game__unit-actions">
-          {onOpenGuide ? (
-            <Button
-              className="game__mini-btn"
-              onClick={onOpenGuide}
-              title="Гайд"
-              type="button"
-              variant="ghost"
-              size="compact"
-            >
-              ❔
-            </Button>
-          ) : null}
           <Button
-            className={`game__mini-btn ${
-              attackActive ? "game__mini-btn--active" : ""
-            }`}
+            className={cn("game__mini-btn", {
+              "game__mini-btn--active": attackActive,
+            })}
             disabled={controlsDisabled || !canAttack || !isMyTurn}
             onClick={onAttackToggle}
             title={t.actions.attack}
@@ -92,9 +80,9 @@ export function ActionsPanel({
             ⚔️
           </Button>
           <Button
-            className={`game__mini-btn ${
-              moveActive ? "game__mini-btn--active" : ""
-            }`}
+            className={cn("game__mini-btn", {
+              "game__mini-btn--active": moveActive,
+            })}
             disabled={controlsDisabled || !canMove || !isMyTurn}
             onClick={onMoveToggle}
             title={t.actions.move}
@@ -153,7 +141,9 @@ export function ActionsPanel({
           <span className="game__turn-timer-label">
             {waitingForOpponents ? "⏳" : t.endTurn}
           </span>
-          <span className="game__turn-timer-count">{turnRemaining}s</span>
+          {showTurnTimer ? (
+            <span className="game__turn-timer-count">{turnRemaining}s</span>
+          ) : null}
         </button>
       </div>
     </div>

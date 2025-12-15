@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import type { Lobby } from "../../domain/lobby/lobby.types";
 import type { GameState } from "../../domain/game/game-state";
+import type { Lobby } from "../../domain/lobby/lobby.types";
 import type { Profile } from "../../domain/profile/profile.types";
 import type { StorePort } from "./store.port";
 

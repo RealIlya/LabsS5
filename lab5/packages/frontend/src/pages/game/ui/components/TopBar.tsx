@@ -1,6 +1,5 @@
-import type { GameStateDto } from "../../../../entities/game/api/gameApi";
-
 import { type Ref } from "react";
+import type { GameStateDto } from "../../../../entities/game/api/gameApi";
 import { Button } from "../../../../shared/ui/button";
 
 interface TopBarProps {

@@ -1,6 +1,6 @@
 import { Global, Module } from "@nestjs/common";
-import { MemoryStore } from "./memory-store";
 import { FileStore } from "./file-store";
+import { MemoryStore } from "./memory-store";
 
 @Global()
 @Module({

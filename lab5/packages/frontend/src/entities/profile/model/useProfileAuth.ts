@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { profileApi, type AuthProfilePayload } from "../api/profileApi";
+import { type AuthProfilePayload, profileApi } from "../api/profileApi";
 
 export function useProfileAuthMutation() {
   return useMutation({
